@@ -1,0 +1,242 @@
+    SELECT 
+      MAX(CF.nid) AS qtl_nid,
+      MAX(QTL.name) AS qtl_symbol,
+      MAX(S.name) AS expt_qtl_symbol,
+      MAX(CO.nid) AS organism_nid,
+      MAX(O.genus || ' ' || O.species) AS organism,
+      MAX(MX.accession) AS mnemonic,
+      MAX(P.uniquename) AS citation,
+      MAX(TRAIT_NAME.value) AS expt_trait_name,
+      MAX(TRAIT_DSCR.value) AS expt_trait_description,
+      MAX(TRAIT_U.value) AS trait_unit,
+      MAX(TRAIT_C.name) AS trait_class,
+      MAX(FAS.name) AS favorable_allele_source,
+      MAX(TMT.value) AS treatment,
+      MAX(METHOD.value) AS analysis_method,
+      MAX(LOD.rawscore) AS lod,
+      MAX(LR.rawscore) AS likelihood_ratio, 
+      MAX(MR2.rawscore) AS marker_r2, 
+      MAX(TR2.rawscore) AS total_r2, 
+      MAX(ADD.rawscore) AS additivity,
+      MAX(PUBLG.value) AS publication_lg,
+      MAX(LG.value) AS lg,
+      MAX(MAPINFO.map_name) AS map_name, 
+      MAX(MAPINFO.start::NUMERIC(7,2)) AS left_end, 
+      MAX(MAPINFO.end::NUMERIC(7,2)) AS right_end,
+      MAX(MAPINFO.lis_lg_map_accession) AS lis_lg_map_accession, 
+      MAX(MAPINFO.lis_map_accession) AS lis_map_accession, 
+      MAX(INT.value) AS interval_calc_method,
+      MAX(NM.name) AS nearest_marker, 
+      MAX(FML.name) AS flanking_marker_low,
+      MAX(FMH.name) AS flanking_marker_high,
+      MAX(COMM.value) AS comment
+    
+    FROM feature QTL
+      -- get nid for QTL feature
+      LEFT JOIN public.chado_feature CF ON CF.feature_id = QTL.feature_id
+    
+      -- get organism information
+      INNER JOIN organism O ON O.organism_id = QTL.organism_id
+      LEFT JOIN public.chado_organism CO ON CO.organism_id = O.organism_id
+      LEFT JOIN organism_dbxref M ON M.organism_id=O.organism_id
+      LEFT JOIN dbxref MX ON MX.dbxref_id=M.dbxref_id 
+        AND MX.db_id=(SELECT db_id FROM db WHERE name='uniprot:species')
+    
+      -- experiment and publication
+      INNER JOIN feature_project FP ON FP.feature_id=QTL.feature_id
+      INNER JOIN project E ON E.project_id=FP.project_id
+      INNER JOIN project_pub PP ON PP.project_id=E.project_id
+      LEFT JOIN pub P ON P.pub_id=PP.pub_id
+    
+      -- QTL name used in publication
+      LEFT JOIN feature_synonym FS ON FS.feature_id=QTL.feature_id
+      LEFT JOIN synonym S ON S.synonym_id=FS.synonym_id
+    
+      -- experiment trait name
+      LEFT OUTER JOIN featureprop TRAIT_NAME ON TRAIT_NAME.feature_id = QTL.feature_id
+        AND TRAIT_NAME.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                                WHERE name='experiment trait name'
+                                      AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+                             
+      -- experiment trait description
+      LEFT OUTER JOIN featureprop TRAIT_DSCR ON TRAIT_DSCR.feature_id = QTL.feature_id
+        AND TRAIT_DSCR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                                WHERE name='experiment trait description'
+                                      AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+                             
+      -- trait units
+      LEFT OUTER JOIN featureprop TRAIT_U ON TRAIT_U.feature_id = QTL.feature_id
+        AND TRAIT_U.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name='trait unit'
+                                   AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+    
+      -- trait class
+      LEFT JOIN (
+        SELECT SYMF.feature_id, TC.name FROM feature Q 
+          -- get QTL symbol (== trait name) ...
+          LEFT JOIN feature_cvterm SYMF ON SYMF.feature_id=Q.feature_id 
+          LEFT JOIN cvterm SYM ON SYM.cvterm_id=SYMF.cvterm_id
+          LEFT JOIN feature_cvtermprop SYMP ON SYMP.feature_cvterm_id=SYMF.feature_cvterm_id 
+            AND SYMP.type_id=(SELECT cvterm_id FROM cvterm 
+                              WHERE name='QTL symbol' 
+                                    AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+          -- ... and use it to get the trait class
+          LEFT JOIN (SELECT subject_id, name FROM cvterm C 
+                       INNER JOIN cvterm_relationship TR ON TR.object_id=C.cvterm_id
+                     WHERE TR.type_id=(SELECT cvterm_id FROM cvterm 
+                                       WHERE name='has trait class' 
+                                             AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+                    ) TC ON TC.subject_id=SYM.cvterm_id
+        ) TRAIT_C ON TRAIT_C.feature_id=QTL.feature_id
+    
+      -- favorable allele source
+      LEFT OUTER JOIN feature_stock FAFS ON FAFS.feature_id=QTL.feature_id
+      LEFT OUTER JOIN stock FAS ON FAS.stock_id=FAFS.stock_id
+    
+      -- treatment
+      LEFT OUTER JOIN featureprop TMT ON TMT.feature_id = QTL.feature_id
+        AND TMT.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                         WHERE name='QTL study treatment'
+                               AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+                             
+      -- analysis method
+      LEFT OUTER JOIN featureprop METHOD ON METHOD.feature_id = QTL.feature_id
+        AND METHOD.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                         WHERE name='QTL analysis method'
+                               AND cv_id=(SELECT cv_id FROM chado.cv 
+                                          WHERE name='local'))
+                             
+      -- LOD
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='LOD'
+        ) LOD ON LOD.feature_id=QTL.feature_id
+    
+      -- likelihood ratio
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='likelihood ratio'
+        ) LR ON LR.feature_id=QTL.feature_id
+      
+      -- marker R2
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='marker R2'
+        ) MR2 ON MR2.feature_id=QTL.feature_id
+      
+      -- total R2
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='total R2'
+        ) TR2 ON TR2.feature_id=QTL.feature_id
+      
+      -- additivity
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='additivity'
+        ) ADD ON ADD.feature_id=QTL.feature_id  
+      
+      -- publication linkage group
+      LEFT OUTER JOIN featureprop PUBLG ON PUBLG.feature_id = QTL.feature_id
+        AND PUBLG.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                           WHERE name='linkage group name used in publication'
+                                 AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      
+      -- linkage group
+      LEFT OUTER JOIN featureprop LG ON LG.feature_id = QTL.feature_id
+        AND LG.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                        WHERE name='linkage_group'
+                              AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+      
+      -- map information
+      LEFT JOIN
+        (SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name, 
+                 FPS.mappos AS start, FPE.mappos AS end, 
+                 LISLGACC.accession AS lis_lg_map_accession,
+                 LISACC.accession AS lis_map_accession
+         FROM feature MAPINFO
+           LEFT JOIN featurepos FPS ON FPS.map_feature_id=MAPINFO.feature_id
+           LEFT JOIN featureposprop FPSP 
+             ON FPSP.featurepos_id=FPS.featurepos_id
+              
+           LEFT JOIN featurepos FPE 
+             ON FPE.map_feature_id=MAPINFO.feature_id
+                AND FPE.feature_id=FPS.feature_id
+           LEFT JOIN featureposprop FPEP 
+             ON FPEP.featurepos_id=FPE.featurepos_id
+          
+           LEFT JOIN featuremap MAP ON MAP.featuremap_id=FPE.featuremap_id
+            
+           LEFT JOIN
+             (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
+              FROM dbxref LISLGACC
+                INNER JOIN feature_dbxref LISLGFDBX 
+                  ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
+              WHERE LISLGACC.db_id=(SELECT db_id FROM db 
+                                    WHERE name='LIS:cmap')
+             ) LISLGACC ON LISLGACC.feature_id=MAPINFO.feature_id
+              
+           LEFT JOIN
+             (SELECT LISACC.accession, LISFDBX.featuremap_id 
+              FROM dbxref LISACC
+                INNER JOIN featuremap_dbxref LISFDBX 
+                  ON LISFDBX.dbxref_id=LISACC.dbxref_id
+              WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
+             ) LISACC ON LISACC.featuremap_id=MAP.featuremap_id
+    
+          WHERE MAPINFO.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                                 WHERE name = 'linkage_group'
+                                       AND cv_id=(SELECT cv_id FROM chado.cv 
+                                                  WHERE name='sequence'))
+                AND FPSP.type_id=(SELECT cvterm_id FROM cvterm 
+                                 WHERE name='start coordinate' 
+                                       AND cv_id=(SELECT cv_id FROM cv 
+                                                  WHERE name='local'))
+                AND FPEP.type_id=(SELECT cvterm_id FROM cvterm 
+                                 WHERE name='stop coordinate' 
+                                       AND cv_id=(SELECT cv_id FROM cv 
+                                                  WHERE name='local'))
+        ) MAPINFO ON MAPINFO.feature_id=QTL.feature_id
+         
+      -- interval_calc_method
+      LEFT OUTER JOIN featureprop INT ON INT.feature_id = QTL.feature_id
+        AND INT.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                        WHERE name='interval calculation method'
+                              AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      
+      -- nearest marker
+      LEFT OUTER JOIN feature_relationship NMR
+        ON NMR.subject_id=QTL.feature_id 
+          AND NMR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+             WHERE name='nearest marker' 
+               AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      LEFT OUTER JOIN feature NM ON NM.feature_id=NMR.object_id
+      
+      -- flanking marker low
+      LEFT OUTER JOIN feature_relationship FMLR ON FMLR.subject_id=QTL.feature_id 
+        AND FMLR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                          WHERE name='flanking marker low' 
+                                AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      LEFT OUTER JOIN feature FML ON FML.feature_id=FMLR.object_id
+    
+      -- flanking marker high
+      LEFT OUTER JOIN feature_relationship FMHR ON FMHR.subject_id=QTL.feature_id 
+        AND FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                          WHERE name='flanking marker low' 
+                                AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      LEFT OUTER JOIN feature FMH ON FMH.feature_id=FMHR.object_id
+    
+      -- comment
+      LEFT OUTER JOIN featureprop COMM ON COMM.feature_id = QTL.feature_id
+        AND COMM.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                          WHERE name='comments'
+                                AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+    WHERE QTL.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                       WHERE name = 'QTL'
+                         AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+    GROUP BY QTL.feature_id

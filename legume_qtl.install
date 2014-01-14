@@ -1,0 +1,1230 @@
+<?php
+ 
+/**
+ * Implementation of hook_install().
+ */
+function legume_qtl_install() {
+   // create the module's data directory
+   tripal_create_moddir('legume_qtl');
+   
+   // add the materializedviews
+   legume_qtl_add_all_mviews();
+   
+   // we want to integrate the materialized views so that they
+   // are available for Drupal Views, upon which our search forms are built
+   legume_qtl_views_integrate_all();
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function legume_qtl_uninstall() {
+  
+  // Drop the MView table if it exists
+  $mview_id = tripal_mviews_get_mview_id('qtl_search');
+  if ($mview_id) {
+    tripal_mviews_action("delete", $mview_id);
+  }
+}
+
+/**
+ * Installs all of the materialized views used by this module
+ */
+function legume_qtl_add_all_mviews() {
+  legume_qtl_add_qtl_search_mview();
+}
+
+/**
+ * Integrates all of the custom tables and materialized views with settings
+ * appropriate for this module.
+ */
+function legume_qtl_views_integrate_all() {
+  legume_qtl_views_integrate_qtl_search();
+}
+
+/**
+ * Add the qtl_search materialized view 
+ */
+function legume_qtl_add_qtl_search_mview() {
+  // Populates the table qtl_search
+  $sql = "
+     SELECT 
+      MAX(CF.nid) AS qtl_nid,
+      MAX(QTL.name) AS qtl_symbol,
+      MAX(S.name) AS expt_qtl_symbol,
+      MAX(CO.nid) AS organism_nid,
+      MAX(O.genus || ' ' || O.species) AS organism,
+      MAX(MX.accession) AS mnemonic,
+      MAX(P.uniquename) AS citation,
+      MAX(TRAIT_NAME.value) AS expt_trait_name,
+      MAX(TRAIT_DSCR.value) AS expt_trait_description,
+      MAX(TRAIT_U.value) AS trait_unit,
+      MAX(TRAIT_C.name) AS trait_class,
+      MAX(FAS.name) AS favorable_allele_source,
+      MAX(TMT.value) AS treatment,
+      MAX(METHOD.value) AS analysis_method,
+      MAX(LOD.rawscore) AS lod,
+      MAX(LR.rawscore) AS likelihood_ratio, 
+      MAX(MR2.rawscore) AS marker_r2, 
+      MAX(TR2.rawscore) AS total_r2, 
+      MAX(ADD.rawscore) AS additivity,
+      MAX(PUBLG.value) AS publication_lg,
+      MAX(LG.value) AS lg,
+      MAX(MAPINFO.map_name) AS map_name, 
+      MAX(MAPINFO.start::NUMERIC(7,2)) AS left_end, 
+      MAX(MAPINFO.end::NUMERIC(7,2)) AS right_end,
+      MAX(MAPINFO.lis_lg_map_accession) AS lis_lg_map_accession, 
+      MAX(MAPINFO.lis_map_accession) AS lis_map_accession, 
+      MAX(INT.value) AS interval_calc_method,
+      MAX(NM.name) AS nearest_marker, 
+      MAX(FML.name) AS flanking_marker_low,
+      MAX(FMH.name) AS flanking_marker_high,
+      MAX(COMM.value) AS comment
+    
+    FROM feature QTL
+      -- get nid for QTL feature
+      LEFT JOIN public.chado_feature CF ON CF.feature_id = QTL.feature_id
+    
+      -- get organism information
+      INNER JOIN organism O ON O.organism_id = QTL.organism_id
+      LEFT JOIN public.chado_organism CO ON CO.organism_id = O.organism_id
+      LEFT JOIN organism_dbxref M ON M.organism_id=O.organism_id
+      LEFT JOIN dbxref MX ON MX.dbxref_id=M.dbxref_id 
+        AND MX.db_id=(SELECT db_id FROM db WHERE name='uniprot:species')
+    
+      -- experiment and publication
+      INNER JOIN feature_project FP ON FP.feature_id=QTL.feature_id
+      INNER JOIN project E ON E.project_id=FP.project_id
+      INNER JOIN project_pub PP ON PP.project_id=E.project_id
+      LEFT JOIN pub P ON P.pub_id=PP.pub_id
+    
+      -- QTL name used in publication
+      LEFT JOIN feature_synonym FS ON FS.feature_id=QTL.feature_id
+      LEFT JOIN synonym S ON S.synonym_id=FS.synonym_id
+    
+      -- experiment trait name
+      LEFT OUTER JOIN featureprop TRAIT_NAME ON TRAIT_NAME.feature_id = QTL.feature_id
+        AND TRAIT_NAME.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                                WHERE name='experiment trait name'
+                                      AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+                             
+      -- experiment trait description
+      LEFT OUTER JOIN featureprop TRAIT_DSCR ON TRAIT_DSCR.feature_id = QTL.feature_id
+        AND TRAIT_DSCR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                                WHERE name='experiment trait description'
+                                      AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+                             
+      -- trait units
+      LEFT OUTER JOIN featureprop TRAIT_U ON TRAIT_U.feature_id = QTL.feature_id
+        AND TRAIT_U.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name='trait unit'
+                                   AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+    
+      -- trait class
+      LEFT JOIN (
+        SELECT SYMF.feature_id, TC.name FROM feature Q 
+          -- get QTL symbol (== trait name) ...
+          LEFT JOIN feature_cvterm SYMF ON SYMF.feature_id=Q.feature_id 
+          LEFT JOIN cvterm SYM ON SYM.cvterm_id=SYMF.cvterm_id
+          LEFT JOIN feature_cvtermprop SYMP ON SYMP.feature_cvterm_id=SYMF.feature_cvterm_id 
+            AND SYMP.type_id=(SELECT cvterm_id FROM cvterm 
+                              WHERE name='QTL symbol' 
+                                    AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+          -- ... and use it to get the trait class
+          LEFT JOIN (SELECT subject_id, name FROM cvterm C 
+                       INNER JOIN cvterm_relationship TR ON TR.object_id=C.cvterm_id
+                     WHERE TR.type_id=(SELECT cvterm_id FROM cvterm 
+                                       WHERE name='has trait class' 
+                                             AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+                    ) TC ON TC.subject_id=SYM.cvterm_id
+        ) TRAIT_C ON TRAIT_C.feature_id=QTL.feature_id
+    
+      -- favorable allele source
+      LEFT OUTER JOIN feature_stock FAFS ON FAFS.feature_id=QTL.feature_id
+      LEFT OUTER JOIN stock FAS ON FAS.stock_id=FAFS.stock_id
+    
+      -- treatment
+      LEFT OUTER JOIN featureprop TMT ON TMT.feature_id = QTL.feature_id
+        AND TMT.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                         WHERE name='QTL study treatment'
+                               AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+                             
+      -- analysis method
+      LEFT OUTER JOIN featureprop METHOD ON METHOD.feature_id = QTL.feature_id
+        AND METHOD.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                         WHERE name='QTL analysis method'
+                               AND cv_id=(SELECT cv_id FROM chado.cv 
+                                          WHERE name='local'))
+                             
+      -- LOD
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='LOD'
+        ) LOD ON LOD.feature_id=QTL.feature_id
+    
+      -- likelihood ratio
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='likelihood ratio'
+        ) LR ON LR.feature_id=QTL.feature_id
+      
+      -- marker R2
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='marker R2'
+        ) MR2 ON MR2.feature_id=QTL.feature_id
+      
+      -- total R2
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='total R2'
+        ) TR2 ON TR2.feature_id=QTL.feature_id
+      
+      -- additivity
+      LEFT OUTER JOIN (
+        SELECT AF.feature_id, AF.rawscore FROM analysis A 
+          INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
+        WHERE A.name='additivity'
+        ) ADD ON ADD.feature_id=QTL.feature_id  
+      
+      -- publication linkage group
+      LEFT OUTER JOIN featureprop PUBLG ON PUBLG.feature_id = QTL.feature_id
+        AND PUBLG.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                           WHERE name='linkage group name used in publication'
+                                 AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      
+      -- linkage group
+      LEFT OUTER JOIN featureprop LG ON LG.feature_id = QTL.feature_id
+        AND LG.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                        WHERE name='linkage_group'
+                              AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+      
+      -- map information
+      LEFT JOIN
+        (SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name, FPS.mappos AS start, 
+                FPE.mappos AS end, LISLGACC.accession AS lis_lg_map_accession,
+                LISACC.accession AS lis_map_accession
+          FROM feature MAPINFO
+            INNER JOIN featurepos FPS ON MAPINFO.feature_id=FPS.map_feature_id
+            LEFT JOIN featureposprop FPSP ON FPSP.featurepos_id=FPS.featurepos_id
+              
+            LEFT JOIN featurepos FPE ON MAPINFO.feature_id=FPE.map_feature_id
+            LEFT JOIN featureposprop FPEP ON FPEP.featurepos_id=FPE.featurepos_id
+          
+            LEFT JOIN featuremap MAP ON MAP.featuremap_id=FPS.featuremap_id
+            
+            LEFT JOIN
+              (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
+               FROM dbxref LISLGACC
+                 INNER JOIN feature_dbxref LISLGFDBX ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
+               WHERE LISLGACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
+              ) LISLGACC ON LISLGACC.feature_id=MAPINFO.feature_id
+              
+            LEFT JOIN
+              (SELECT LISACC.accession, LISFDBX.featuremap_id 
+               FROM dbxref LISACC
+                 INNER JOIN featuremap_dbxref LISFDBX ON LISFDBX.dbxref_id=LISACC.dbxref_id
+               WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
+              ) LISACC ON LISACC.featuremap_id=MAP.featuremap_id
+    
+          WHERE MAPINFO.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name = 'linkage_group'
+                               AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+                AND FPSP.type_id=(SELECT cvterm_id FROM cvterm 
+                                 WHERE name='start coordinate' 
+                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+                AND FPEP.type_id=(SELECT cvterm_id FROM cvterm 
+                                 WHERE name='stop coordinate' 
+                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+          ) MAPINFO ON MAPINFO.feature_id=QTL.feature_id
+         
+      -- interval_calc_method
+      LEFT OUTER JOIN featureprop INT ON INT.feature_id = QTL.feature_id
+        AND INT.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                        WHERE name='interval calculation method'
+                              AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      
+      -- nearest marker
+      LEFT OUTER JOIN feature_relationship NMR
+        ON NMR.subject_id=QTL.feature_id 
+          AND NMR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+             WHERE name='nearest marker' 
+               AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      LEFT OUTER JOIN feature NM ON NM.feature_id=NMR.object_id
+      
+      -- flanking marker low
+      LEFT OUTER JOIN feature_relationship FMLR ON FMLR.subject_id=QTL.feature_id 
+        AND FMLR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                          WHERE name='flanking marker low' 
+                                AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      LEFT OUTER JOIN feature FML ON FML.feature_id=FMLR.object_id
+    
+      -- flanking marker high
+      LEFT OUTER JOIN feature_relationship FMHR ON FMHR.subject_id=QTL.feature_id 
+        AND FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                          WHERE name='flanking marker low' 
+                                AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+      LEFT OUTER JOIN feature FMH ON FMH.feature_id=FMHR.object_id
+    
+      -- comment
+      LEFT OUTER JOIN featureprop COMM ON COMM.feature_id = QTL.feature_id
+        AND COMM.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                          WHERE name='comments'
+                                AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+    WHERE QTL.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                       WHERE name = 'QTL'
+                         AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+    GROUP BY QTL.feature_id
+  ";
+  
+  // Describes the table qtl_search
+  $schema = array (
+    'table' => 'qtl_search',
+    'fields' => array(
+      'qtl_nid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'qtl_symbol' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'expt_qtl_symbol' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'org_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'organism' => array(
+        'type' => 'varchar',
+        'length' => '510',
+        'not null' => TRUE,
+      ),
+      'mnemonic' => array(
+        'type' => 'varchar',
+        'length' => '10',
+        'not null' => TRUE,
+      ),
+      'citation' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'expt_trait_name' => array(
+        'type' => 'text',
+        'NOT NULL' => TRUE,
+      ),
+      'expt_trait_description' => array(
+        'type' => 'text',
+        'NOT NULL' => TRUE,
+      ),
+      'trait_unit' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'NOT NULL' => FALSE,
+      ),
+      'trait_class' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'favorable_allele_source' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'treatment' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'analysis_method' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'lod' => array(
+        'type' => 'float',
+        'not null' => FALSE,
+      ),
+      'likelihood_ratio' => array(
+        'type' => 'float',
+        'not null' => FALSE,
+      ),
+      'marker_r2' => array(
+        'type' => 'float',
+        'not null' => FALSE,
+      ),
+      'total_r2' => array(
+        'type' => 'float',
+        'not null' => FALSE,
+      ),
+      'additivity' => array(
+        'type' => 'float',
+        'not null' => FALSE,
+      ),
+      'publication_lg' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'lg' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'map_name' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'left_end' => array(
+        'type' => 'float',
+        'NOT NULL' => FALSE,
+      ),
+      'right_end' => array(
+        'type' => 'float',
+        'NOT NULL' => FALSE,
+      ),
+      'lis_lg_map_accession' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'lis_map_accession' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'interval_calc_method' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'nearest_marker' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'flanking_marker_low' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'flanking_marker_high' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+      'comment' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+      ),
+    ),
+    'indexes' => array(
+      'QTL_search_indx0' => array('organism'),
+      'QTL_search_indx2' => array('expt_qtl_symbol'),
+      'QTL_search_indx3' => array('qtl_symbol'),
+      'QTL_search_indx4' => array('trait_class'),
+    ),
+  );
+  
+  // add a comment to make sure this view makes sense to the site administator
+  $comment = t('This view is used to provide a table for searching QTLs.');
+  
+  tripal_add_mview('qtl_search', 'legume_qtl', NULL, NULL, NULL, $sql, NULL, 
+                   $comment, $schema);
+}
+
+/**
+ * Integrate the qtl_search materialized view for use by Drupal Views and
+ * our search form
+ */
+function legume_qtl_views_integrate_qtl_search() {
+  $integration = array (
+    'table' => 'qtl_search',
+    'name' => 'qtl_search',
+    'type' => 'chado',
+    'description' => '',
+    'priority' => '-1',
+    'base_table' => '1',
+    'fields' => array (
+      'additivity' => array (
+        'name' => 'additivity',
+        'title' => 'Additivity',
+        'description' => 'Additivity',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'citation' => array (
+        'name' => 'citation',
+        'title' => 'Citation',
+        'description' => 'Publication citation',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'comment' => array (
+        'name' => 'comment',
+        'title' => 'Comment',
+        'description' => 'Comment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'expt_qtl_symbol' => array (
+        'name' => 'expt_qtl_symbol',
+        'title' => 'QTL name used in experiment',
+        'description' => 'QTL name used in experiment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'expt_trait_name' => array (
+        'name' => 'expt_trait_name',
+        'title' => 'Experimental Trait Name',
+        'description' => 'Trait name used in experiment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'expt_trait_description' => array (
+        'name' => 'expt_trait_description',
+        'title' => 'Experimental Trait Description',
+        'description' => 'Trait description from experiment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'favorable_allele_source' => array (
+        'name' => 'favorable_allele_source',
+        'title' => 'Favorable Allele Source',
+        'description' => 'Parent with the favorable allele',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'flanking_marker_high' => array (
+        'name' => 'flanking_marker_high',
+        'title' => 'Right Flanking Marker',
+        'description' => 'Right flanking marker',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'flanking_marker_low' => array (
+        'name' => 'flanking_marker_low',
+        'title' => 'Left Flanking Marker',
+        'description' => 'Left flanking marker',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'interval_calc_method' => array (
+        'name' => 'interval_calc_method',
+        'title' => 'Interval Calculation Method',
+        'description' => 'Method used to calculate map intervals',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'left_end' => array (
+        'name' => 'left_end',
+        'title' => 'Left Coordinate',
+        'description' => 'Left coordinate for QTL',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lg' => array (
+        'name' => 'lg',
+        'title' => 'Linkage Group',
+        'description' => 'Standardized linkage group name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'likelihood_ratio' => array (
+        'name' => 'likelihood_ratio',
+        'title' => 'Likelihood Ratio',
+        'description' => 'Likelihood ratio',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lis_lg_map_accession' => array (
+        'name' => 'lis_lg_map_accession',
+        'title' => 'LIS Map Name',
+        'description' => 'Linkage Group Map Name at LIS',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lis_map_accession' => array (
+        'name' => 'lis_map_accession',
+        'title' => 'LIS Map Name',
+        'description' => 'Map set Name at LIS',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lod' => array (
+        'name' => 'lod',
+        'title' => 'LOD',
+        'description' => 'LOD',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'map_name' => array (
+        'name' => 'map_name',
+        'title' => 'Map',
+        'description' => 'Genetic map name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'marker_r2' => array (
+        'name' => 'marker_r2',
+        'title' => 'Marker R2',
+        'description' => 'Marker R2',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'mnemonic' => array (
+        'name' => 'mnemonic',
+        'title' => 'Species mnemonic',
+        'description' => 'Species mnemonic',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'nearest_marker' => array (
+        'name' => 'nearest_marker',
+        'title' => 'Nearest Marker',
+        'description' => 'Nearest marker',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'organism' => array (
+        'name' => 'organism',
+        'title' => 'organism',
+        'description' => 'Organism name',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'organism_nid' => array (
+        'name' => 'organism_nid',
+        'title' => 'organism_nid',
+        'description' => 'Organism nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'publication_lg' => array (
+        'name' => 'publication_lg',
+        'title' => 'Publication Linkage Group',
+        'description' => 'Linkage group used in publication',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'qtl_symbol' => array (
+        'name' => 'qtl_symbol',
+        'title' => 'QTL',
+        'description' => 'QTL symbol',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'qtl_nid' => array (
+        'name' => 'qtl_nid',
+        'title' => 'qtl_nid',
+        'description' => 'QTL nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'right_end' => array (
+        'name' => 'right_end',
+        'title' => 'Right Coordinate',
+        'description' => 'Right coordinate for QTL',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'trait_class' => array (
+        'name' => 'trait_class',
+        'title' => 'Trait class',
+        'description' => 'Trait class',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'trait_unit' => array (
+        'name' => 'trait_unit',
+        'title' => 'Trait unit',
+        'description' => 'Trait unit',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'treatment' => array (
+        'name' => 'treatment',
+        'title' => 'QTL treatment',
+        'description' => 'QTL study treatment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'total_r2' => array (
+        'name' => 'total_r2',
+        'title' => 'Total R2',
+        'description' => 'Total R2',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'chado_views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'chado_views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'chado_views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+    ),
+  );  
+
+  // add the array above that will integrate our qtl_search materialized view
+  // for use with Drupal Views
+  tripal_views_integration_add_entry($integration); 
+}
