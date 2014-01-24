@@ -227,8 +227,11 @@ if ($qtl_details->pub_expt) {
         <td>
           <?php 
             print $linkage_group;
-            print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
-            print "target=\"_blank\">cMap</a>]";
+            if ($qtl_details->map_pos->lis_lg_map_accession
+                  && $qtl_details->map_pos->lis_lg_map_accession != '') {
+              print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
+              print "target=\"_blank\">cMap</a>]";
+            }
           ?>
         </td>
       </tr>
@@ -245,8 +248,11 @@ if ($qtl_details->pub_expt) {
         <td>
           <?php 
             print $qtl_details->map_pos->map_name;
-            print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_map_accession."\" ";
-            print "target=\"_blank\">cMap</a>]";
+            if ($qtl_details->map_pos->lis_map_accession
+                  && $qtl_details->map_pos->lis_map_accession != '') {
+              print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_map_accession."\" ";
+              print "target=\"_blank\">cMap</a>]";
+            }
           ?>
         </td>
       </tr>
