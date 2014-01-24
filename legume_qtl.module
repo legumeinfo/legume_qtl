@@ -360,7 +360,7 @@ function getQTLDetails ($feature_id) {
                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
            AND FPS.feature_id = %d
            AND FPE.feature_id = %d";
-    $qtl->map_pos = db_fetch_object(chado_query($sql, $feature_id)); 
+    $qtl->map_pos = db_fetch_object(chado_query($sql, $feature_id, $feature_id)); 
 //echo "In module: <pre>";var_dump($qtl->map_pos);echo "</pre>";
 
   // Get aliases
