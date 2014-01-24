@@ -169,7 +169,8 @@ foreach ($qtl_details->analysis as $analysis) {
 $citation = 'N/A';
 //echo "Publications: <pre>";var_dump($qtl_details->pub_expt);echo "</pre><br><br><br>";
 if ($qtl_details->pub_expt) {
-  $citation = $qtl_details->pub_expt[0]->citation;
+  $citation = "<a href=\"pub/" . $qtl_details->pub_expt[0]->pub_id . "\">";
+  $citation .= $qtl_details->pub_expt[0]->citation . "</a>";
 }
 
 ?>
@@ -226,7 +227,7 @@ if ($qtl_details->pub_expt) {
         <td>
           <?php 
             print $linkage_group;
-            print " [<a href=\"$lis_cmap{ $qtl_details->map_pos->lis_lg_map_accession}\" ";
+            print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
             print "target=\"_blank\">cMap</a>]";
           ?>
         </td>
@@ -244,7 +245,7 @@ if ($qtl_details->pub_expt) {
         <td>
           <?php 
             print $qtl_details->map_pos->map_name;
-            print " [<a href=\"$lis_cmap{ $qtl_details->map_pos->lis_map_accession}\" ";
+            print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_map_accession."\" ";
             print "target=\"_blank\">cMap</a>]";
           ?>
         </td>

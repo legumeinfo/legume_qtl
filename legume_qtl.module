@@ -297,7 +297,7 @@ function getQTLDetails ($feature_id) {
    // Get map, position, population
    $sql = "
      SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name,
-            FPS.mappos AS start, FPE.mappos AS end, 
+            TO_CHAR(FPS.mappos, '9999D99') AS start, TO_CHAR(FPE.mappos, '9999D99') AS end, 
             LISLGACC.accession AS lis_lg_map_accession,
             LISACC.accession AS lis_map_accession,
             MP.name AS mapping_population,
@@ -358,7 +358,8 @@ function getQTLDetails ($feature_id) {
            AND FPEP.type_id=(SELECT cvterm_id FROM cvterm 
                                 WHERE name='stop coordinate' 
                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-           AND FPS.feature_id = %d";
+           AND FPS.feature_id = %d
+           AND FPE.feature_id = %d";
     $qtl->map_pos = db_fetch_object(chado_query($sql, $feature_id)); 
 //echo "In module: <pre>";var_dump($qtl->map_pos);echo "</pre>";
 
