@@ -1,3 +1,3 @@
 # README #
 
-Custom QTL module for Drupal6/Tripal1
+Custom QTL module for Drupal7/Tripal2
