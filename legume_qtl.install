@@ -1,5 +1,42 @@
 <?php
- 
+//eksc: copied from tripal_feature; purpose as yet unknown
+/**
+ * Implements hook_disable().
+ * Disable default views when module is disabled
+ *
+ * @ingroup legume_qtl
+ */
+function legume_qtl_disable() {
+
+  // Disable all default views provided by this module
+  require_once("legume_qtl.views_default.inc");
+  $views = legume_qtl_views_default_views();
+  foreach (array_keys($views) as $view_name) {
+    tripal_views_admin_disable_view($view_name,FALSE,array('suppress_error' => TRUE));
+  }
+}
+
+//eksc: copied from tripal_features
+/**
+ * Implements hook_requirements().
+ *
+ * @ingroup legume_qtl
+ */
+function legume_qtl_requirements($phase) {
+  $requirements = array();
+  if ($phase == 'install') {
+    // make sure chado is installed
+    if (!$GLOBALS["chado_is_installed"]) {
+      $requirements ['legume_qtl'] = array(
+          'title' => "legume_qtl",
+          'value' => "ERROR: Chado must be installed before this module can be enabled",
+          'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+  return $requirements;
+}
+
 /**
  * Implementation of hook_install().
  */
@@ -8,11 +45,11 @@ function legume_qtl_install() {
    tripal_create_moddir('legume_qtl');
    
    // add the materializedviews
-   legume_qtl_add_all_mviews();
+   legume_qtl_add_qtl_search_mview();
    
    // we want to integrate the materialized views so that they
    // are available for Drupal Views, upon which our search forms are built
-   legume_qtl_views_integrate_all();
+   legume_qtl_views_integrate_qtl_search();
 }
 
 /**
@@ -25,21 +62,6 @@ function legume_qtl_uninstall() {
   if ($mview_id) {
     tripal_mviews_action("delete", $mview_id);
   }
-}
-
-/**
- * Installs all of the materialized views used by this module
- */
-function legume_qtl_add_all_mviews() {
-  legume_qtl_add_qtl_search_mview();
-}
-
-/**
- * Integrates all of the custom tables and materialized views with settings
- * appropriate for this module.
- */
-function legume_qtl_views_integrate_all() {
-  legume_qtl_views_integrate_qtl_search();
 }
 
 /**
@@ -205,42 +227,53 @@ function legume_qtl_add_qtl_search_mview() {
       
       -- map information
       LEFT JOIN
-        (SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name, FPS.mappos AS start, 
-                FPE.mappos AS end, LISLGACC.accession AS lis_lg_map_accession,
-                LISACC.accession AS lis_map_accession
-          FROM feature MAPINFO
-            INNER JOIN featurepos FPS ON MAPINFO.feature_id=FPS.map_feature_id
-            LEFT JOIN featureposprop FPSP ON FPSP.featurepos_id=FPS.featurepos_id
+        (SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name, 
+                 FPS.mappos AS start, FPE.mappos AS end, 
+                 LISLGACC.accession AS lis_lg_map_accession,
+                 LISACC.accession AS lis_map_accession
+         FROM feature MAPINFO
+           LEFT JOIN featurepos FPS ON FPS.map_feature_id=MAPINFO.feature_id
+           LEFT JOIN featureposprop FPSP 
+             ON FPSP.featurepos_id=FPS.featurepos_id
               
-            LEFT JOIN featurepos FPE ON MAPINFO.feature_id=FPE.map_feature_id
-            LEFT JOIN featureposprop FPEP ON FPEP.featurepos_id=FPE.featurepos_id
+           LEFT JOIN featurepos FPE 
+             ON FPE.map_feature_id=MAPINFO.feature_id
+                AND FPE.feature_id=FPS.feature_id
+           LEFT JOIN featureposprop FPEP 
+             ON FPEP.featurepos_id=FPE.featurepos_id
           
-            LEFT JOIN featuremap MAP ON MAP.featuremap_id=FPS.featuremap_id
+           LEFT JOIN featuremap MAP ON MAP.featuremap_id=FPE.featuremap_id
             
-            LEFT JOIN
-              (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
-               FROM dbxref LISLGACC
-                 INNER JOIN feature_dbxref LISLGFDBX ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
-               WHERE LISLGACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
-              ) LISLGACC ON LISLGACC.feature_id=MAPINFO.feature_id
+           LEFT JOIN
+             (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
+              FROM dbxref LISLGACC
+                INNER JOIN feature_dbxref LISLGFDBX 
+                  ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
+              WHERE LISLGACC.db_id=(SELECT db_id FROM db 
+                                    WHERE name='LIS:cmap')
+             ) LISLGACC ON LISLGACC.feature_id=MAPINFO.feature_id
               
-            LEFT JOIN
-              (SELECT LISACC.accession, LISFDBX.featuremap_id 
-               FROM dbxref LISACC
-                 INNER JOIN featuremap_dbxref LISFDBX ON LISFDBX.dbxref_id=LISACC.dbxref_id
-               WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
-              ) LISACC ON LISACC.featuremap_id=MAP.featuremap_id
+           LEFT JOIN
+             (SELECT LISACC.accession, LISFDBX.featuremap_id 
+              FROM dbxref LISACC
+                INNER JOIN featuremap_dbxref LISFDBX 
+                  ON LISFDBX.dbxref_id=LISACC.dbxref_id
+              WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
+             ) LISACC ON LISACC.featuremap_id=MAP.featuremap_id
     
           WHERE MAPINFO.type_id=(SELECT cvterm_id FROM chado.cvterm 
-                             WHERE name = 'linkage_group'
-                               AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+                                 WHERE name = 'linkage_group'
+                                       AND cv_id=(SELECT cv_id FROM chado.cv 
+                                                  WHERE name='sequence'))
                 AND FPSP.type_id=(SELECT cvterm_id FROM cvterm 
                                  WHERE name='start coordinate' 
-                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+                                       AND cv_id=(SELECT cv_id FROM cv 
+                                                  WHERE name='local'))
                 AND FPEP.type_id=(SELECT cvterm_id FROM cvterm 
                                  WHERE name='stop coordinate' 
-                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-          ) MAPINFO ON MAPINFO.feature_id=QTL.feature_id
+                                       AND cv_id=(SELECT cv_id FROM cv 
+                                                  WHERE name='local'))
+        ) MAPINFO ON MAPINFO.feature_id=QTL.feature_id
          
       -- interval_calc_method
       LEFT OUTER JOIN featureprop INT ON INT.feature_id = QTL.feature_id
@@ -415,7 +448,7 @@ function legume_qtl_add_qtl_search_mview() {
     ),
     'indexes' => array(
       'QTL_search_indx0' => array('organism'),
-      'QTL_search_indx2' => array('expt_qtl_symbol'),
+      'QTL_search_indx2' => array('pub_qtl_symbol'),
       'QTL_search_indx3' => array('qtl_symbol'),
       'QTL_search_indx4' => array('trait_class'),
     ),
@@ -423,10 +456,11 @@ function legume_qtl_add_qtl_search_mview() {
   
   // add a comment to make sure this view makes sense to the site administator
   $comment = t('This view is used to provide a table for searching QTLs.');
-  
-  tripal_add_mview('qtl_search', 'legume_qtl', NULL, NULL, NULL, $sql, NULL, 
-                   $comment, $schema);
+
+//eksc: modified per tripal_feature:tripal_feature_add_organism_count_mview()  
+  tripal_add_mview('qtl_search', 'legume_qtl', $schema, $sql, $comment);
 }
+
 
 /**
  * Integrate the qtl_search materialized view for use by Drupal Views and

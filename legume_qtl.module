@@ -11,7 +11,7 @@
 
 /**
  *
- * @ingroup tripal_feature
+ * @ingroup legume_qtl
  */
 function legume_qtl_init() {
 }
@@ -23,7 +23,7 @@ function legume_qtl_init() {
  *
  * @ingroup legume_qtl
  */
-function legume_qtl_perm() {
+function legume_qtl_permission() {
   return array(
 
   );
@@ -51,7 +51,7 @@ function legume_qtl_menu() {
  */
 function legume_qtl_views_api() {
   return array(
-    'api' => 2.0,
+    'api' => 3.0,
   );
 }
 
@@ -61,26 +61,30 @@ function legume_qtl_views_api() {
  *
  * @ingroup legume_qtl
  */
+/*eksc not in Drupal 7; don't know replacement, if any
 function legume_qtl_admin() {
   $form = array();
 
   return system_settings_form($form);
 }
+*/
 
 /**
  *
  * @ingroup legume_qtl
  */
+/*eksc not in Drupal 7; don't know replacement, if any
 function legume_qtl_admin_validate($form, &$form_state) {
  
 }
+*/
 
 /**
  * Implementation of hook_nodeapi().
  *
  * @ingroup legume_qtl
  */
-//TODO: reasearch this function
+/*eksc not in Drupal 7; don't know replacement, if any
 function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
 
   switch ($op) {
@@ -92,14 +96,14 @@ function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
             
       if (strcmp($node->type, 'chado_feature')==0) {        
         if(strcmp($node->feature->type_id->name, "QTL") == 0) {
-/*TODO: fix or change these
-          $node->content['tripal_feature_QTL_map_positions'] = array(
-            '#value' => theme('tripal_feature_QTL_map_positions',  $node),
-          );
-          $node->content['tripal_feature_QTL_publications'] = array(
-            '#value' => theme('tripal_feature_QTL_publications',  $node),
-          );
-*/
+//TODO: fix or change these
+//          $node->content['tripal_feature_QTL_map_positions'] = array(
+//            '#value' => theme('tripal_feature_QTL_map_positions',  $node),
+//          );
+//          $node->content['tripal_feature_QTL_publications'] = array(
+//            '#value' => theme('tripal_feature_QTL_publications',  $node),
+//          );
+//
           // we want to override the base theme
           // TODO: uncomment the follwoing lines when Tripal v2.0 is released
 //          $node->content['tripal_feature_base'] = array(
@@ -110,6 +114,7 @@ function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
       break;      
   } 
 }
+*/
 
 /**
  * We need to let drupal know about our theme functions and their arguments.
@@ -118,7 +123,8 @@ function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
  *
  * @ingroup legume_qtl
  */
-function legume_qtl_theme() {
+//function legume_qtl_theme() {
+function tripal_legume_qtl_theme($existing, $type, $theme, $path) {
 //  $path = drupal_get_path('module', 'legume_qtl') . '/theme';  
   $themes = array(        
     'tripal_feature_QTL_base' => array(
@@ -139,6 +145,7 @@ function legume_qtl_theme() {
     ),
 */
   );
+
   return $themes;
 }
 
@@ -189,7 +196,7 @@ function legume_qtl_cron() {
 /**
  *
  */
-//TODO: fix or change
+//TODO: fix or change (can't this come from qtl_search?)
 function get_QTL_map_positions ($feature_id) {
   // Get map positions.
   $sql = "
