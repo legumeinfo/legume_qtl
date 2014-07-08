@@ -119,32 +119,31 @@ function legume_qtl_node_view($node, $view_mode, $langcode) {
 }
 
 /**
+ *  Implements hook_theme().
+ *
  * We need to let drupal know about our theme functions and their arguments.
  * We create theme functions to allow users of the module to customize the
  * look and feel of the output generated in this module
  *
  * @ingroup legume_qtl
  */
-function legume_qtl_theme() {
-//  $path = drupal_get_path('module', 'legume_qtl') . '/theme';  
+function legume_qtl_theme($existing, $type, $theme, $path) {
   $themes = array(        
     'tripal_feature_QTL_base' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_base',
-      'path' => '', //$path . '/tripal_feature',
+      'path' => '', "$path/theme/tripal_feature"
     ),
-/*TODO: fix or change these
     'tripal_feature_QTL_map_positions' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_map_positions',
-      'path' => $path . '/tripal_feature',
+      'path' => "$path/theme/tripal_feature"
     ),
     'tripal_feature_QTL_publications' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_publications',
-      'path' => $path . '/tripal_feature',
+      'path' => "$path/theme/tripal_feature"
     ),
-*/
   );
   return $themes;
 }
@@ -182,15 +181,6 @@ function legume_qtl_preprocess_tripal_feature_QTL_map_positions(&$variables) {
   $qtl_map_pos = get_QTL_map_positions($feature->feature_id);
 //TODO: fix this
 //  $feature->legume_qtl->map_positions = $qtl_map_pos;
-}
-
-/**
- *
- * @ingroup legume_qtl
- */
-//TODO: reasearch this function
-function legume_qtl_cron() {
-
 }
 
 /**
