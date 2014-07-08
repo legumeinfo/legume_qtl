@@ -1,34 +1,36 @@
 <?php
 
 /**
- * @defgroup legume_qtl 
- * @{
- * Provides functions for display and management of data in custom tables
- * @}
- * @ingroup tripal_modules
+ * @file
+ * This file contains all Drupal hooks for the module other than any
+ * node hooks and block hooks. Those go in the [module name].chado_node.inc file
+ * and [module_name].blocks.inc respectively
+ *
  */
 
-
 /**
- *
- * @ingroup tripal_feature
- */
-function legume_qtl_init() {
-}
-
-/**
- * Set the permission types that the chado module uses.  Essentially we
- * want permissions that protect creation, editing and deleting of chado
- * data objects
- *
+ * Implementation of hook_permissions()
+ * 
+ * Set the permission types that this module uses.  Essentially we
+ * want permissions that protect creation, editing and deleting of
+ * chado data objects
  * @ingroup legume_qtl
+ *
  */
-function legume_qtl_perm() {
-  return array(
-
+function legume_qtl_permissions() {
+   return array(
+    'access legume_qtl content' => array(
+      'title' => t('View QTLs'),
+      'description' => t('Allow users to view qtl pages.'),
+    ),
+      'administer legume_qtl' => array(
+      'title' => t('Administer QTLs'),
+      'description' => t('Allow module administration.'),
+    )
   );
 }
 /**
+ * Implements hook_menu().
  * Menu items are automatically added for the new node types created
  * by this module to the 'Create Content' Navigation menu item.  This function
  * adds more menu items needed for this module.
@@ -37,6 +39,38 @@ function legume_qtl_perm() {
  */
 function legume_qtl_menu() {
   $items = array();
+
+  // administration landing page. currently has no content but is
+  // apparently required for the Sync and Help links to work.
+  $items['admin/tripal/extension/legume_qtl'] = array(
+    'title' => 'QTLs',
+    'description' => 'qtls administration',
+    'page callback' => 'legume_qtl_admin_listing',
+    'access arguments' => array('administer legume_qtl'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  // help menu 
+  $items['admin/tripal/extension/legume_qtl/help'] = array(
+    'title' => 'Help',
+    'description' => 'Basic description of legume_qtl module functionality',
+    'page callback' => 'theme',
+    'page arguments' => array('legume_qtl_help'),
+    'access arguments' => array('administer legume_qtl'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10
+  );
+
+  // configuration menu item
+  $items['admin/tripal/extension/legume_qtl/configuration'] = array(
+    'title' => 'Settings',
+    'description' => 'Configure the legume_qtl module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('legume_qtl_admin'),
+    'access arguments' => array('administer legume_qtl'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5
+  );
 
   return $items;
 }
@@ -51,64 +85,37 @@ function legume_qtl_menu() {
  */
 function legume_qtl_views_api() {
   return array(
-    'api' => 2.0,
+    'api' => 3.0,
   );
 }
 
-
 /**
- * Administrative settings form
+ * Implements hook_node_view(). Acts on all content types
  *
  * @ingroup legume_qtl
  */
-function legume_qtl_admin() {
-  $form = array();
-
-  return system_settings_form($form);
-}
-
-/**
- *
- * @ingroup legume_qtl
- */
-function legume_qtl_admin_validate($form, &$form_state) {
- 
-}
-
-/**
- * Implementation of hook_nodeapi().
- *
- * @ingroup legume_qtl
- */
-//TODO: reasearch this function
-function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
-
-  switch ($op) {
-    case 'view':
-
-      if ($teaser) {
-        return '';
-      }
-            
-      if (strcmp($node->type, 'chado_feature')==0) {        
-        if(strcmp($node->feature->type_id->name, "QTL") == 0) {
-/*TODO: fix or change these
-          $node->content['tripal_feature_QTL_map_positions'] = array(
-            '#value' => theme('tripal_feature_QTL_map_positions',  $node),
-          );
-          $node->content['tripal_feature_QTL_publications'] = array(
-            '#value' => theme('tripal_feature_QTL_publications',  $node),
-          );
-*/
-          // we want to override the base theme
-          // TODO: uncomment the follwoing lines when Tripal v2.0 is released
-//          $node->content['tripal_feature_base'] = array(
-//            '#value' => theme('tripal_feature_QTL_base',  $node),
-//          );
-        }
-      }
-      break;      
-  } 
+function legume_qtl_node_view($node, $view_mode, $langcode) {
+  if($node->type != 'chado_feature') { return; }
+  switch($view_mode) {
+  case 'full':
+    if($node->feature->type_id->name == 'QTL') {
+      $node->content['tripal_feature_QTL_map_positions'] = array(
+        '#value' => theme('tripal_feature_QTL_map_positions',  $node),
+      );
+      $node->content['tripal_feature_QTL_publications'] = array(
+        '#value' => theme('tripal_feature_QTL_publications',  $node),
+      );
+      // we want to override the base theme
+      $node->content['tripal_feature_base'] = array(
+        '#value' => theme('tripal_feature_QTL_base',  $node),
+      );
+    }
+    break;
+  case 'teaser':
+    break;
+  default:
+    break;
+  }
 }
 
 /**
