@@ -1,8 +1,8 @@
 name = Legume QTL
 description = This is a Tripal extension module for legume databases that manages QTL data housed in Chado and displayed in the same way as the genome database sites created by the Main Bioinformatics Laborator at Washington State University. 
-core = 6.x
-version = 6.x-1.1-tripal_v1.1
-project = mainlab_qtl
+core = 7.x
+version = 7.x-2.x
+project = legume_qtl
 package = Tripal Extensions 
 dependencies[] = tripal_core
 dependencies[] = tripal_feature

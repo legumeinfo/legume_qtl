@@ -81,7 +81,7 @@ foreach($mtl_details->neighboring_marker as $marker) {
   <div class="tripal_feature-info-box-title tripal-info-box-title"> Mendelian Trait Locus (MTL) Details</div>
   <div class="tripal_feature-info-box-desc tripal-info-box-desc"></div>
 
-   <?php if(strcmp($feature->is_obsolete,'t')==0){ ?>
+   <?php if($feature->is_obsolete =='t') { ?>
       <div class="tripal_feature-obsolete">This feature is obsolete</div>
    <?php }?>
    <table id="tripal_feature-base-table" class="tripal_feature-table tripal-table tripal-table-vert">
