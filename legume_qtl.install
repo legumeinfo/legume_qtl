@@ -448,7 +448,7 @@ function legume_qtl_add_qtl_search_mview() {
     ),
     'indexes' => array(
       'QTL_search_indx0' => array('organism'),
-      'QTL_search_indx2' => array('pub_qtl_symbol'),
+      'QTL_search_indx2' => array('expt_qtl_symbol'),
       'QTL_search_indx3' => array('qtl_symbol'),
       'QTL_search_indx4' => array('trait_class'),
     ),
@@ -485,13 +485,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -514,10 +514,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -540,10 +540,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -563,13 +563,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -589,13 +589,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -615,13 +615,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -644,10 +644,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -667,13 +667,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -693,13 +693,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -719,13 +719,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -745,13 +745,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -774,10 +774,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -797,13 +797,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -826,10 +826,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -852,10 +852,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -875,13 +875,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -904,10 +904,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -927,13 +927,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -953,13 +953,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -979,13 +979,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1008,10 +1008,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1031,13 +1031,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'int',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -1060,10 +1060,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1083,13 +1083,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1109,13 +1109,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'int',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -1135,13 +1135,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -1164,10 +1164,10 @@ function legume_qtl_views_integrate_qtl_search() {
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1187,13 +1187,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'varchar',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1213,13 +1213,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -1239,13 +1239,13 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',

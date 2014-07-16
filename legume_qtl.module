@@ -112,10 +112,11 @@ function legume_qtl_admin() {
  */
 
 function legume_qtl_node_view($node, $view_mode, $langcode) {
-  if($node->type != 'chado_feature') { return; }
-  switch($view_mode) {
+  if ($node->type != 'chado_feature') { return; }
+  
+  switch ($view_mode) {
     case 'full':
-      if($node->feature->type_id->name == 'QTL') {
+      if ($node->feature->type_id->name == 'QTL') {
         $node->content['tripal_feature_QTL_map_positions'] = array(
           '#value' => theme('tripal_feature_QTL_map_positions',  $node),
         );
@@ -179,6 +180,8 @@ function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
  * @ingroup legume_qtl
  */
 function legume_qtl_theme($existing, $type, $theme, $path) {
+  $path = drupal_get_path('module', 'legume_qtl');
+  
   $themes = array(        
     'tripal_feature_QTL_base' => array(
       'arguments' => array('node' => NULL),

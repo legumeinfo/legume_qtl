@@ -1,5 +1,6 @@
 <?php
 // The marker link is for GDR only
+
 $marker_link = "/node/";
 
 $feature  = $variables['node']->feature;

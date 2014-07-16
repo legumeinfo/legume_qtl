@@ -3,7 +3,6 @@
  *
  * @ingroup tripal_feature_views
  */
-//function legume_qtl_default_views() {
 function legume_qtl_views_default_views() {
   $views = array();
 
@@ -20,52 +19,30 @@ function legume_qtl_views_default_views() {
  * @ingroup legume_qtl
  */
 function legume_qtl_defaultvalue_user_qtl() {
-
-  $view = new view();
-  $view->name = 'legume_qtl_user_qtl';
-  $view->description = 'Allows users to search QTL data';
-  $view->tag = 'tripal search';
+  $view = new view;
+  $view->name = 'qtl_search';
+  $view->description = 'QTL search';
+  $view->tag = '';
   $view->base_table = 'qtl_search';
-  $view->human_name = 'QTL User Search';
-  $view->core = 0;
+  $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-
-  // Display: features_all/
-  $handler = $view->new_display('default', 'qtl_all', 'default');
-  $handler->display->display_options['title'] = 'QTL Features';
+  
+  // DEFAULT VIEW
+  $handler = $view->new_display('default', 'Master', 'default');
+  
+  $handler->display->display_options['title'] = 'QTL';
   $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['access']['perm'] = 'access chado_feature content';
+  $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '25';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['pager']['options']['id'] = '0';
-  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
   $handler->display->display_options['style_plugin'] = 'table';
-  $handler->display->display_options['style_options']['grouping'] = '';
-  $handler->display->display_options['style_options']['columns'] = array(
-    'common_name' => 'common_name',
-    'end' => 'end',
-    'lg' => 'lg',
-    'map_name' => 'map_name',
-    'qtl_symbol' => 'qtl_symbol',
-    'start' => 'start',
-    'trait_class' => 'trait_class',
-    'nid' => 'qtl_nid',
-  );
-  
-  return $view;
-}
+  $handler->display->display_options['row_plugin'] = 'node';
 
-/*
-  // DEFAULT VIEW
-  $handler = $view->new_display('default', 'Defaults', 'default');
-  
-  $handler->override_option('fields', array(
+  $handler->display->display_options['fields'] = array(
     'qtl_nid' => array(
       'label' => 'qtl_nid',
       'alter' => array(
@@ -143,7 +120,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       'relationship' => 'none',
     ),
     'expt_qtl_symbol' => array(
-      'label' => 'Experiment QTL Symbol',
+      'label' => 'Exp QTL Symbol',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -279,7 +256,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       'relationship' => 'none',
     ),
     'expt_trait_name' => array(
-      'label' => 'Experiment Trait Name',
+      'label' => 'Expt Trait Name',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -313,7 +290,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       'relationship' => 'none',
     ),
     'expt_trait_description' => array(
-      'label' => 'Experiment Trait Description',
+      'label' => 'Expt Trait Description',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -803,10 +780,10 @@ function legume_qtl_defaultvalue_user_qtl() {
         'suffix' => '',
         'target' => '',
         'help' => '',
-        'trim' => 0,
-        'max_length' => 7,
-        'word_boundary' => 1,
-        'ellipsis' => 1,
+        'trim' => 1,
+        'max_length' => 6,
+        'word_boundary' => 0,
+        'ellipsis' => 0,
         'html' => 0,
         'strip_tags' => 0,
       ),
@@ -837,10 +814,10 @@ function legume_qtl_defaultvalue_user_qtl() {
         'suffix' => '',
         'target' => '',
         'help' => '',
-        'trim' => 0,
-        'max_length' => 7,
-        'word_boundary' => 1,
-        'ellipsis' => 1,
+        'trim' => 1,
+        'max_length' => 6,
+        'word_boundary' => 0,
+        'ellipsis' => 0,
         'html' => 0,
         'strip_tags' => 0,
       ),
@@ -993,7 +970,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       'field' => 'flanking_marker_high',
       'relationship' => 'none',
     ),
-  ));
+  );
   
   // DEFAULT FILTERS
   $handler->override_option('filters', array(
@@ -1115,7 +1092,7 @@ function legume_qtl_defaultvalue_user_qtl() {
   unset ($view->attachment_after);
   ?>
   
-  <div id=views-search_by_gene-results style="margin:0px 20px 20px 20px;border: 1px solid #CCCCCC;padding:20px 30px 30px 30px;">
+  <div id=views-search_by_gene-results style="margin:0px 20px 20px 20px;/*background: #FFFFF0;*/border: 1px solid #CCCCCC;padding:20px 30px 30px 30px;">
      <div id=views-search_by_gene-header>
         <p style="margin-top: 0px"><b>0</b> records were returned.</p>
      </div>
@@ -1297,8 +1274,8 @@ function legume_qtl_defaultvalue_user_qtl() {
   
   
   // QTL SEARCH DOWNLOAD DISPLAY
-  
-  $handler = $view->new_display('views_data_export', 'QTL Search Download', 'views_data_export_1');
+//TODO: not available in views 3.0: FIX  
+//  $handler = $view->new_display('views_data_export', 'QTL Search Download', 'views_data_export_1');
   
   // FIELDS
   $handler->override_option('fields', array(
@@ -1382,7 +1359,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       ),
     ),
     'expt_qtl_symbol' => array(
-      'label' => 'Experiment QTL Symbol',
+      'label' => 'Expt QTL Symbol',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -1527,7 +1504,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       ),
     ),
     'expt_trait_name' => array(
-      'label' => 'Experiment Trait Name',
+      'label' => 'Expt Trait Name',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -1561,7 +1538,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       'relationship' => 'none',
     ),
     'expt_trait_description' => array(
-      'label' => 'Experiment Trait Description',
+      'label' => 'Expt Trait Description',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -2179,6 +2156,7 @@ function legume_qtl_defaultvalue_user_qtl() {
   $handler->override_option('items_per_page', '0');
   
   // STYLE_PLUGIN
+/* TODO: this style plugin is not available in Views 3.0: FIX*/
   $handler->override_option('style_plugin', 'views_data_export_xls');
   
   // STYLE_OPTIONS
@@ -2230,4 +2208,3 @@ function legume_qtl_defaultvalue_user_qtl() {
   
   return $views;
 }
-*/

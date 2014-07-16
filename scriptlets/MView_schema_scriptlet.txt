@@ -131,7 +131,7 @@ array (
     ),
     'indexes' => array(
       'QTL_search_indx0' => array('organism'),
-      'QTL_search_indx2' => array('pub_qtl_symbol'),
+      'QTL_search_indx2' => array('expt_qtl_symbol'),
       'QTL_search_indx3' => array('qtl_symbol'),
       'QTL_search_indx4' => array('trait_class'),
     ),

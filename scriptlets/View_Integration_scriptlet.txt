@@ -13,16 +13,42 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'analysis_method' => array (
+        'name' => 'analysis_method',
+        'title' => 'Analysis method',
+        'description' => 'QTL analysis method',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
@@ -42,10 +68,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -68,10 +94,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -91,13 +117,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -117,13 +143,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -143,13 +169,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -172,10 +198,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -195,13 +221,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -221,13 +247,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -247,13 +273,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -273,13 +299,13 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -302,10 +328,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -325,13 +351,13 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -354,10 +380,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -380,10 +406,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -403,13 +429,13 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -432,10 +458,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -455,13 +481,13 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -481,13 +507,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -507,13 +533,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -536,10 +562,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -552,20 +578,20 @@ array (
         ),
       ),
   
-      'organism_nid' => array (
-        'name' => 'organism_nid',
-        'title' => 'organism_nid',
+      'org_nid' => array (
+        'name' => 'org_nid',
+        'title' => 'org_nid',
         'description' => 'Organism nid',
         'type' => 'int',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -588,10 +614,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -611,13 +637,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -637,13 +663,13 @@ array (
         'type' => 'int',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -663,13 +689,13 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
@@ -692,10 +718,10 @@ array (
             'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -715,13 +741,13 @@ array (
         'type' => 'varchar',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -741,13 +767,13 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_string',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
@@ -767,13 +793,13 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'chado_views_handler_filter_numeric',
+            'name' => 'views_handler_filter_numeric',
           ),
           'field' => array (
-            'name' => 'chado_views_handler_field_numeric',
+            'name' => 'views_handler_field_numeric',
           ),
           'sort' => array (
-            'name' => 'chado_views_handler_sort',
+            'name' => 'views_handler_sort',
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
