@@ -177,7 +177,7 @@ if ($qtl_details->pub_expt) {
 <div id="tripal_feature-base-box" class="tripal_feature-info-box tripal-info-box">
   <div class="tripal_feature-info-box-title tripal-info-box-title"> <?php print $feature->type_id->name ?> Details</div>
   <div class="tripal_feature-info-box-desc tripal-info-box-desc"></div> <?php 
-    if(strcmp($feature->is_obsolete,'t')==0){ ?>
+    if($feature->is_obsolete == 't') { ?>
       <div class="tripal_feature-obsolete">This feature is obsolete</div> <?php 
     } ?>
     <table id="tripal_feature-base-table" class="tripal_feature-table tripal-table tripal-table-vert">
@@ -227,8 +227,11 @@ if ($qtl_details->pub_expt) {
         <td>
           <?php 
             print $linkage_group;
-            print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
-            print "target=\"_blank\">cMap</a>]";
+            if ($qtl_details->map_pos->lis_lg_map_accession
+                  && $qtl_details->map_pos->lis_lg_map_accession != '') {
+              print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
+              print "target=\"_blank\">cMap</a>]";
+            }
           ?>
         </td>
       </tr>
@@ -245,8 +248,11 @@ if ($qtl_details->pub_expt) {
         <td>
           <?php 
             print $qtl_details->map_pos->map_name;
-            print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_map_accession."\" ";
-            print "target=\"_blank\">cMap</a>]";
+            if ($qtl_details->map_pos->lis_map_accession
+                  && $qtl_details->map_pos->lis_map_accession != '') {
+              print " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_map_accession."\" ";
+              print "target=\"_blank\">cMap</a>]";
+            }
           ?>
         </td>
       </tr>

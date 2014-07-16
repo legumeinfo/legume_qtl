@@ -456,9 +456,12 @@ function legume_qtl_add_qtl_search_mview() {
   
   // add a comment to make sure this view makes sense to the site administator
   $comment = t('This view is used to provide a table for searching QTLs.');
-
-//eksc: modified per tripal_feature:tripal_feature_add_organism_count_mview()  
-  tripal_add_mview('qtl_search', 'legume_qtl', $schema, $sql, $comment);
+  tripal_add_mview(
+    'qtl_search', // name of materialized view
+    'legume_qtl', // name of module submitting view
+    $schema,      // schema api array representation
+    $sql,         // sql query that loads the mview
+    $comment );
 }
 
 

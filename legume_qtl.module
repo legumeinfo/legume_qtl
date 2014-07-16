@@ -1,34 +1,38 @@
 <?php
-
 /**
- * @defgroup legume_qtl 
- * @{
- * Provides functions for display and management of data in custom tables
- * @}
- * @ingroup tripal_modules
- */
-
-
-/**
+ * @file
+ * This file contains all Drupal hooks for the module other than any
+ * node hooks and block hooks. Those go in the [module name].chado_node.inc file
+ * and [module_name].blocks.inc respectively
  *
  * @ingroup legume_qtl
  */
-function legume_qtl_init() {
-}
 
 /**
- * Set the permission types that the chado module uses.  Essentially we
- * want permissions that protect creation, editing and deleting of chado
- * data objects
- *
+ * Implementation of hook_permissions()
+ * 
+ * Set the permission types that this module uses. Essentially we
+ * want permissions that protect creation, editing and deleting of
+ * chado data objects
  * @ingroup legume_qtl
+ *
  */
-function legume_qtl_permission() {
-  return array(
-
+function legume_qtl_permissions() {
+   return array(
+    'access legume_qtl content' => array(
+      'title' => t('View QTLs'),
+      'description' => t('Allow users to view qtl pages.'),
+    ),
+      'administer legume_qtl' => array(
+      'title' => t('Administer QTLs'),
+      'description' => t('Allow module administration.'),
+    )
   );
 }
+
+
 /**
+ * Implements hook_menu().
  * Menu items are automatically added for the new node types created
  * by this module to the 'Create Content' Navigation menu item.  This function
  * adds more menu items needed for this module.
@@ -37,6 +41,38 @@ function legume_qtl_permission() {
  */
 function legume_qtl_menu() {
   $items = array();
+
+  // administration landing page. currently has no content but is
+  // apparently required for the Sync and Help links to work.
+  $items['admin/tripal/extension/legume_qtl'] = array(
+    'title' => 'QTLs',
+    'description' => 'qtls administration',
+    'page callback' => 'legume_qtl_admin_listing',
+    'access arguments' => array('administer legume_qtl'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  // help menu 
+  $items['admin/tripal/extension/legume_qtl/help'] = array(
+    'title' => 'Help',
+    'description' => 'Basic description of legume_qtl module functionality',
+    'page callback' => 'theme',
+    'page arguments' => array('legume_qtl_help'),
+    'access arguments' => array('administer legume_qtl'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10
+  );
+
+  // configuration menu item
+  $items['admin/tripal/extension/legume_qtl/configuration'] = array(
+    'title' => 'Settings',
+    'description' => 'Configure the legume_qtl module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('legume_qtl_admin'),
+    'access arguments' => array('administer legume_qtl'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5
+  );
 
   return $items;
 }
@@ -70,20 +106,36 @@ function legume_qtl_admin() {
 */
 
 /**
+ * Implements hook_node_view(). Acts on all content types
  *
  * @ingroup legume_qtl
  */
-/*eksc not in Drupal 7; don't know replacement, if any
-function legume_qtl_admin_validate($form, &$form_state) {
- 
-}
-*/
 
-/**
- * Implementation of hook_nodeapi().
- *
- * @ingroup legume_qtl
- */
+function legume_qtl_node_view($node, $view_mode, $langcode) {
+  if($node->type != 'chado_feature') { return; }
+  switch($view_mode) {
+    case 'full':
+      if($node->feature->type_id->name == 'QTL') {
+        $node->content['tripal_feature_QTL_map_positions'] = array(
+          '#value' => theme('tripal_feature_QTL_map_positions',  $node),
+        );
+        $node->content['tripal_feature_QTL_publications'] = array(
+          '#value' => theme('tripal_feature_QTL_publications',  $node),
+        );
+        // we want to override the base theme
+        $node->content['tripal_feature_base'] = array(
+          '#value' => theme('tripal_feature_QTL_base',  $node),
+        );
+      }
+      break;
+    case 'teaser':
+      break;
+    default:
+      break;
+  }
+}
+
+
 /*eksc not in Drupal 7; don't know replacement, if any
 function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
 
@@ -116,38 +168,38 @@ function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
 }
 */
 
+
 /**
+ *  Implements hook_theme().
+ *
  * We need to let drupal know about our theme functions and their arguments.
  * We create theme functions to allow users of the module to customize the
  * look and feel of the output generated in this module
  *
  * @ingroup legume_qtl
  */
-//function legume_qtl_theme() {
-function tripal_legume_qtl_theme($existing, $type, $theme, $path) {
-//  $path = drupal_get_path('module', 'legume_qtl') . '/theme';  
+function legume_qtl_theme($existing, $type, $theme, $path) {
   $themes = array(        
     'tripal_feature_QTL_base' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_base',
-      'path' => '', //$path . '/tripal_feature',
+      'path' => '', "$path/theme/tripal_feature"
     ),
-/*TODO: fix or change these
     'tripal_feature_QTL_map_positions' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_map_positions',
-      'path' => $path . '/tripal_feature',
+      'path' => "$path/theme/tripal_feature"
     ),
     'tripal_feature_QTL_publications' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_publications',
-      'path' => $path . '/tripal_feature',
+      'path' => "$path/theme/tripal_feature"
     ),
-*/
   );
 
   return $themes;
 }
+
 
 /**
  * Provide more details about the QTL
@@ -159,6 +211,7 @@ function legume_qtl_preprocess_tripal_feature_QTL_base(&$variables) {
   $qtl_details = getQTLDetails($feature->feature_id);
   $feature->legume_qtl->qtl_details =  $qtl_details;
 }
+
 
 /**
  * Provide more details about the QTL
@@ -172,6 +225,7 @@ function legume_qtl_preprocess_tripal_feature_QTL_publications(&$variables) {
 //  $feature->legume_qtl->publications = $qtl_pubs;
 }
 
+
 /**
  * Provide more details about the QTL
  * 
@@ -184,14 +238,6 @@ function legume_qtl_preprocess_tripal_feature_QTL_map_positions(&$variables) {
 //  $feature->legume_qtl->map_positions = $qtl_map_pos;
 }
 
-/**
- *
- * @ingroup legume_qtl
- */
-//TODO: reasearch this function
-function legume_qtl_cron() {
-
-}
 
 /**
  *
@@ -267,6 +313,7 @@ function get_QTL_map_positions ($feature_id) {
   return legume_qtl_dbresult_to_array(chado_query($sql, $feature_id, $feature_id));
 }
 
+
 /**
  *
  */
@@ -293,6 +340,7 @@ function get_QTL_pubs ($feature_id) {
   ";
   return legume_qtl_dbresult_to_array(chado_query($sql, $feature_id)); 
 }
+
 
 /**
  * 
@@ -367,7 +415,7 @@ function getQTLDetails ($feature_id) {
                                       AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
            AND FPS.feature_id = %d
            AND FPE.feature_id = %d";
-    $qtl->map_pos = db_fetch_object(chado_query($sql, $feature_id)); 
+    $qtl->map_pos = db_fetch_object(chado_query($sql, $feature_id, $feature_id)); 
 //echo "In module: <pre>";var_dump($qtl->map_pos);echo "</pre>";
 
   // Get aliases
@@ -450,6 +498,7 @@ function getQTLDetails ($feature_id) {
   return $qtl;
 }
 
+
 // This is a function to convert a database resultset into an object array
 function legume_qtl_dbresult_to_array($dbresult) {
   $arr = array();
@@ -458,6 +507,7 @@ function legume_qtl_dbresult_to_array($dbresult) {
   }
   return $arr;
 }
+
 
 // The function will aggreate the content of a String array by using the specified separator
 function legume_qtl_stringarray_agg($arr, $separator) {

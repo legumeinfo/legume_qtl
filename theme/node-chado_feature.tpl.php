@@ -95,7 +95,7 @@ else { ?>
    <!-- Basic Details Theme -->
    <?php
     // eksc
-    if (strcmp($feature->type_id->name, 'QTL') == 0 ) {
+    if ($feature->type_id->name == 'QTL') {
       print theme('tripal_feature_QTL_base', $node);
     }
     else {
@@ -106,20 +106,18 @@ else { ?>
       print theme('tripal_feature_synonyms', $node);
       print theme('tripal_feature_phenotypes', $node);
       print theme('tripal_feature_featurepos', $node);
-      if (strcmp($feature->type_id->name,'scaffold')!=0 and 
-         strcmp($feature->type_id->name,'chromosome')!=0 and
-         strcmp($feature->type_id->name,'supercontig')!=0 and
-         strcmp($feature->type_id->name,'pseudomolecule')!=0)
-      {
+      if ($feature->type_id->name != 'scaffold' and 
+          $feature->type_id->name != 'chromosome' and
+          $feature->type_id->name != 'supercontig' and
+          $feature->type_id->name != 'pseudomolecule') {
          print theme('tripal_feature_sequence', $node); 
       }
       print theme('tripal_feature_featureloc_sequences', $node);
-      print theme('tripal_feature_relationships', $node);
-      if (strcmp($feature->type_id->name,'scaffold')!=0 and 
-        strcmp($feature->type_id->name,'chromosome')!=0 and
-        strcmp($feature->type_id->name,'supercontig')!=0 and
-        strcmp($feature->type_id->name,'pseudomolecule')!=0)
-      {
+     print theme('tripal_feature_relationships', $node);
+      if ($feature->type_id->name != 'scaffold' and 
+          $feature->type_id->name != 'chromosome' and
+          $feature->type_id->name != 'supercontig' and
+          $feature->type_id->name != 'pseudomolecule') {
         print theme('tripal_feature_alignments', $node); 
       }
       for($i = 0; $i < count($node->field_resource_titles); $i++){
@@ -139,10 +137,7 @@ else { ?>
 
 <!-- Table of contents -->
 <?php
-  // eksc
-  if (strcmp($feature->type_id->name, 'QTL') == 0 ) {
-  }
-  else {
+  if ($feature->type_id->name != 'QTL') {
 ?>
 <div id="tripal_feature_toc" class="tripal_toc">
    <div id="tripal_feature_toc_title" class="tripal_toc_title">Resources</div>
