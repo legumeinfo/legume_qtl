@@ -227,7 +227,7 @@
       -- flanking marker high
       LEFT OUTER JOIN feature_relationship FMHR ON FMHR.subject_id=QTL.feature_id 
         AND FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
-                          WHERE name='flanking marker low' 
+                          WHERE name='flanking marker high' 
                                 AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
       LEFT OUTER JOIN feature FMH ON FMH.feature_id=FMHR.object_id
     

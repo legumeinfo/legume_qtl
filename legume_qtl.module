@@ -8,6 +8,8 @@
  * @ingroup legume_qtl
  */
 
+require_once('includes/legume_qtl.chado_node.inc');
+
 /**
  * Implementation of hook_permissions()
  * 
@@ -93,84 +95,6 @@ function legume_qtl_views_api() {
 
 
 /**
- * Administrative settings form
- *
- * @ingroup legume_qtl
- */
-/*eksc not in Drupal 7; don't know replacement, if any
-function legume_qtl_admin() {
-  $form = array();
-
-  return system_settings_form($form);
-}
-*/
-
-/**
- * Implements hook_node_view(). Acts on all content types
- *
- * @ingroup legume_qtl
- */
-
-function legume_qtl_node_view($node, $view_mode, $langcode) {
-  if ($node->type != 'chado_feature') { return; }
-  
-  switch ($view_mode) {
-    case 'full':
-      if ($node->feature->type_id->name == 'QTL') {
-        $node->content['tripal_feature_QTL_map_positions'] = array(
-          '#value' => theme('tripal_feature_QTL_map_positions',  $node),
-        );
-        $node->content['tripal_feature_QTL_publications'] = array(
-          '#value' => theme('tripal_feature_QTL_publications',  $node),
-        );
-        // we want to override the base theme
-        $node->content['tripal_feature_base'] = array(
-          '#value' => theme('tripal_feature_QTL_base',  $node),
-        );
-      }
-      break;
-    case 'teaser':
-      break;
-    default:
-      break;
-  }
-}
-
-
-/*eksc not in Drupal 7; don't know replacement, if any
-function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
-
-  switch ($op) {
-    case 'view':
-
-      if ($teaser) {
-        return '';
-      }
-            
-      if (strcmp($node->type, 'chado_feature')==0) {        
-        if(strcmp($node->feature->type_id->name, "QTL") == 0) {
-//TODO: fix or change these
-//          $node->content['tripal_feature_QTL_map_positions'] = array(
-//            '#value' => theme('tripal_feature_QTL_map_positions',  $node),
-//          );
-//          $node->content['tripal_feature_QTL_publications'] = array(
-//            '#value' => theme('tripal_feature_QTL_publications',  $node),
-//          );
-//
-          // we want to override the base theme
-          // TODO: uncomment the follwoing lines when Tripal v2.0 is released
-//          $node->content['tripal_feature_base'] = array(
-//            '#value' => theme('tripal_feature_QTL_base',  $node),
-//          );
-        }
-      }
-      break;      
-  } 
-}
-*/
-
-
-/**
  *  Implements hook_theme().
  *
  * We need to let drupal know about our theme functions and their arguments.
@@ -181,25 +105,36 @@ function legume_qtl_nodeapi(&$node, $op, $teaser, $page) {
  */
 function legume_qtl_theme($existing, $type, $theme, $path) {
   $path = drupal_get_path('module', 'legume_qtl');
-  
+
   $themes = array(        
+    'tripal_feature_base' => array(
+      'arguments' => array('node' => NULL),
+      'template' => 'tripal_feature_QTL_base',
+      'path' => "$path/theme/templates"
+    ),
     'tripal_feature_QTL_base' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_base',
-      'path' => '', "$path/theme/tripal_feature"
+      'path' => "$path/theme/templates"
     ),
-    'tripal_feature_QTL_map_positions' => array(
+    'tripal_feature_QTL_details' => array(
       'arguments' => array('node' => NULL),
-      'template' => 'tripal_feature_QTL_map_positions',
-      'path' => "$path/theme/tripal_feature"
+      'template' => 'tripal_feature_QTL_details',
+      'path' => "$path/theme/templates"
     ),
-    'tripal_feature_QTL_publications' => array(
-      'arguments' => array('node' => NULL),
-      'template' => 'tripal_feature_QTL_publications',
-      'path' => "$path/theme/tripal_feature"
-    ),
+//    'tripal_feature_QTL_map_positions' => array(
+//      'arguments' => array('node' => NULL),
+//      'template' => 'tripal_feature_QTL_map_positions',
+//      'path' => "$path/theme/templates"
+//    ),
+//    'tripal_feature_QTL_publications' => array(
+//      'arguments' => array('node' => NULL),
+//      'template' => 'tripal_feature_QTL_publications',
+//      'path' => "$path/theme/tripal_feature"
+//    ),
   );
 
+//var_dump($themes);
   return $themes;
 }
 
@@ -212,7 +147,8 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
 function legume_qtl_preprocess_tripal_feature_QTL_base(&$variables) {
   $feature = $variables['node']->feature;  
   $qtl_details = getQTLDetails($feature->feature_id);
-  $feature->legume_qtl->qtl_details =  $qtl_details;
+//  $feature->legume_qtl->qtl_details = $qtl_details;
+  $feature->qtl_details = $qtl_details;
 }
 
 
@@ -339,7 +275,7 @@ function get_QTL_pubs ($feature_id) {
       INNER JOIN {pub} P ON P.pub_id = NEP.pub_id
       LEFT JOIN public.chado_pub CP ON CP.pub_id = P.pub_id
     WHERE QTL.feature_id = %d
-    GROUP BY P.pub_id
+    GROUP BY P.pub_id;
   ";
   return legume_qtl_dbresult_to_array(chado_query($sql, $feature_id)); 
 }
@@ -349,77 +285,83 @@ function get_QTL_pubs ($feature_id) {
  * 
  * @param $feature_id
  */
-function getQTLDetails ($feature_id) {
-   $qtl = new stdClass();
-   
-   // Get map, position, population
-   $sql = "
-     SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name,
-            TO_CHAR(FPS.mappos, '9999D99') AS start, TO_CHAR(FPE.mappos, '9999D99') AS end, 
-            LISLGACC.accession AS lis_lg_map_accession,
-            LISACC.accession AS lis_map_accession,
-            MP.name AS mapping_population,
-            P1.parent_name AS parent1, P1.parent_id AS parent1_id,
-            P2.parent_name AS parent2, P2.parent_id AS parent2_id
-     FROM feature MAPINFO
-       INNER JOIN featurepos FPS ON MAPINFO.feature_id=FPS.map_feature_id
-       LEFT JOIN featureposprop FPSP ON FPSP.featurepos_id=FPS.featurepos_id
+function getQTLDetails($feature_id) {
+  $qtl = new stdClass();
+  
+  // Get map, position, population
+  $sql = "
+    SELECT FPS.feature_id, FPS.map_feature_id, MAP.name AS map_name,
+           TO_CHAR(FPS.mappos, '9999D99') AS start, TO_CHAR(FPE.mappos, '9999D99') AS end, 
+           LISLGACC.accession AS lis_lg_map_accession,
+           LISACC.accession AS lis_map_accession,
+           MP.name AS mapping_population,
+           P1.parent_name AS parent1, P1.parent_id AS parent1_id,
+           P2.parent_name AS parent2, P2.parent_id AS parent2_id
+    FROM chado.feature MAPINFO
+      INNER JOIN chado.featurepos FPS ON MAPINFO.feature_id=FPS.map_feature_id
+      LEFT JOIN chado.featureposprop FPSP ON FPSP.featurepos_id=FPS.featurepos_id
         
-       LEFT JOIN featurepos FPE ON MAPINFO.feature_id=FPE.map_feature_id
-       LEFT JOIN featureposprop FPEP ON FPEP.featurepos_id=FPE.featurepos_id
+      LEFT JOIN chado.featurepos FPE ON MAPINFO.feature_id=FPE.map_feature_id
+      LEFT JOIN chado.featureposprop FPEP ON FPEP.featurepos_id=FPE.featurepos_id
     
-       LEFT JOIN featuremap MAP ON MAP.featuremap_id=FPS.featuremap_id
+      LEFT JOIN chado.featuremap MAP ON MAP.featuremap_id=FPS.featuremap_id
        
-       LEFT JOIN featuremap_stock FS ON FS.featuremap_id=MAP.featuremap_id
-       LEFT JOIN stock MP ON MP.stock_id = FS.stock_id
-       LEFT JOIN 
-         (SELECT PR.object_id, PR.subject_id, NID.nid AS parent_id, P.name AS parent_name 
-          FROM stock_relationship PR 
-            INNER JOIN stock P ON P.stock_id = PR.subject_id
-            INNER JOIN public.chado_stock NID ON NID.stock_id=p.stock_id
-          WHERE PR.type_id = (SELECT cvterm_id FROM cvterm 
-                              WHERE name='parent1' 
-                                    AND cv_id = (SELECT cv_id FROM cv
-                                                 WHERE name='local'))
-         ) P1 ON P1.object_id = MP.stock_id
-       LEFT JOIN 
-         (SELECT PR.object_id, PR.subject_id, NID.nid AS parent_id, P.name AS parent_name 
-          FROM stock_relationship PR 
-            INNER JOIN stock P ON P.stock_id = PR.subject_id
-            INNER JOIN public.chado_stock NID ON NID.stock_id=p.stock_id
-          WHERE PR.type_id = (SELECT cvterm_id FROM cvterm 
-                              WHERE name='parent2' 
-                                    AND cv_id = (SELECT cv_id FROM cv 
-                                                 WHERE name='local'))
-         ) P2 ON P2.object_id = MP.stock_id
+      LEFT JOIN chado.featuremap_stock FS ON FS.featuremap_id=MAP.featuremap_id
+      LEFT JOIN chado.stock MP ON MP.stock_id = FS.stock_id
+      LEFT JOIN 
+        (SELECT PR.object_id, PR.subject_id, NID.nid AS parent_id, P.name AS parent_name 
+         FROM chado.stock_relationship PR 
+           INNER JOIN chado.stock P ON P.stock_id = PR.subject_id
+           INNER JOIN public.chado_stock NID ON NID.stock_id=p.stock_id
+         WHERE PR.type_id = (SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name='parent1' 
+                                   AND cv_id = (SELECT cv_id FROM chado.cv
+                                                WHERE name='local'))
+        ) P1 ON P1.object_id = MP.stock_id
+      LEFT JOIN 
+        (SELECT PR.object_id, PR.subject_id, NID.nid AS parent_id, P.name AS parent_name 
+         FROM chado.stock_relationship PR 
+           INNER JOIN chado.stock P ON P.stock_id = PR.subject_id
+           INNER JOIN public.chado_stock NID ON NID.stock_id=p.stock_id
+         WHERE PR.type_id = (SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name='parent2' 
+                                   AND cv_id = (SELECT cv_id FROM chado.cv 
+                                                WHERE name='local'))
+        ) P2 ON P2.object_id = MP.stock_id
                     
-       LEFT JOIN
-         (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
-          FROM dbxref LISLGACC
-            INNER JOIN feature_dbxref LISLGFDBX ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
-          WHERE LISLGACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
-         ) LISLGACC ON LISLGACC.feature_id=MAPINFO.feature_id
+      LEFT JOIN
+        (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
+         FROM chado.dbxref LISLGACC
+           INNER JOIN chado.feature_dbxref LISLGFDBX ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
+         WHERE LISLGACC.db_id=(SELECT db_id FROM chado.db WHERE name='LIS:cmap')
+        ) LISLGACC ON LISLGACC.feature_id=MAPINFO.feature_id
       
-       LEFT JOIN
-         (SELECT LISACC.accession, LISFDBX.featuremap_id 
-          FROM dbxref LISACC
-            INNER JOIN featuremap_dbxref LISFDBX ON LISFDBX.dbxref_id=LISACC.dbxref_id
-          WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
-         ) LISACC ON LISACC.featuremap_id=MAP.featuremap_id
+      LEFT JOIN
+        (SELECT LISACC.accession, LISFDBX.featuremap_id 
+         FROM chado.dbxref LISACC
+           INNER JOIN chado.featuremap_dbxref LISFDBX ON LISFDBX.dbxref_id=LISACC.dbxref_id
+         WHERE LISACC.db_id=(SELECT db_id FROM chado.db WHERE name='LIS:cmap')
+        ) LISACC ON LISACC.featuremap_id=MAP.featuremap_id
 
-     WHERE MAPINFO.type_id=(SELECT cvterm_id FROM chado.cvterm 
-                            WHERE name = 'linkage_group'
-                                  AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
-           AND FPSP.type_id=(SELECT cvterm_id FROM cvterm 
-                             WHERE name='start coordinate' 
-                                   AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-           AND FPEP.type_id=(SELECT cvterm_id FROM cvterm 
-                                WHERE name='stop coordinate' 
-                                      AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-           AND FPS.feature_id = %d
-           AND FPE.feature_id = %d";
-    $qtl->map_pos = db_fetch_object(chado_query($sql, $feature_id, $feature_id)); 
-//echo "In module: <pre>";var_dump($qtl->map_pos);echo "</pre>";
+    WHERE MAPINFO.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                           WHERE name = 'linkage_group'
+                                 AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='sequence'))
+          AND FPSP.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                            WHERE name='start coordinate' 
+                                  AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+          AND FPEP.type_id=(SELECT cvterm_id FROM chado.cvterm 
+                            WHERE name='stop coordinate' 
+                                  AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
+          AND FPS.feature_id = $feature_id
+          AND FPE.feature_id = $feature_id;
+    ";
+
+//eksc db_fetch_object removed from Drupal 7
+//echo "<br>feature id: $feature_id<br>$sql<br>\n";
+    $res = chado_query($sql, array());
+//echo "\n<br>query result:<pre>";var_dump($res);echo "</pre><br>\n";
+    $qtl->map_pos = $res->fetchObject();
+//echo "\n<br>map_pos:<pre>";var_dump($qtl->map_pos);echo "</pre><br>\n";
 
   // Get aliases
   $sql = "
@@ -428,74 +370,93 @@ function getQTLDetails ($feature_id) {
       INNER JOIN {feature_synonym} FS ON S.synonym_id = FS.synonym_id
       INNER JOIN {cvterm} T ON T.cvterm_id=S.type_id
       INNER JOIN {cv} CV ON CV.cv_id=T.cv_id
-    WHERE FS.feature_id = %d";
-  $qtl->synonyms = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
+    WHERE FS.feature_id = :feature_id";
+  $qtl->synonyms 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                               array(':feature_id' => $feature_id)));
+//echo "\n<br>Synonyms:<pre>";var_dump($qtl->synonyms);echo "</pre><br>\n";
 
   // Get trait class
   $sql = "
     SELECT TC.name 
-    FROM feature_cvterm SYMF
-      LEFT JOIN cvterm SYM ON SYM.cvterm_id=SYMF.cvterm_id
-      LEFT JOIN feature_cvtermprop SYMP ON SYMP.feature_cvterm_id=SYMF.feature_cvterm_id 
-        AND SYMP.type_id=(SELECT cvterm_id FROM cvterm 
+    FROM {feature_cvterm} SYMF
+      LEFT JOIN {cvterm} SYM ON SYM.cvterm_id=SYMF.cvterm_id
+      LEFT JOIN {feature_cvtermprop} SYMP ON SYMP.feature_cvterm_id=SYMF.feature_cvterm_id 
+        AND SYMP.type_id=(SELECT cvterm_id FROM {cvterm} 
                           WHERE name='QTL symbol' 
-                                AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-      LEFT JOIN cvterm_relationship TR ON TR.subject_id=SYM.cvterm_id
-                AND TR.type_id=(SELECT cvterm_id FROM cvterm 
+                                AND cv_id=(SELECT cv_id FROM {cv} WHERE name='local'))
+      LEFT JOIN {cvterm_relationship} TR ON TR.subject_id=SYM.cvterm_id
+                AND TR.type_id=(SELECT cvterm_id FROM {cvterm} 
                                    WHERE name='has trait class' 
-                                         AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-      LEFT JOIN cvterm TC ON TC.cvterm_id=TR.object_id
-    WHERE SYMF.feature_id = %d";
-  $qtl->trait_class = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
-//echo "In module: <pre>";var_dump($qtl->trait_class);echo "</pre>";
+                                         AND cv_id=(SELECT cv_id FROM {cv} WHERE name='local'))
+      LEFT JOIN {cvterm} TC ON TC.cvterm_id=TR.object_id
+    WHERE SYMF.feature_id = :feature_id";
+  $qtl->trait_class 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                               array(':feature_id' => $feature_id)));
+//echo "Trait: <pre>";var_dump($qtl->trait_class);echo "</pre>";
 
   // Get nearest marker
   $sql = "
-    SELECT NM.feature_id, NM.name FROM feature_relationship NMR
-      INNER JOIN feature NM ON NM.feature_id = NMR.object_id
-    WHERE NMR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+    SELECT NM.feature_id, NM.name FROM {feature_relationship} NMR
+      INNER JOIN {feature} NM ON NM.feature_id = NMR.object_id
+    WHERE NMR.type_id=(SELECT cvterm_id FROM {cvterm} 
                        WHERE name='nearest marker' 
-                         AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
-          AND NMR.subject_id = %d"; 
-  $qtl->nearest_marker = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
+                         AND cv_id=(SELECT cv_id FROM {cv} WHERE name='local'))
+          AND NMR.subject_id = :subject_id"; 
+  $qtl->nearest_marker 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                               array('subject_id' => $feature_id)));
+//echo "Nearest marker: <pre>";var_dump($qtl->nearest_marker);echo "</pre>";
 
   // Get flanking marker low
   $sql = "
-    SELECT FML.feature_id, FML.name FROM feature_relationship FMLR
-      INNER JOIN feature FML ON FML.feature_id = FMLR.object_id
-    WHERE FMLR.type_id=(SELECT cvterm_id FROM chado.cvterm 
+    SELECT FML.feature_id, FML.name FROM {feature_relationship} FMLR
+      INNER JOIN {feature} FML ON FML.feature_id = FMLR.object_id
+    WHERE FMLR.type_id=(SELECT cvterm_id FROM {cvterm} 
                    WHERE name='flanking marker low' 
-                         AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
-          AND FMLR.subject_id = %d"; 
-  $qtl->flanking_marker_low = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
+                         AND cv_id=(SELECT cv_id FROM {cv} WHERE name='local'))
+          AND FMLR.subject_id = :subject_id"; 
+  $qtl->flanking_marker_low 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                   array('subject_id' => $feature_id)));
+//echo "Flanking marker low: <pre>";var_dump($qtl->flanking_marker_low);echo "</pre>";
 
   // Get flanking marker high
   $sql = "
-    SELECT FMH.feature_id, FMH.name FROM feature_relationship FMHR
-      INNER JOIN feature FMH ON FMH.feature_id = FMHR.object_id
-    WHERE FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
-                   WHERE name='flanking marker low' 
-                         AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
-          AND FMHR.subject_id = %d"; 
-  $qtl->flanking_marker_high = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
+    SELECT FMH.feature_id, FMH.name FROM {feature_relationship} FMHR
+      INNER JOIN {feature} FMH ON FMH.feature_id = FMHR.object_id
+    WHERE FMHR.type_id=(SELECT cvterm_id FROM {cvterm} 
+                   WHERE name='flanking marker high' 
+                         AND cv_id=(SELECT cv_id FROM {cv} WHERE name='local'))
+          AND FMHR.subject_id = :subject_id"; 
+  $qtl->flanking_marker_high 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                   array('subject_id' => $feature_id)));
+//echo "Flanking marker high: <pre>";var_dump($qtl->flanking_marker_high);echo "</pre>";
 
   // Get publication & experiment information
   $sql = "
-    SELECT P.pub_id, P.uniquename AS citation FROM feature_project FP
-      INNER JOIN project E ON E.project_id=FP.project_id
-      INNER JOIN project_pub PP ON PP.project_id=E.project_id
-      LEFT JOIN pub P ON P.pub_id=PP.pub_id
-    WHERE FP.feature_id = %d";
-  $qtl->pub_expt = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
+    SELECT P.pub_id, P.uniquename AS citation FROM {feature_project} FP
+      INNER JOIN {project} E ON E.project_id=FP.project_id
+      INNER JOIN {project_pub} PP ON PP.project_id=E.project_id
+      LEFT JOIN {pub} P ON P.pub_id=PP.pub_id
+    WHERE FP.feature_id = :feature_id";
+  $qtl->pub_expt 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                   array('feature_id' => $feature_id)));
+//echo "publication: <pre>";var_dump($qtl->pub_expt);echo "</pre>";
 
   // Get measurements
   $sql = "
     SELECT AF.feature_id, AF.rawscore, A.name 
-    FROM analysis A 
-      INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
-    WHERE AF.feature_id = %d";
-  $qtl->analysis = legume_qtl_dbresult_to_array(chado_query($sql, $feature_id));
-//echo "In module:\n$sql\n with $feature_id, produced analysis values:<pre>";var_dump($qtl->analysis);echo "</pre>";
+    FROM {analysis} A 
+      INNER JOIN {analysisfeature} AF ON AF.analysis_id=A.analysis_id
+    WHERE AF.feature_id = :feature_id";
+  $qtl->analysis 
+    = legume_qtl_dbresult_to_array(chado_query($sql, 
+                                               array('feature_id' => $feature_id)));
+//echo "analysis: <pre>";var_dump($qtl->analysis);echo "</pre>";
   
   // Return the data
   return $qtl;
@@ -504,15 +465,20 @@ function getQTLDetails ($feature_id) {
 
 // This is a function to convert a database resultset into an object array
 function legume_qtl_dbresult_to_array($dbresult) {
+  if (!$dbresult) {
+    return false;
+  }
+  
   $arr = array();
-  while ($obj = db_fetch_object($dbresult)) {
+  while ($obj = $dbresult->fetchObject()) {
     array_push($arr, $obj);
   }
   return $arr;
 }
 
 
-// The function will aggreate the content of a String array by using the specified separator
+// The function will aggreate the content of a String array by using the 
+//  specified separator
 function legume_qtl_stringarray_agg($arr, $separator) {
     $text = "";
     for ($i = 0; $i < count($arr); $i ++) {

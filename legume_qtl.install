@@ -299,7 +299,7 @@ function legume_qtl_add_qtl_search_mview() {
       -- flanking marker high
       LEFT OUTER JOIN feature_relationship FMHR ON FMHR.subject_id=QTL.feature_id 
         AND FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
-                          WHERE name='flanking marker low' 
+                          WHERE name='flanking marker high' 
                                 AND cv_id=(SELECT cv_id FROM chado.cv WHERE name='local'))
       LEFT OUTER JOIN feature FMH ON FMH.feature_id=FMHR.object_id
     
@@ -495,6 +495,32 @@ function legume_qtl_views_integrate_qtl_search() {
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'analysis_method' => array (
+        'name' => 'analysis_method',
+        'title' => 'Analysis method',
+        'description' => 'QTL analysis method',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
@@ -1024,9 +1050,9 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
-      'organism_nid' => array (
-        'name' => 'organism_nid',
-        'title' => 'organism_nid',
+      'org_nid' => array (
+        'name' => 'org_nid',
+        'title' => 'org_nid',
         'description' => 'Organism nid',
         'type' => 'int',
         'handlers' => array (

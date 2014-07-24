@@ -1274,8 +1274,8 @@ function legume_qtl_defaultvalue_user_qtl() {
   
   
   // QTL SEARCH DOWNLOAD DISPLAY
-//TODO: not available in views 3.0: FIX  
-//  $handler = $view->new_display('views_data_export', 'QTL Search Download', 'views_data_export_1');
+/*TODO: not available in views 3.0: FIX  */
+  $handler = $view->new_display('views_data_export', 'QTL Search Download', 'views_data_export_1');
   
   // FIELDS
   $handler->override_option('fields', array(
@@ -2156,8 +2156,8 @@ function legume_qtl_defaultvalue_user_qtl() {
   $handler->override_option('items_per_page', '0');
   
   // STYLE_PLUGIN
-/* TODO: this style plugin is not available in Views 3.0: FIX*/
-  $handler->override_option('style_plugin', 'views_data_export_xls');
+// TODO: this style plugin is not available in Views 3.0: FIX
+//  $handler->override_option('style_plugin', 'views_data_export_xls');
   
   // STYLE_OPTIONS
   $handler->override_option('style_options', array(
@@ -2206,5 +2206,5 @@ function legume_qtl_defaultvalue_user_qtl() {
   // USE_BATCH
   $handler->override_option('use_batch', 0);
   
-  return $views;
+  return $view;
 }

@@ -20,10 +20,10 @@
 //       print_r $node line below or install the Drupal Devel module which 
 //       provides an extra tab at the top of the node page labelled Devel
 
-//echo "node:<pre>";var_dump($node);echo "</pre>";
-
 drupal_add_css('./tripal-node-templates.css');
 $feature  = $variables['node']->feature;
+echo "Feature: <pre>";var_dump($feature);echo "</pre><br><br><br>";
+exit;
 
 // get the template settings
 $template_settings = theme_get_settings('tripal');
