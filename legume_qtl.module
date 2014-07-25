@@ -122,16 +122,16 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
       'template' => 'tripal_feature_QTL_details',
       'path' => "$path/theme/templates"
     ),
-//    'tripal_feature_QTL_map_positions' => array(
-//      'arguments' => array('node' => NULL),
-//      'template' => 'tripal_feature_QTL_map_positions',
-//      'path' => "$path/theme/templates"
-//    ),
-//    'tripal_feature_QTL_publications' => array(
-//      'arguments' => array('node' => NULL),
-//      'template' => 'tripal_feature_QTL_publications',
-//      'path' => "$path/theme/tripal_feature"
-//    ),
+    'tripal_feature_QTL_measurements' => array(
+      'arguments' => array('node' => NULL),
+      'template' => 'tripal_feature_QTL_measurements',
+      'path' => "$path/theme/templates"
+    ),
+    'tripal_feature_QTL_trait' => array(
+      'arguments' => array('node' => NULL),
+      'template' => 'tripal_feature_QTL_trait',
+      'path' => "$path/theme/templates"
+    ),
   );
 
 //var_dump($themes);
