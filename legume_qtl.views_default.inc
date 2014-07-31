@@ -1140,6 +1140,8 @@ function legume_qtl_defaultvalue_user_qtl() {
       'publication_lg' => 'publication_lg',
       'lg' => 'lg',
       'map_name' => 'map_name',
+      'left_end' => 'left_end',
+      'right_end' => 'right_end',
       'interval_calc_method' => 'interval_calc_method',
       'nearest_marker' => 'nearest_marker',
       'flanking_marker_low' => 'flanking_marker_low',
@@ -1179,6 +1181,10 @@ function legume_qtl_defaultvalue_user_qtl() {
         'separator' => '',
       ),
       'trait_unit' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'trait_class' => array(
         'sortable' => 1,
         'separator' => '',
       ),
@@ -1223,6 +1229,14 @@ function legume_qtl_defaultvalue_user_qtl() {
         'separator' => '',
       ),
       'map_name' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'left_end' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'right_end' => array(
         'sortable' => 1,
         'separator' => '',
       ),
@@ -1274,7 +1288,7 @@ function legume_qtl_defaultvalue_user_qtl() {
   
   
   // QTL SEARCH DOWNLOAD DISPLAY
-/*TODO: not available in views 3.0: FIX  */
+/*TODO: not available in views 3.0: FIX  
   $handler = $view->new_display('views_data_export', 'QTL Search Download', 'views_data_export_1');
   
   // FIELDS
@@ -2205,6 +2219,7 @@ function legume_qtl_defaultvalue_user_qtl() {
   
   // USE_BATCH
   $handler->override_option('use_batch', 0);
+*/
   
   return $view;
 }
