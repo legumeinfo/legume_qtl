@@ -186,7 +186,12 @@
   // Linkage Group
   if ($qtl_details->map_pos->lis_lg_map_accession
         && $qtl_details->map_pos->lis_lg_map_accession != '') {
-    $linkage_group .= " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
+    $qtl_symbol_encoded = urlencode("\"" . $feature->name . "\"");
+    $qtl_map_url = "$lis_cmap" 
+                 . $qtl_details->map_pos->lis_lg_map_accession
+                 . "&highlight=$qtl_symbol_encoded";
+//    $linkage_group .= " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
+    $linkage_group .= " [<a href=\"$qtl_map_url\" ";
     $linkage_group .= "target=\"_blank\">CMap</a>]";
   }
   $rows[] = array(
@@ -224,8 +229,12 @@
   $map = $qtl_details->map_pos->map_name;
   if ($qtl_details->map_pos->lis_map_accession
         && $qtl_details->map_pos->lis_map_accession != '') {
-    $map .= " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_map_accession."\" ";
-    $map .= "target=\"_blank\">cMap</a>]";
+    $qtl_symbol_encoded = urlencode("\"" . $feature->name . "\"");
+    $qtl_map_url = "$lis_cmap" 
+                 . $qtl_details->map_pos->lis_map_accession
+                 . "&highlight=$qtl_symbol_encoded";
+    $map .= " [<a href=\"$qtl_map_url\" ";
+    $map .= "target=\"_blank\">CMap</a>]";
   }
   $rows[] = array(
     array(
