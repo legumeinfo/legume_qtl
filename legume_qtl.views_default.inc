@@ -7,7 +7,7 @@ function legume_qtl_views_default_views() {
   $views = array();
 
   $view = legume_qtl_defaultvalue_user_qtl();
-  $view = tripal_views_make_view_compatible_with_external($view);
+  $view = tripal_make_view_compatible_with_external($view);
   $views[$view->name] = $view;
   
   return $views;
