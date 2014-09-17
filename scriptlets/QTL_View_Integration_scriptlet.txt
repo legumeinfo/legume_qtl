@@ -1,0 +1,816 @@
+array (
+    'table' => 'qtl_search',
+    'name' => 'qtl_search',
+    'type' => 'chado',
+    'description' => '',
+    'priority' => '-1',
+    'base_table' => '1',
+    'fields' => array (
+      'additivity' => array (
+        'name' => 'additivity',
+        'title' => 'Additivity',
+        'description' => 'Additivity',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'analysis_method' => array (
+        'name' => 'analysis_method',
+        'title' => 'Analysis method',
+        'description' => 'QTL analysis method',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'citation' => array (
+        'name' => 'citation',
+        'title' => 'Citation',
+        'description' => 'Publication citation',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'comment' => array (
+        'name' => 'comment',
+        'title' => 'Comment',
+        'description' => 'Comment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'common_name' => array (
+        'name' => 'common_name',
+        'title' => 'common name',
+        'description' => 'Organism common name',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'expt_qtl_symbol' => array (
+        'name' => 'expt_qtl_symbol',
+        'title' => 'QTL name used in experiment',
+        'description' => 'QTL name used in experiment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'expt_trait_name' => array (
+        'name' => 'expt_trait_name',
+        'title' => 'Experimental Trait Name',
+        'description' => 'Trait name used in experiment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'expt_trait_description' => array (
+        'name' => 'expt_trait_description',
+        'title' => 'Experimental Trait Description',
+        'description' => 'Trait description from experiment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'favorable_allele_source' => array (
+        'name' => 'favorable_allele_source',
+        'title' => 'Favorable Allele Source',
+        'description' => 'Parent with the favorable allele',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'fas_nid' => array (
+        'name' => 'fas_nid',
+        'title' => 'fas_nid',
+        'description' => 'Favorable Allele Source nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+
+      'flanking_marker_high' => array (
+        'name' => 'flanking_marker_high',
+        'title' => 'Right Flanking Marker',
+        'description' => 'Right flanking marker',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'flanking_marker_high_id' => array (
+        'name' => 'flanking_marker_high_id',
+        'title' => 'Right Flanking Marker ID',
+        'description' => 'Right flanking marker ID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'flanking_marker_low' => array (
+        'name' => 'flanking_marker_low',
+        'title' => 'Left Flanking Marker',
+        'description' => 'Left flanking marker',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'flanking_marker_low_id' => array (
+        'name' => 'flanking_marker_low_id',
+        'title' => 'Left Flanking Marker ID',
+        'description' => 'Left flanking marker ID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'interval_calc_method' => array (
+        'name' => 'interval_calc_method',
+        'title' => 'Interval Calculation Method',
+        'description' => 'Method used to calculate map intervals',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'likelihood_ratio' => array (
+        'name' => 'likelihood_ratio',
+        'title' => 'Likelihood Ratio',
+        'description' => 'Likelihood ratio',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lod' => array (
+        'name' => 'lod',
+        'title' => 'LOD',
+        'description' => 'LOD',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'marker_r2' => array (
+        'name' => 'marker_r2',
+        'title' => 'Marker R2',
+        'description' => 'Marker R2',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'mnemonic' => array (
+        'name' => 'mnemonic',
+        'title' => 'Species mnemonic',
+        'description' => 'Species mnemonic',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'nearest_marker' => array (
+        'name' => 'nearest_marker',
+        'title' => 'Nearest Marker',
+        'description' => 'Nearest marker',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'nearest_marker_id' => array (
+        'name' => 'nearest_marker_id',
+        'title' => 'Nearest Marker ID',
+        'description' => 'Nearest marker ID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'organism' => array (
+        'name' => 'organism',
+        'title' => 'organism',
+        'description' => 'Organism name',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'org_nid' => array (
+        'name' => 'org_nid',
+        'title' => 'org_nid',
+        'description' => 'Organism nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'pub_nid' => array (
+        'name' => 'pub_nid',
+        'title' => 'pub_nid',
+        'description' => 'Publication nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'qtl_symbol' => array (
+        'name' => 'qtl_symbol',
+        'title' => 'QTL',
+        'description' => 'QTL symbol',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'qtl_id' => array (
+        'name' => 'qtl_id',
+        'title' => 'qtl_id',
+        'description' => 'QTL ID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'qtl_nid' => array (
+        'name' => 'qtl_nid',
+        'title' => 'qtl_nid',
+        'description' => 'QTL nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'trait_class' => array (
+        'name' => 'trait_class',
+        'title' => 'Trait class',
+        'description' => 'Trait class',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'trait_unit' => array (
+        'name' => 'trait_unit',
+        'title' => 'Trait unit',
+        'description' => 'Trait unit',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'treatment' => array (
+        'name' => 'treatment',
+        'title' => 'QTL treatment',
+        'description' => 'QTL study treatment',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'total_r2' => array (
+        'name' => 'total_r2',
+        'title' => 'Total R2',
+        'description' => 'Total R2',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+    ),
+  )

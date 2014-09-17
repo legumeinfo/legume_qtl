@@ -1,105 +1,52 @@
 <?php
   $feature  = $variables['node']->feature;
-  //echo "<br><br>tripal_feature_QTL_base.tpl.php Feature object: <pre>";var_dump($feature);echo "</pre><br><br><br>";
-  
-  //tripal_core_expand_chado_vars deprecated
-  //$feature = tripal_core_expand_chado_vars($feature, 'table', 'featureprop', 
-  //                                         array('return_array' => 1));
-  $feature = chado_expand_var($feature, 'table', 'featureprop', 
-                              array('return_array' => 1));
-  //echo "<br><br>Feature object expanded: <pre>";var_dump($feature);echo "</pre><br><br><br>";
-  
-  // Process featureprop 
-  $properties = $feature->featureprop;
-  //echo "<br><br>Feature properties: <pre>";var_dump($properties);echo "</pre><br><br><br>";
-  
-  $trait_name           = 'N/A';
-  $trait_description    = '';
-  $trait_unit           = 'unknown';
-  $treatment            = 'unknown';
-  $linkage_group        = 'unknown';
-  $publication_lg       = 'N/A';
-  $comments             = '';
+//echo "<br><br>tripal_feature_QTL_base.tpl.php variables object: <pre>";var_dump($variables);echo "</pre><br><br><br>";
+//echo "<br><br>tripal_feature_QTL_base.tpl.php Feature object: <pre>";var_dump($feature);echo "</pre><br><br><br>";
 
-  if ($properties) {
-    foreach ($properties AS $prop) {
-//echo $feature->feature_id .": " . $prop->type_id->name . " = " . $prop->value . "<br>";
-      if ($prop->value != '') {
-        if ($prop->type_id->cv_id->name == 'local'
-              && $prop->type_id->name == 'experiment trait name') {
-          $trait_name = $prop->value;
-        } 
-        else if ($prop->type_id->cv_id->name == 'local'
-                   && $prop->type_id->name == 'experiment trait description') {
-          $trait_description = $prop->value;
-        } 
-        else if ($prop->type_id->cv_id->name == 'local'
-                   && $prop->type_id->name == 'trait unit') {
-          $trait_unit = $prop->value;
-        } 
-        else if ($prop->type_id->cv_id->name == 'local' 
-                  && $prop->type_id->name == 'QTL study treatment') {
-          $treatment = $prop->value;
-        }
-        else if ($prop->type_id->cv_id->name == 'sequence' 
-                  && $prop->type_id->name == 'linkage_group') {
-          $linkage_group = $prop->value;
-        }
-        else if ($prop->type_id->cv_id->name == 'local' 
-                  && $prop->type_id->name == 'linkage group name used in publication') {
-          $publication_lg = $prop->value;
-        }
-        else if ($prop->type_id->cv_id->name == 'local' 
-                  && $prop->type_id->name == 'comment') {
-          $comment = $prop->value;
-        }
-      }//property has a value
-    }//each property
-  }//there are property records
-  
-  // Retrieve QTL details
   $qtl_details = $feature->qtl_details;
-//echo "<br><br>qtl details: <pre>";var_dump($qtl_details);echo "</pre><br><br><br>";
+//echo "<br><br>tripal_feature_QTL_base.tpl.php QTL details: <pre>";var_dump($qtl_details);echo "</pre><br><br><br>";
 
-  // Base URL for LIS cMap instance
-  $lis_cmap = "http://cmap.comparative-legumes.org/cgi-bin/cmap/viewer";
-//echo "<br><br>lis_cmap: <pre>";var_dump($lis_cmap);echo "</pre><br><br><br>";
+  // QTL symbol from publication
+  $expt_qtl_symbol = $qtl_details->expt_qtl_symbol;
 
-  // Synonyms
-  $synonyms        = '';
-  $expt_qtl_symbol = 'N/A';
-  if ($qtl_details->synonyms) {
-      foreach ($qtl_details->synonyms as $syn) {
-        if ($syn->cv = 'feature_property'
-              && $syn->type == 'symbol') {
-          $expt_qtl_symbol = $syn->name;
-        }
-        else {
-          $synonyms .= $syn->name . ". ";
-        }
-      }
-  }
-  if ($synonyms == '') {
-    $synonyms = 'N/A';
-  }
-//echo "<br><br>synonyms: <pre>";var_dump($synonyms);echo "</pre><br><br><br>";
-
-  // Trait class
-  $trait_class = 'N/A';
-  if ($qtl_details->trait_class 
-        && $qtl_details->trait_class[0]->name != '') {
-    $trait_class = $qtl_details->trait_class[0]->name;
-  }
-//echo "<br><br>trait class: <pre>";var_dump($trait_class);echo "</pre><br><br><br>";
-
+  // Trait Name
+  $trait_name = $qtl_details->expt_trait_name;
+  
+  // Trait Description
+  $trait_description = $qtl_details->expt_trait_description;
+  
+  // Trait Unit
+  $trait_unit = $qtl_details->trait_unit;
+  
+  // Trait Class
+  $trait_class = $qtl_details->trait_class;
+  
+  // Treatment
+  $treatment = $qtl_details->treatment;
+  
   // Publication
   $citation = 'N/A';
   //echo "Publications: <pre>";var_dump($qtl_details->pub_expt);echo "</pre><br><br><br>";
-  if ($qtl_details->pub_expt) {
-    $citation = "<a href=\"/pub/" . $qtl_details->pub_expt[0]->pub_id . "\">";
-    $citation .= $qtl_details->pub_expt[0]->citation . "</a>";
+  if ($qtl_details->pub_nid) {
+    $citation = "<a href=\"/pub/" . $qtl_details->pub_nid . "\">";
+    $citation .= $qtl_details->citation . "</a>";
   }
-//echo "publication: <pre>$citation</pre><br><br><br>";
+
+  // Organism
+  $organism = $feature->organism_id->genus . " " 
+            . $feature->organism_id->species . " (" 
+            . $feature->organism_id->common_name .")";
+  if (property_exists($feature->organism_id, 'nid')) {
+    $organism = l("<i>" . $feature->organism_id->genus . " " 
+                  . $feature->organism_id->species . "</i> ("  
+                  . $feature->organism_id->common_name .")", 
+                  $feature->organism_id->common_name, 
+                  array('html' => TRUE));
+  } 
+  
+  
+  // Comments
+  $comments = $qtl_details->comments;
 ?>
 
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 
@@ -118,22 +65,14 @@
   // https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme_table/7 
   $rows = array();
   
-  // Unique Name row
-  $rows[] = array(
-    array(
-      'data' => 'QTL Label',
-      'header' => TRUE,
-      'width'  => '270',
-    ),
-    $feature->uniquename
-  );
   // Name row
   $rows[] = array(
     array(
       'data' => 'QTL Symbol',
       'header' => TRUE,
+      'width' => 200,
     ),
-    $feature->name
+    $feature->name,
   );
   // Experiment QTL symbol
   $rows[] = array(
@@ -141,7 +80,7 @@
       'data' => 'Experiment QTL symbol',
       'header' => TRUE
     ),
-    $expt_qtl_symbol
+    $expt_qtl_symbol,
   );
   // Trait Name
   $rows[] = array(
@@ -149,7 +88,7 @@
       'data' => 'Trait Name',
       'header' => TRUE,
     ),
-    $trait_name
+    $trait_name,
   );
   // Trait Description
   $rows[] = array(
@@ -157,7 +96,7 @@
       'data' => 'Trait Description',
       'header' => TRUE,
     ),
-    $trait_description
+    $trait_description,
   );
   // Trait Unit
   $rows[] = array(
@@ -165,7 +104,7 @@
       'data' => 'Trait Unit',
       'header' => TRUE,
     ),
-    $trait_unit
+    $trait_unit,
   );
   // Trait Class
   $rows[] = array(
@@ -173,7 +112,7 @@
       'data' => 'Trait Class',
       'header' => TRUE,
     ),
-    $trait_class
+    $trait_class,
   );
   // Treatment
   $rows[] = array(
@@ -181,67 +120,7 @@
       'data' => 'Treatment',
       'header' => TRUE,
     ),
-    $treatment
-  );
-  // Linkage Group
-  if ($qtl_details->map_pos->lis_lg_map_accession
-        && $qtl_details->map_pos->lis_lg_map_accession != '') {
-    $qtl_symbol_encoded = urlencode("\"" . $feature->name . "\"");
-    $qtl_map_url = "$lis_cmap" 
-                 . $qtl_details->map_pos->lis_lg_map_accession
-                 . "&highlight=$qtl_symbol_encoded";
-//    $linkage_group .= " [<a href=\"$lis_cmap".$qtl_details->map_pos->lis_lg_map_accession."\" ";
-    $linkage_group .= " [<a href=\"$qtl_map_url\" ";
-    $linkage_group .= "target=\"_blank\">CMap</a>]";
-  }
-  $rows[] = array(
-    array(
-      'data' => 'Linkage Group',
-      'header' => TRUE,
-    ),
-    $linkage_group
-  );
-  // Linkage Group Name from Publication
-  $rows[] = array(
-    array(
-      'data' => 'Linkage Group Name from Publication',
-      'header' => TRUE,
-    ),
-    $publication_lg
-  );
-  // Start Position
-  $rows[] = array(
-    array(
-      'data' => 'Start Position',
-      'header' => TRUE,
-    ),
-    $qtl_details->map_pos->start
-  );
-  // End Position
-  $rows[] = array(
-    array(
-      'data' => 'End Position',
-      'header' => TRUE,
-    ),
-    $qtl_details->map_pos->end
-  );
-  // Map
-  $map = $qtl_details->map_pos->map_name;
-  if ($qtl_details->map_pos->lis_map_accession
-        && $qtl_details->map_pos->lis_map_accession != '') {
-    $qtl_symbol_encoded = urlencode("\"" . $feature->name . "\"");
-    $qtl_map_url = "$lis_cmap" 
-                 . $qtl_details->map_pos->lis_map_accession
-                 . "&highlight=$qtl_symbol_encoded";
-    $map .= " [<a href=\"$qtl_map_url\" ";
-    $map .= "target=\"_blank\">CMap</a>]";
-  }
-  $rows[] = array(
-    array(
-      'data' => 'Map',
-      'header' => TRUE,
-    ),
-    $map
+    $treatment,
   );
   // Publication
   $rows[] = array(
@@ -249,7 +128,7 @@
       'data' => 'Publication',
       'header' => TRUE,
     ),
-    $citation
+    $citation,
   );
   // Organism row
   $organism = $feature->organism_id->genus . " " 
@@ -258,15 +137,16 @@
   if (property_exists($feature->organism_id, 'nid')) {
     $organism = l("<i>" . $feature->organism_id->genus . " " 
                   . $feature->organism_id->species . "</i> ("  
-                  . $feature->organism_id->common_name .")", "node/"
-                  . $feature->organism_id->nid, array('html' => TRUE));
+                  . $feature->organism_id->common_name .")", 
+                  $feature->organism_id->common_name, 
+                  array('html' => TRUE));
   } 
   $rows[] = array(
     array(
       'data' => 'Organism',
       'header' => TRUE,
     ),
-    $organism
+    $organism,
   );
   // Comments
   $rows[] = array(
@@ -274,7 +154,7 @@
       'data' => 'Comments',
       'header' => TRUE,
     ),
-    $comments
+    $comments,
   );
  
   // the $table array contains the headers and rows array as well as other

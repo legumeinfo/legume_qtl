@@ -1,0 +1,92 @@
+SELECT 
+  q.feature_id AS qtl_id,
+  cf.nid AS qtl_nid,
+  q.name AS qtl_symbol,
+  m.name AS map_name,
+  m.featuremap_id AS map_id,
+  lg.value AS lg,
+  lgm.feature_id AS lg_id,
+  CAST(loc.fmin as float)/100.0 AS start, 
+  CAST(loc.fmax as float)/100.0 AS end,
+  flp.value AS int_calc_meth,
+  mpop.name AS mapping_population,
+  mpop.stock_id AS mapping_population_id,
+  p1.parent_name AS parent1,
+  p1.subject_id AS parent1_id,
+  p2.parent_name AS parent2,
+  p2.subject_id AS parent2_id,
+  lislgacc.accession AS lis_lg_map_accession, 
+  lisacc.accession AS lis_map_accession
+  
+FROM feature q
+
+  -- get nid for QTL feature
+  LEFT JOIN public.chado_feature cf ON cf.feature_id = q.feature_id
+
+  INNER JOIN featureloc loc ON loc.feature_id=q.feature_id
+  INNER JOIN feature lgm ON lgm.feature_id=loc.srcfeature_id
+  INNER JOIN featureprop lg ON lgm.feature_id=lg.feature_id
+  
+  LEFT JOIN featurelocprop flp 
+    ON flp.featureloc_id=loc.featureloc_id
+       AND flp.type_id=(SELECT cvterm_id FROM cvterm 
+                        WHERE name='Interval Calculation Method'
+                              AND cv_id=(SELECT cv_id FROM cv 
+                                         WHERE name='feature_property'))
+  
+  INNER JOIN featurepos mp ON mp.feature_id=lgm.feature_id
+  INNER JOIN featureposprop mpp 
+    ON mpp.featurepos_id=mp.featurepos_id
+       AND mpp.type_id=(SELECT cvterm_id FROM cvterm
+                        WHERE name='start'
+                          AND cv_id=(SELECT cv_id FROM chado.cv 
+                                     WHERE name='featurepos_property'))
+  INNER JOIN featuremap m ON m.featuremap_id=mp.featuremap_id
+  LEFT JOIN public.chado_featuremap cm ON cm.featuremap_id=m.featuremap_id
+                                        
+  LEFT JOIN chado.featuremap_stock fs ON fs.featuremap_id=m.featuremap_id
+  LEFT JOIN chado.stock mpop ON mpop.stock_id = fs.stock_id
+  LEFT JOIN 
+    (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_id, p.name AS parent_name 
+     FROM chado.stock_relationship pr 
+       INNER JOIN chado.stock p ON p.stock_id = pr.subject_id
+       INNER JOIN public.chado_stock nid ON nid.stock_id=p.stock_id
+     WHERE pr.type_id = (SELECT cvterm_id FROM chado.cvterm 
+                         WHERE name='Parent1' 
+                               AND cv_id = (SELECT cv_id FROM chado.cv
+                                            WHERE name='stock_relationship'))
+    ) p1 ON p1.object_id = mpop.stock_id
+  LEFT JOIN 
+    (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_id, p.name AS parent_name 
+     FROM chado.stock_relationship pr 
+       INNER JOIN chado.stock p ON p.stock_id = pr.subject_id
+       INNER JOIN public.chado_stock nid ON nid.stock_id=p.stock_id
+     WHERE pr.type_id = (SELECT cvterm_id FROM chado.cvterm 
+                         WHERE name='Parent2' 
+                               AND cv_id = (SELECT cv_id FROM chado.cv 
+                                            WHERE name='stock_relationship'))
+    ) p2 ON p2.object_id = mpop.stock_id
+
+  LEFT JOIN
+   (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
+    FROM dbxref LISLGACC
+      INNER JOIN feature_dbxref LISLGFDBX 
+        ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
+    WHERE LISLGACC.db_id=(SELECT db_id FROM db 
+                          WHERE name='LIS:cmap')
+   ) lislgacc ON lislgacc.feature_id=lg.feature_id
+    
+  LEFT JOIN
+   (SELECT LISACC.accession, LISFDBX.featuremap_id 
+    FROM dbxref LISACC
+      INNER JOIN featuremap_dbxref LISFDBX 
+        ON LISFDBX.dbxref_id=LISACC.dbxref_id
+    WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
+   ) lisacc ON lisacc.featuremap_id=m.featuremap_id
+
+
+WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
+                 WHERE name='QTL'
+                       AND cv_id=(SELECT cv_id FROM chado.cv 
+                                  WHERE name='sequence'))
+

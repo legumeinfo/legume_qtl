@@ -1,0 +1,135 @@
+array (
+  'table' => 'qtl_search',
+  'fields' => array(
+    'qtl_id' => array(
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
+    'qtl_nid' => array(
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
+    'qtl_symbol' => array(
+      'type' => 'text',
+      'not null' => TRUE,
+    ),
+    'expt_qtl_symbol' => array(
+      'type' => 'text',
+      'NOT NULL' => TRUE,
+    ),
+    'organism' => array(
+      'type' => 'varchar',
+      'length' => '510',
+      'not null' => TRUE,
+    ),
+    'common_name' => array(
+      'type' => 'varchar',
+      'length' => '510',
+      'not null' => TRUE,
+    ),
+    'org_nid' => array(
+      'type' => 'int',
+      'not null' => TRUE,
+    ),
+    'mnemonic' => array(
+      'type' => 'varchar',
+      'length' => '10',
+      'not null' => TRUE,
+    ),
+    'citation' => array(
+      'type' => 'text',
+      'not null' => TRUE,
+    ),
+    'pub_nid' => array(
+      'type' => 'int',
+      'not null' => TRUE,
+    ),
+    'expt_trait_name' => array(
+      'type' => 'text',
+      'NOT NULL' => TRUE,
+    ),
+    'expt_trait_description' => array(
+      'type' => 'text',
+      'NOT NULL' => TRUE,
+    ),
+    'trait_unit' => array(
+      'type' => 'varchar',
+      'length' => '255',
+      'NOT NULL' => FALSE,
+    ),
+    'trait_class' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+    'favorable_allele_source' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+    'fas_nid' => array(
+      'type' => 'int',
+      'not null' => TRUE,
+    ),
+    'treatment' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+    'analysis_method' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+    'lod' => array(
+      'type' => 'float',
+      'not null' => FALSE,
+    ),
+    'likelihood_ratio' => array(
+      'type' => 'float',
+      'not null' => FALSE,
+    ),
+    'marker_r2' => array(
+      'type' => 'float',
+      'not null' => FALSE,
+    ),
+    'total_r2' => array(
+      'type' => 'float',
+      'not null' => FALSE,
+    ),
+    'additivity' => array(
+      'type' => 'float',
+      'not null' => FALSE,
+    ),
+    'nearest_marker' => array(
+      'type' => 'text',
+      'not null' => FALSE,
+    ),
+    'nearest_marker_id' => array(
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
+    'flanking_marker_low' => array(
+      'type' => 'text',
+      'not null' => FALSE,
+    ),
+    'flanking_marker_low_id' => array(
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
+    'flanking_marker_high' => array(
+      'type' => 'text',
+      'not null' => FALSE,
+    ),
+    'flanking_marker_high_id' => array(
+      'type' => 'int',
+      'not null' => FALSE,
+    ),
+    'comment' => array(
+      'type' => 'text',
+      'not null' => FALSE,
+    ),
+  ),
+  'indexes' => array(
+    'QTL_search_indx0' => array('organism'),
+    'QTL_search_indx2' => array('expt_qtl_symbol'),
+    'QTL_search_indx3' => array('qtl_symbol'),
+    'QTL_search_indx4' => array('trait_class'),
+  ),
+)
