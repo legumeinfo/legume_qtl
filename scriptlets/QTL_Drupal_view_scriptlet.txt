@@ -926,7 +926,7 @@
       'max_length' => '40',
     ),
     'expt_qtl_symbol' => array(
-      'operator' => '~',
+      'operator' => 'contains',
       'value' => '',
       'group' => '0',
       'exposed' => TRUE,
@@ -949,7 +949,7 @@
       ),
     ),
     'qtl_symbol' => array(
-      'operator' => '~',
+      'operator' => 'contains',
       'value' => '',
       'group' => '0',
       'exposed' => TRUE,
@@ -1000,23 +1000,7 @@
   ));
   
   // EMPTY
-  $handler->override_option('empty', '<style type="text/css">
-  #tripal-views-data-export-download-form, .feed-icon{
-  display:none;
-  }
-  </style>
-  <?php
-  $view = views_get_current_view();
-  if (!empty($view->exposed_input)) {
-  unset ($view->attachment_after);
-  ?>
-  
-  <div id=views-search_by_gene-results style="margin:0px 20px 20px 20px;/*background: #FFFFF0;*/border: 1px solid #CCCCCC;padding:20px 30px 30px 30px;">
-     <div id=views-search_by_gene-header>
-        <p style="margin-top: 0px"><b>0</b> records were returned.</p>
-     </div>
-  </div>
-  <?php } ?>');
+  $handler->override_option('empty', 'No search options selected.');
   
   // EMPTY_FORMAT
   $handler->override_option('empty_format', '3');

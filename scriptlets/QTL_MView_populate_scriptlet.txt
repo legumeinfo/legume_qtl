@@ -33,7 +33,7 @@ SELECT
 FROM feature q
 
   -- get nid for QTL feature
-  LEFT JOIN public.chado_feature cf ON cf.feature_id = q.feature_id
+  INNER JOIN public.chado_feature cf ON cf.feature_id = q.feature_id
 
   INNER JOIN organism o ON o.organism_id=q.organism_id
   INNER JOIN public.chado_organism co ON co.organism_id = o.organism_id
@@ -111,14 +111,14 @@ FROM feature q
                                       WHERE name='feature_property'))
 
   -- analysis method
-  LEFT OUTER JOIN featureprop meth ON meth.feature_id = q.feature_id
+  LEFT JOIN featureprop meth ON meth.feature_id = q.feature_id
     AND meth.type_id=(SELECT cvterm_id FROM chado.cvterm 
                       WHERE name='QTL Analysis Method'
                             AND cv_id=(SELECT cv_id FROM chado.cv 
                                        WHERE name='feature_property'))
 
   -- LOD
-  LEFT OUTER JOIN (
+  LEFT JOIN (
     SELECT af.feature_id, af.rawscore
     FROM analysis a 
       INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
@@ -126,61 +126,61 @@ FROM feature q
   ) lod ON lod.feature_id=q.feature_id
 
   -- likelihood ratio
-  LEFT OUTER JOIN (
+  LEFT JOIN (
     SELECT af.feature_id, af.rawscore FROM analysis a 
       INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
     WHERE a.name='likelihood ratio'
   ) lr ON lr.feature_id=q.feature_id
   
   -- marker R2
-  LEFT OUTER JOIN (
+  LEFT JOIN (
     SELECT af.feature_id, af.rawscore FROM analysis a 
       INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
     WHERE a.name='marker R2'
   ) mr2 ON mr2.feature_id=q.feature_id
   
   -- total R2
-  LEFT OUTER JOIN (
+  LEFT JOIN (
     SELECT af.feature_id, af.rawscore FROM analysis a 
       INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
     WHERE a.name='total R2'
   ) tr2 ON tr2.feature_id=q.feature_id
   
   -- additivity
-  LEFT OUTER JOIN (
+  LEFT JOIN (
     SELECT AF.feature_id, AF.rawscore FROM analysis A 
       INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
     WHERE A.name='additivity'
   ) add ON add.feature_id=q.feature_id  
 
   -- nearest marker
-  LEFT OUTER JOIN feature_relationship nmr
+  LEFT JOIN feature_relationship nmr
     ON nmr.subject_id=q.feature_id 
       AND nmr.type_id=(SELECT cvterm_id FROM chado.cvterm 
          WHERE name='Nearest Marker' 
            AND cv_id=(SELECT cv_id FROM chado.cv 
                       WHERE name='feature_relationship'))
-  LEFT OUTER JOIN feature nm ON nm.feature_id=nmr.object_id
+  LEFT JOIN feature nm ON nm.feature_id=nmr.object_id
   
   -- flanking marker low
-  LEFT OUTER JOIN feature_relationship fmlr 
+  LEFT JOIN feature_relationship fmlr 
     ON fmlr.subject_id=q.feature_id 
        AND fmlr.type_id=(SELECT cvterm_id FROM chado.cvterm 
                          WHERE name='Flanking Marker Low' 
                                AND cv_id=(SELECT cv_id FROM chado.cv 
                                           WHERE name='feature_relationship'))
-  LEFT OUTER JOIN feature fml ON fml.feature_id=fmlr.object_id
+  LEFT JOIN feature fml ON fml.feature_id=fmlr.object_id
 
   -- flanking marker high
-  LEFT OUTER JOIN feature_relationship fmhr ON fmhr.subject_id=q.feature_id 
+  LEFT JOIN feature_relationship fmhr ON fmhr.subject_id=q.feature_id 
     AND FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
                       WHERE name='Flanking Marker High' 
                             AND cv_id=(SELECT cv_id FROM chado.cv 
                                        WHERE name='feature_relationship'))
-  LEFT OUTER JOIN feature fmh ON fmh.feature_id=fmhr.object_id
+  LEFT JOIN feature fmh ON fmh.feature_id=fmhr.object_id
     
   -- comment
-  LEFT OUTER JOIN featureprop comm ON comm.feature_id = q.feature_id
+  LEFT JOIN featureprop comm ON comm.feature_id = q.feature_id
     AND comm.type_id=(SELECT cvterm_id FROM chado.cvterm 
                      WHERE name='comment'
                            AND cv_id=(SELECT cv_id FROM chado.cv 

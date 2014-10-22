@@ -6,75 +6,9 @@ array (
   'priority' => '-1',
   'base_table' => '1',
   'fields' => array (
-    'qtl_nid' => array (
-      'name' => 'qtl_nid',
-      'title' => 'Qtl Nid',
-      'description' => 'TODO: please describe this field!',
-      'type' => 'int',
-      'handlers' => array (
-        'filter' => array (
-          'name' => 'views_handler_filter_numeric',
-        ),
-        'field' => array (
-          'name' => 'views_handler_field_numeric',
-        ),
-        'sort' => array (
-          'name' => 'views_handler_sort',
-        ),
-        'argument' => array (
-          'name' => 'views_handler_argument_numeric',
-        ),
-      ),
-      'joins' => array (
-      ),
-    ),
-    'qtl_symbol' => array (
-      'name' => 'qtl_symbol',
-      'title' => 'Qtl Symbol',
-      'description' => 'TODO: please describe this field!',
-      'type' => 'text',
-      'handlers' => array (
-        'filter' => array (
-          'name' => 'views_handler_filter_string',
-        ),
-        'field' => array (
-          'name' => 'views_handler_field',
-        ),
-        'sort' => array (
-          'name' => 'views_handler_sort',
-        ),
-        'argument' => array (
-          'name' => 'views_handler_argument_string',
-        ),
-      ),
-      'joins' => array (
-      ),
-    ),
-    'lg' => array (
-      'name' => 'lg',
-      'title' => 'Lg',
-      'description' => 'TODO: please describe this field!',
-      'type' => 'text',
-      'handlers' => array (
-        'filter' => array (
-          'name' => 'views_handler_filter_string',
-        ),
-        'field' => array (
-          'name' => 'views_handler_field',
-        ),
-        'sort' => array (
-          'name' => 'views_handler_sort',
-        ),
-        'argument' => array (
-          'name' => 'views_handler_argument_string',
-        ),
-      ),
-      'joins' => array (
-      ),
-    ),
-    'map_name' => array (
-      'name' => 'map_name',
-      'title' => 'Map Name',
+    'int_calc_meth' => array (
+      'name' => 'int_calc_meth',
+      'title' => 'Interval Calculation Method',
       'description' => 'TODO: please describe this field!',
       'type' => 'text',
       'handlers' => array (
@@ -116,6 +50,354 @@ array (
       'joins' => array (
       ),
     ),
+    'lg' => array (
+      'name' => 'lg',
+      'title' => 'Lg',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'lg_id' => array (
+      'name' => 'lg_id',
+      'title' => 'Linkage Group ID',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+        'relationship' => array (
+          'name' => 'views_handler_relationship',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'lis_lg_map_accession' => array (
+      'name' => 'lis_lg_map_accession',
+      'title' => 'LIS Lg Map Accession',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'lis_map_accession' => array (
+      'name' => 'lis_map_accession',
+      'title' => 'LIS Map Accession',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'map_name' => array (
+      'name' => 'map_name',
+      'title' => 'Map Name',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'map_id' => array (
+      'name' => 'map_id',
+      'title' => 'Map ID',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+        'relationship' => array (
+          'name' => 'views_handler_relationship',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'mapping_population' => array (
+      'name' => 'mapping_population',
+      'title' => 'Mapping Population',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'mapping_population_id' => array (
+      'name' => 'mapping_population_id',
+      'title' => 'Mapping Population ID',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+        'relationship' => array (
+          'name' => 'views_handler_relationship',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'parent1' => array (
+      'name' => 'parent1',
+      'title' => 'Parent1',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'parent1_id' => array (
+      'name' => 'parent1_id',
+      'title' => 'Parent1 ID',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+        'relationship' => array (
+          'name' => 'views_handler_relationship',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'parent2' => array (
+      'name' => 'parent2',
+      'title' => 'Parent2',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'parent2_id' => array (
+      'name' => 'parent2_id',
+      'title' => 'Parent2 ID',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+        'relationship' => array (
+          'name' => 'views_handler_relationship',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'qtl_id' => array (
+      'name' => 'qtl_id',
+      'title' => 'qtl_id',
+      'description' => 'QTL ID',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+        'relationship' => array (
+          'name' => 'views_handler_relationship',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'qtl_nid' => array (
+      'name' => 'qtl_nid',
+      'title' => 'Qtl NID',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_numeric',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
+    'qtl_symbol' => array (
+      'name' => 'qtl_symbol',
+      'title' => 'Qtl Symbol',
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_string',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_string',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
     'right_end' => array (
       'name' => 'right_end',
       'title' => 'Right End',
@@ -138,49 +420,6 @@ array (
       'joins' => array (
       ),
     ),
-    'lis_lg_map_accession' => array (
-      'name' => 'lis_lg_map_accession',
-      'title' => 'Lis Lg Map Accession',
-      'description' => 'TODO: please describe this field!',
-      'type' => 'text',
-      'handlers' => array (
-        'filter' => array (
-          'name' => 'views_handler_filter_string',
-        ),
-        'field' => array (
-          'name' => 'views_handler_field',
-        ),
-        'sort' => array (
-          'name' => 'views_handler_sort',
-        ),
-        'argument' => array (
-          'name' => 'views_handler_argument_string',
-        ),
-      ),
-      'joins' => array (
-      ),
-    ),
-    'lis_map_accession' => array (
-      'name' => 'lis_map_accession',
-      'title' => 'Lis Map Accession',
-      'description' => 'TODO: please describe this field!',
-      'type' => 'text',
-      'handlers' => array (
-        'filter' => array (
-          'name' => 'views_handler_filter_string',
-        ),
-        'field' => array (
-          'name' => 'views_handler_field',
-        ),
-        'sort' => array (
-          'name' => 'views_handler_sort',
-        ),
-        'argument' => array (
-          'name' => 'views_handler_argument_string',
-        ),
-      ),
-      'joins' => array (
-      ),
-    ),
+
   ),
 )

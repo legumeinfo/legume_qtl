@@ -1,6 +1,6 @@
 array (
     'table' => 'qtl_search',
-    'name' => 'qtl_search',
+    'name' => 'QTL',
     'type' => 'chado',
     'description' => '',
     'priority' => '-1',
@@ -39,7 +39,7 @@ array (
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'views_handler_filter_select_string',
+            'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',

@@ -67,7 +67,7 @@ array (
     ),
     'fas_nid' => array(
       'type' => 'int',
-      'not null' => TRUE,
+      'not null' => FALSE,
     ),
     'treatment' => array(
       'type' => 'text',

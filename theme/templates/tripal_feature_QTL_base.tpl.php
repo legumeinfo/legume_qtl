@@ -44,6 +44,15 @@
                   array('html' => TRUE));
   } 
   
+  // Map(s)
+  $map_positions = $feature->map_positions;
+  $map_array = array();
+  foreach ($map_positions as $map_position) {
+    $map = makeMapLink($map_position);
+    $map .= " (lg: " . makeLgMapLink($map_position) . ')';
+    array_push($map_array, $map);
+  };
+  $maps = (count($map_array) > 0) ? implode('; ', $map_array) : '';
   
   // Comments
   $comments = $qtl_details->comments;
@@ -147,6 +156,14 @@
       'header' => TRUE,
     ),
     $organism,
+  );
+  // Map(s)
+  $rows[] = array(
+    array(
+      'data' => 'Map(s)',
+      'header' => TRUE,
+    ),
+    $maps,
   );
   // Comments
   $rows[] = array(
