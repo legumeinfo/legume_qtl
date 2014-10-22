@@ -94,7 +94,7 @@
   // Trait Name
   $rows[] = array(
     array(
-      'data' => 'Trait Name',
+      'data' => 'Experiment Trait Name',
       'header' => TRUE,
     ),
     $trait_name,
@@ -102,7 +102,7 @@
   // Trait Description
   $rows[] = array(
     array(
-      'data' => 'Trait Description',
+      'data' => 'Experiment Trait Description',
       'header' => TRUE,
     ),
     $trait_description,
