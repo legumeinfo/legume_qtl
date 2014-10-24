@@ -167,7 +167,7 @@
       'relationship' => 'none',
     ),
     'expt_qtl_symbol' => array(
-      'label' => 'Exp QTL Symbol',
+      'label' => 'Published QTL Symbol',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -311,7 +311,7 @@
       'relationship' => 'none',
     ),
     'expt_trait_name' => array(
-      'label' => 'Expt Trait Name',
+      'label' => 'Published Trait Name',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -338,7 +338,7 @@
       'hide_alter_empty' => 1,
       'type' => 'separator',
       'separator' => ', ',
-      'exclude' => 0,
+      'exclude' => 1,
       'id' => 'expt_trait_name',
       'table' => 'qtl_search',
       'field' => 'expt_trait_name',
