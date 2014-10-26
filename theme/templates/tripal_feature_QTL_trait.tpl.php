@@ -88,6 +88,7 @@ if (count($s_terms) > 0) {
     // once we have our table array structure defined, we call Drupal's theme_table()
     // function to generate the table.
     print theme_table($table);
+
     $i++;
   }
 }

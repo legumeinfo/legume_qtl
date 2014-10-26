@@ -147,3 +147,6 @@
   // once we have our table array structure defined, we call Drupal's theme_table()
   // function to generate the table.
   print theme_table($table); 
+
+  // accept user corrections
+  print correctThis("and include QTL name and publication");

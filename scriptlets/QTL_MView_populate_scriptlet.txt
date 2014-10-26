@@ -1,7 +1,7 @@
 SELECT 
   q.feature_id AS qtl_id,
   cf.nid AS qtl_nid,
-  q.name AS qtl_symbol,
+  q.name AS qtl_name,
   pq.name AS expt_qtl_symbol,
   o.genus || ' ' || o.species AS organism,
   o.common_name,
@@ -12,7 +12,9 @@ SELECT
   etn.value AS expt_trait_name,
   etd.value AS expt_trait_description,
   tu.value AS trait_unit,
-  tc.name AS trait_class,
+  tc.trait_class,
+  tc.qtl_symbol,
+  tc.trait_description,
   s.name AS favorable_allele_source,
   cs.nid AS fas_nid,
   tmt.value AS treatment,
@@ -75,7 +77,8 @@ FROM feature q
 
   -- trait class
   LEFT JOIN (
-    SELECT symf.feature_id, t.name 
+    SELECT symf.feature_id, sym.name AS qtl_symbol, 
+           sym.definition AS trait_description, t.name AS trait_class
     FROM feature q2 
       -- get QTL symbol (== trait name) ...
       LEFT JOIN feature_cvterm symf ON symf.feature_id=q2.feature_id 

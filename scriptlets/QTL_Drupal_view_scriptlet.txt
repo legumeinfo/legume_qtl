@@ -132,6 +132,40 @@
       'field' => 'qtl_nid',
       'relationship' => 'none',
     ),
+    'qtl_name' => array(
+      'label' => 'QTL name',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 1,
+        'path' => 'node/[qtl_nid]',
+        'absolute' => 0,
+        'link_class' => '',
+        'alt' => '',
+        'rel' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'hide_alter_empty' => 1,
+      'type' => 'separator',
+      'separator' => ', ',
+      'exclude' => 0,
+      'id' => 'qtl_name',
+      'table' => 'qtl_search',
+      'field' => 'qtl_name',
+      'relationship' => 'none',
+    ),
     'qtl_symbol' => array(
       'label' => 'QTL symbol',
       'alter' => array(
@@ -160,7 +194,7 @@
       'hide_alter_empty' => 1,
       'type' => 'separator',
       'separator' => ', ',
-      'exclude' => 0,
+      'exclude' => 1,
       'id' => 'qtl_symbol',
       'table' => 'qtl_search',
       'field' => 'qtl_symbol',
@@ -1000,7 +1034,7 @@
   ));
   
   // EMPTY
-  $handler->override_option('empty', 'No search options selected.');
+  $handler->override_option('empty', 'No QTL records found. Please select your search options, then press "Apply".');
   
   // EMPTY_FORMAT
   $handler->override_option('empty_format', '3');

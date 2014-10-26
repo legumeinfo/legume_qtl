@@ -630,32 +630,6 @@ array (
         ),
       ),
   
-      'qtl_symbol' => array (
-        'name' => 'qtl_symbol',
-        'title' => 'QTL',
-        'description' => 'QTL symbol',
-        'type' => 'text',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'views_handler_filter_string',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_string',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-      
       'qtl_id' => array (
         'name' => 'qtl_id',
         'title' => 'qtl_id',
@@ -682,6 +656,32 @@ array (
         ),
       ),
   
+      'qtl_name' => array (
+        'name' => 'qtl_name',
+        'title' => 'QTL name',
+        'description' => 'QTL name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'qtl_nid' => array (
         'name' => 'qtl_nid',
         'title' => 'qtl_nid',
@@ -708,6 +708,32 @@ array (
         ),
       ),
   
+      'qtl_symbol' => array (
+        'name' => 'qtl_symbol',
+        'title' => 'QTL Symbol',
+        'description' => 'QTL symbol',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'trait_class' => array (
         'name' => 'trait_class',
         'title' => 'Trait class',
@@ -716,6 +742,32 @@ array (
         'handlers' => array (
           'filter' => array (
             'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'trait_description' => array (
+        'name' => 'trait_description',
+        'title' => 'Trait Description',
+        'description' => 'Trait description',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',

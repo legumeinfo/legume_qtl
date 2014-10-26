@@ -74,38 +74,32 @@
   // https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme_table/7 
   $rows = array();
   
+  /////// MAIN QTL SECTION /////////
+  
   // Name row
   $rows[] = array(
     array(
-      'data' => 'QTL Symbol',
+      'data' => 'QTL Name',
       'header' => TRUE,
       'width' => 200,
     ),
     $feature->name,
   );
-  // Experiment QTL symbol
+  // QTL symbol
   $rows[] = array(
     array(
-      'data' => 'Experiment QTL symbol',
+      'data' => 'QTL symbol',
       'header' => TRUE
     ),
-    $expt_qtl_symbol,
-  );
-  // Trait Name
-  $rows[] = array(
-    array(
-      'data' => 'Experiment Trait Name',
-      'header' => TRUE,
-    ),
-    $trait_name,
+    $qtl_details->qtl_symbol,
   );
   // Trait Description
   $rows[] = array(
     array(
-      'data' => 'Experiment Trait Description',
+      'data' => 'Trait Description',
       'header' => TRUE,
     ),
-    $trait_description,
+    $qtl_details->trait_description,
   );
   // Trait Unit
   $rows[] = array(
@@ -130,14 +124,6 @@
       'header' => TRUE,
     ),
     $treatment,
-  );
-  // Publication
-  $rows[] = array(
-    array(
-      'data' => 'Publication',
-      'header' => TRUE,
-    ),
-    $citation,
   );
   // Organism row
   $organism = $feature->organism_id->genus . " " 
@@ -174,6 +160,64 @@
     $comments,
   );
  
+  /////// SEPARATOR /////////
+  
+  $rows[] = array(
+    array(
+      'data' => '',
+      'header' => TRUE,
+      'height' => 6,
+      'style' => 'background-color:white',
+    ),
+    array(
+      'data' => '',
+      'style' => 'background-color:white',
+    ),
+  );
+
+  /////// PUBLICATION QTL INFORMATION SECTION /////////
+  
+  $rows[] = array(
+    array(
+      'data' => 'Publication Information',
+      'header' => TRUE,
+      'colspan' => 2,
+      'style' => 'background-color:#c9c9c9;color:#101010',
+    ),
+  );
+  // Publication
+  $rows[] = array(
+    array(
+      'data' => 'Publication',
+      'header' => TRUE,
+    ),
+    $citation,
+  );
+  // publication QTL symbol
+  $rows[] = array(
+    array(
+      'data' => 'Publication QTL symbol',
+      'header' => TRUE
+    ),
+    $expt_qtl_symbol,
+  );
+  // publication trait Name
+  $rows[] = array(
+    array(
+      'data' => 'Publication Trait Name',
+      'header' => TRUE,
+    ),
+    $trait_name,
+  );
+  // publication trait description
+  $rows[] = array(
+    array(
+      'data' => 'Publication Trait Description',
+      'header' => TRUE,
+    ),
+    $trait_description,
+  );
+  
   // the $table array contains the headers and rows array as well as other
   // options for controlling the display of the table.  Additional
   // documentation can be found here:
@@ -194,3 +238,7 @@
   // once we have our table array structure defined, we call Drupal's theme_table()
   // function to generate the table.
   print theme_table($table); 
+
+  // accept user corrections
+  print correctThis("and include QTL name and publication");
+  

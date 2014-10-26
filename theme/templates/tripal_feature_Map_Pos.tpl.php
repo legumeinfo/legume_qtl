@@ -83,12 +83,8 @@
       array(
         'data' => 'Map Position ' . ($i+1),
         'header' => TRUE,
-        'width' => 200,
+        'colspan' => 2,
         'style' => 'background-color:#c9c9c9;color:#101010',
-      ),
-      array(
-        'data' => '',
-        'style' => 'background-color:white;',
       ),
     );
     // Map
@@ -96,6 +92,7 @@
       array(
         'data' => 'Map',
         'header' => TRUE,
+        'width' => 200,
       ),
       $positions[$i]['map_name'],
     );
@@ -189,3 +186,6 @@
   // once we have our table array structure defined, we call Drupal's theme_table()
   // function to generate the table.
   print theme_table($table); 
+
+  // accept user corrections
+  print correctThis("and include QTL name and publication");

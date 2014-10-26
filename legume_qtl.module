@@ -224,9 +224,11 @@ function makeLgMapLink($map_position) {
 //    $lg_id = $map_positions->lg_id;
 //    $lg    = "<a href=\"/ID$lg_id\">$lg</a>";
   if ($map_position->lis_lg_map_accession) {
-//TODO: add base URL to map_position hash
-    $url = "http://cmap.comparative-legumes.org/cgi-bin/cmap/viewer"
-         . $map_position->lis_lg_map_accession;
+    $options = array('return_sql' => true); // for debugging
+    $cols = array('urlprefix');
+    $vals = array('name' => 'LIS:cmap');
+    $res = tripal_core_chado_select('db', $cols, $vals);
+    $url = $res[0]->urlprefix . $map_position->lis_lg_map_accession;
     $lg .= " [<a href=\"$url\">CMap</a>]";
   }
   
@@ -240,9 +242,13 @@ function makeMapLink($map_position) {
   $map_id   = $map_position->map_id;
   $map_name = "<a href=\"/$map_name\">$map_name</a>";
   if ($map_position->lis_map_accession) {
-//TODO: add base URL to map_position hash
-    $url = "http://cmap.comparative-legumes.org/cgi-bin/cmap/viewer"
-         . $map_position->lis_map_accession;
+    $options = array('return_sql' => true); // for debugging
+    $cols = array('urlprefix');
+    $vals = array('name' => 'LIS:cmap');
+    $res = tripal_core_chado_select('db', $cols, $vals);
+//echo "<pre>";var_dump($res);echo "</pre>";
+//echo "urlprefix: " . $res[0]->urlprefix. "<br>";
+    $url = $res[0]->urlprefix . $map_position->lis_map_accession;
     $map_name .= " [<a href=\"$url\">CMap</a>]";
   }
   

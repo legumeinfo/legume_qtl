@@ -9,7 +9,7 @@ array (
       'type' => 'int',
       'not null' => FALSE,
     ),
-    'qtl_symbol' => array(
+    'qtl_name' => array(
       'type' => 'text',
       'not null' => TRUE,
     ),
@@ -61,7 +61,15 @@ array (
       'type' => 'text',
       'NOT NULL' => FALSE,
     ),
-    'favorable_allele_source' => array(
+     'qtl_symbol' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+    'trait_description' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+   'favorable_allele_source' => array(
       'type' => 'text',
       'NOT NULL' => FALSE,
     ),
