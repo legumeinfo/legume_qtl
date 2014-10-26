@@ -1084,6 +1084,10 @@
         'sortable' => 0,
         'separator' => '',
       ),
+      'qtl_name' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
       'qtl_symbol' => array(
         'sortable' => 1,
         'separator' => '',
