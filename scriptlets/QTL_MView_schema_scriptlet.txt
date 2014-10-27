@@ -65,6 +65,11 @@ array (
       'type' => 'text',
       'NOT NULL' => FALSE,
     ),
+    'trait_name' => array(
+      'type' => 'varchar',
+      'length' => '255',
+      'NOT NULL' => FALSE,
+    ),
     'trait_description' => array(
       'type' => 'text',
       'NOT NULL' => FALSE,

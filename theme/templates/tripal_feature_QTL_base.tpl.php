@@ -82,16 +82,44 @@
       'data' => 'QTL Name',
       'header' => TRUE,
       'width' => 200,
+      'style' => 'background-color:#c9c9c9;color:#101010',
     ),
     $feature->name,
   );
-  // QTL symbol
+
+  /////// SEPARATOR /////////
+  
   $rows[] = array(
     array(
-      'data' => 'QTL symbol',
-      'header' => TRUE
+      'data' => '',
+      'header' => TRUE,
+      'height' => 6,
+      'style' => 'background-color:white',
     ),
-    $qtl_details->qtl_symbol,
+    array(
+      'data' => '',
+      'style' => 'background-color:white',
+    ),
+  );
+
+  /////// TRAIT INFORMATION ///////
+  
+  $rows[] = array(
+    array(
+      'data' => 'Trait Information',
+      'header' => TRUE,
+      'colspan' => 2,
+      'style' => 'background-color:#c9c9c9;color:#101010',
+    ),
+  );
+  
+  // Trait Name
+  $rows[] = array(
+    array(
+      'data' => 'Trait name',
+      'header' => TRUE,
+    ),
+    $qtl_details->trait_name,
   );
   // Trait Description
   $rows[] = array(
@@ -101,14 +129,6 @@
     ),
     $qtl_details->trait_description,
   );
-  // Trait Unit
-  $rows[] = array(
-    array(
-      'data' => 'Trait Unit',
-      'header' => TRUE,
-    ),
-    $trait_unit,
-  );
   // Trait Class
   $rows[] = array(
     array(
@@ -116,6 +136,41 @@
       'header' => TRUE,
     ),
     $trait_class,
+  );
+
+  /////// SEPARATOR /////////
+  
+  $rows[] = array(
+    array(
+      'data' => '',
+      'header' => TRUE,
+      'height' => 6,
+      'style' => 'background-color:white',
+    ),
+    array(
+      'data' => '',
+      'style' => 'background-color:white',
+    ),
+  );
+
+  /////// QTL INFORMATION ///////
+  
+  $rows[] = array(
+    array(
+      'data' => 'QTL Information',
+      'header' => TRUE,
+      'colspan' => 2,
+      'style' => 'background-color:#c9c9c9;color:#101010',
+    ),
+  );
+  
+  // Trait Unit
+  $rows[] = array(
+    array(
+      'data' => 'Trait Unit',
+      'header' => TRUE,
+    ),
+    $trait_unit,
   );
   // Treatment
   $rows[] = array(
@@ -196,7 +251,7 @@
   // publication QTL symbol
   $rows[] = array(
     array(
-      'data' => 'Publication QTL symbol',
+      'data' => 'Publication QTL Symbol',
       'header' => TRUE
     ),
     $expt_qtl_symbol,

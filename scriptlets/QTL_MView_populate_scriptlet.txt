@@ -5,7 +5,7 @@ SELECT
   pq.name AS expt_qtl_symbol,
   o.genus || ' ' || o.species AS organism,
   o.common_name,
-  co.organism_id AS organism_nid,
+  co.nid AS organism_nid,
   m.accession AS mnemonic,
   p.uniquename AS citation,
   cp.pub_id AS pub_nid,
@@ -14,6 +14,7 @@ SELECT
   tu.value AS trait_unit,
   tc.trait_class,
   tc.qtl_symbol,
+  tn.trait_name,
   tc.trait_description,
   s.name AS favorable_allele_source,
   cs.nid AS fas_nid,
@@ -80,7 +81,7 @@ FROM feature q
     SELECT symf.feature_id, sym.name AS qtl_symbol, 
            sym.definition AS trait_description, t.name AS trait_class
     FROM feature q2 
-      -- get QTL symbol (== trait name) ...
+      -- get QTL symbol 
       LEFT JOIN feature_cvterm symf ON symf.feature_id=q2.feature_id 
       LEFT JOIN cvterm sym ON sym.cvterm_id=symf.cvterm_id
       LEFT JOIN feature_cvtermprop symp ON symp.feature_cvterm_id=symf.feature_cvterm_id 
@@ -95,6 +96,26 @@ FROM feature q
                                          AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
                 ) t ON t.subject_id=sym.cvterm_id
   ) tc ON tc.feature_id=q.feature_id
+    
+  -- trait name
+  LEFT JOIN (
+    SELECT tnf.feature_id, t.name AS trait_name
+    FROM feature q2 
+      -- get QTL symbol 
+      LEFT JOIN feature_cvterm tnf ON tnf.feature_id=q2.feature_id 
+      LEFT JOIN cvterm tn ON tn.cvterm_id=tnf.cvterm_id
+      LEFT JOIN feature_cvtermprop tnp ON tnp.feature_cvterm_id=tnf.feature_cvterm_id 
+        AND tnp.type_id=(SELECT cvterm_id FROM cvterm 
+                          WHERE name='QTL Symbol' 
+                                AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+      -- ... and use it to get the trait name
+      LEFT JOIN (SELECT subject_id, name FROM cvterm c 
+                   INNER JOIN cvterm_relationship tnr ON tnr.object_id=c.cvterm_id
+                 WHERE tnr.type_id=(SELECT cvterm_id FROM cvterm 
+                                   WHERE name='Has Trait Name' 
+                                         AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+                ) t ON t.subject_id=tn.cvterm_id
+  ) tn ON tn.feature_id=q.feature_id
     
   -- Favorable Allele Source
   LEFT JOIN feature_stock fs 

@@ -370,6 +370,32 @@ array (
         ),
       ),
       
+      'genus' => array (
+        'name' => 'genus',
+        'title' => 'Genus',
+        'description' => 'Organism genus',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'interval_calc_method' => array (
         'name' => 'interval_calc_method',
         'title' => 'Interval Calculation Method',
@@ -552,32 +578,6 @@ array (
         ),
       ),
       
-      'organism' => array (
-        'name' => 'organism',
-        'title' => 'organism',
-        'description' => 'Organism name',
-        'type' => 'varchar',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_string',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-  
       'org_nid' => array (
         'name' => 'org_nid',
         'title' => 'org_nid',
@@ -595,6 +595,32 @@ array (
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'organism' => array (
+        'name' => 'organism',
+        'title' => 'organism',
+        'description' => 'Organism name',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
@@ -734,6 +760,32 @@ array (
         ),
       ),
       
+      'species' => array (
+        'name' => 'species',
+        'title' => 'Species',
+        'description' => 'Organism species',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'trait_class' => array (
         'name' => 'trait_class',
         'title' => 'Trait class',
@@ -742,6 +794,32 @@ array (
         'handlers' => array (
           'filter' => array (
             'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'trait_name' => array (
+        'name' => 'trait_name',
+        'title' => 'Trait Name',
+        'description' => 'Official Trait Name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',
