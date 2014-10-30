@@ -49,7 +49,7 @@
   $map_array = array();
   foreach ($map_positions as $map_position) {
     $map = makeMapLink($map_position);
-    $map .= " (lg: " . makeLgMapLink($map_position) . ')';
+    $map .= " (<b>linkage group:</b> " . makeLgMapLink($map_position) . ')';
     array_push($map_array, $map);
   };
   $maps = (count($map_array) > 0) ? implode('; ', $map_array) : '';
@@ -61,7 +61,7 @@
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 
 
 <?php
-  // the $headers array is an array of fields to use as the colum headers. 
+  // the $headers array is an array of fields to use as the column headers. 
   // additional documentation can be found here 
   // https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme_table/7
   // This table for the analysis has a vertical header (down the first column)
