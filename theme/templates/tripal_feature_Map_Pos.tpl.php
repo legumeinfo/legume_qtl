@@ -21,6 +21,9 @@
     $left_end  = $map_position->left_end;
     $right_end = $map_position->right_end;
     
+    // QTL peak
+    $qtl_peak = $map_position->qtl_peak;
+    
     // Mapping population
     $mapping_population = $map_position->mapping_population;
     
@@ -51,6 +54,7 @@
       'interval_calc_method' => $interval_calc_method,
       'map_name' => $map_name,
       'lg' => $lg,
+      'qtl_peak' => $qtl_peak,
       'left_end' => $left_end,
       'right_end' => $right_end,
       'mapping_population' => $mapping_population,
@@ -103,6 +107,14 @@
         'header' => TRUE,
       ),
       $positions[$i]['lg'],
+    );
+    // QTL peak
+    $rows[] = array(
+      array(
+        'data' => 'QTL Peak',
+        'header' => TRUE,
+      ),
+      $positions[$i]['qtl_peak'],
     );
     // Start Position
     $rows[] = array(

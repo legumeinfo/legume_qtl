@@ -376,6 +376,28 @@ array (
       'joins' => array (
       ),
     ),
+    'qtl_peak' => array (
+      'name' => 'qtl_peak',
+      'title' => 'QTL Peak',
+      'description' => 'QTL Peak',
+      'type' => 'float',
+      'handlers' => array (
+        'filter' => array (
+          'name' => 'views_handler_filter_float',
+        ),
+        'field' => array (
+          'name' => 'views_handler_field_numeric',
+        ),
+        'sort' => array (
+          'name' => 'views_handler_sort',
+        ),
+        'argument' => array (
+          'name' => 'views_handler_argument_numeric',
+        ),
+      ),
+      'joins' => array (
+      ),
+    ),
     'qtl_symbol' => array (
       'name' => 'qtl_symbol',
       'title' => 'Qtl Symbol',

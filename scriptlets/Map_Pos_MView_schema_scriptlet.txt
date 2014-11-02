@@ -29,6 +29,10 @@ array (
         'type' => 'int',
         'not null' => TRUE,
       ),
+      'qtl_peak' => array(
+        'type' => 'float',
+        'NOT NULL' => FALSE,
+      ),
       'left_end' => array(
         'type' => 'float',
         'NOT NULL' => FALSE,

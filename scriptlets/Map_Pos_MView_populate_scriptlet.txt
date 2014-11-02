@@ -6,6 +6,7 @@ SELECT
   m.featuremap_id AS map_id,
   lg.value AS lg,
   lgm.feature_id AS lg_id,
+  qp.value::numeric AS qtl_peak,
   CAST(loc.fmin as float)/100.0 AS start, 
   CAST(loc.fmax as float)/100.0 AS end,
   flp.value AS int_calc_meth,
@@ -26,6 +27,13 @@ FROM feature q
   INNER JOIN featureloc loc ON loc.feature_id=q.feature_id
   INNER JOIN feature lgm ON lgm.feature_id=loc.srcfeature_id
   INNER JOIN featureprop lg ON lgm.feature_id=lg.feature_id
+  
+  LEFT JOIN featureprop qp 
+    ON qp.feature_id=q.feature_id
+       AND qp.type_id=(SELECT cvterm_id FROM cvterm 
+                       WHERE name='QTL Peak'
+                             AND cv_id=(SELECT cv_id FROM cv 
+                                        WHERE name='feature_property'))
   
   LEFT JOIN featurelocprop flp 
     ON flp.featureloc_id=loc.featureloc_id
