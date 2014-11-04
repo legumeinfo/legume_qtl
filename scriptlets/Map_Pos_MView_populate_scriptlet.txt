@@ -3,15 +3,15 @@ SELECT
   cf.nid AS qtl_nid,
   q.name AS qtl_symbol,
   m.name AS map_name,
-  m.featuremap_id AS map_id,
+  cm.nid AS map_nid,
   lg.value AS lg,
-  lgm.feature_id AS lg_id,
+  clg.nid AS lg_nid,
   qp.value::numeric AS qtl_peak,
   CAST(loc.fmin as float)/100.0 AS start, 
   CAST(loc.fmax as float)/100.0 AS end,
   flp.value AS int_calc_meth,
   mpop.name AS mapping_population,
-  mpop.stock_id AS mapping_population_id,
+  cmpop.nid AS mapping_population_nid,
   p1.parent_name AS parent1,
   p1.parent_nid AS parent1_nid,
   p2.parent_name AS parent2,
@@ -28,6 +28,7 @@ FROM feature q
   INNER JOIN featureloc loc ON loc.feature_id=q.feature_id
   INNER JOIN feature lgm ON lgm.feature_id=loc.srcfeature_id
   INNER JOIN featureprop lg ON lgm.feature_id=lg.feature_id
+  LEFT JOIN public.chado_feature clg ON clg.feature_id=lgm.feature_id
   
   -- QTL peak
   LEFT JOIN featureprop qp 
@@ -55,10 +56,13 @@ FROM feature q
                                      WHERE name='featurepos_property'))
   INNER JOIN featuremap m ON m.featuremap_id=mp.featuremap_id
   LEFT JOIN public.chado_featuremap cm ON cm.featuremap_id=m.featuremap_id
-                        
-  -- Parent 1                
+    
+  -- Mapping population                    
   LEFT JOIN chado.featuremap_stock fs ON fs.featuremap_id=m.featuremap_id
   LEFT JOIN chado.stock mpop ON mpop.stock_id = fs.stock_id
+  LEFT JOIN public.chado_stock cmpop ON cmpop.stock_id=mpop.stock_id
+
+  -- Parent 1                
   LEFT JOIN 
     (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_nid, p.name AS parent_name 
      FROM chado.stock_relationship pr 

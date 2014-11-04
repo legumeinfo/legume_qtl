@@ -72,10 +72,10 @@ array (
       'joins' => array (
       ),
     ),
-    'lg_id' => array (
-      'name' => 'lg_id',
-      'title' => 'Linkage Group ID',
-      'description' => 'TODO: please describe this field!',
+    'lg_nid' => array (
+      'name' => 'lg_nid',
+      'title' => 'Linkage Group NID',
+      'description' => 'Linkage Group NID',
       'type' => 'int',
       'handlers' => array (
         'filter' => array (
@@ -163,10 +163,10 @@ array (
       'joins' => array (
       ),
     ),
-    'map_id' => array (
-      'name' => 'map_id',
-      'title' => 'Map ID',
-      'description' => 'TODO: please describe this field!',
+    'map_nid' => array (
+      'name' => 'map_nid',
+      'title' => 'Map NID',
+      'description' => 'Map NID',
       'type' => 'int',
       'handlers' => array (
         'filter' => array (
@@ -210,10 +210,10 @@ array (
       'joins' => array (
       ),
     ),
-    'mapping_population_id' => array (
-      'name' => 'mapping_population_id',
-      'title' => 'Mapping Population ID',
-      'description' => 'TODO: please describe this field!',
+    'mapping_population_nid' => array (
+      'name' => 'mapping_population_nid',
+      'title' => 'Mapping Population NID',
+      'description' => 'Mapping Population NID',
       'type' => 'int',
       'handlers' => array (
         'filter' => array (
@@ -257,10 +257,10 @@ array (
       'joins' => array (
       ),
     ),
-    'parent1_id' => array (
-      'name' => 'parent1_id',
-      'title' => 'Parent1 ID',
-      'description' => 'TODO: please describe this field!',
+    'parent1_nid' => array (
+      'name' => 'parent1_nid',
+      'title' => 'Parent1 NID',
+      'description' => 'Parent1 NID',
       'type' => 'int',
       'handlers' => array (
         'filter' => array (
@@ -304,10 +304,10 @@ array (
       'joins' => array (
       ),
     ),
-    'parent2_id' => array (
-      'name' => 'parent2_id',
-      'title' => 'Parent2 ID',
-      'description' => 'TODO: please describe this field!',
+    'parent2_nid' => array (
+      'name' => 'parent2_nid',
+      'title' => 'Parent2 NID',
+      'description' => 'Parent2 NID',
       'type' => 'int',
       'handlers' => array (
         'filter' => array (

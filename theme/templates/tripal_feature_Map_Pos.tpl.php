@@ -31,16 +31,16 @@
     $parent1 = 'unknown';
     if ($map_position->parent1) {
       $name = $map_position->parent1;
-      $id = $map_position->parent1_id;
-      $parent1 = "<a href=\"/stock/Phaseolus/vulgaris/cultivar/$name\">$name</a>";
+      $nid = $map_position->parent1_nid;
+      $parent1 = "<a href=\"/node/$nid\">$name</a>";
     }
 
     // Parent2
     $parent2 = 'unknown';
     if ($map_position->parent2) {
       $name = $map_position->parent2;
-      $id = $map_position->parent2_id;
-      $parent2 = "<a href=\"/stock/Phaseolus/vulgaris/cultivar/$name\">$name</a>";
+      $nid = $map_position->parent2_nid;
+      $parent2 = "<a href=\"/node/$nid\">$name</a>";
     }
   
     // Population

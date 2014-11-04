@@ -17,7 +17,7 @@ array (
         'type' => 'text',
         'NOT NULL' => TRUE,
       ),
-      'map_id' => array(
+      'map_nid' => array(
         'type' => 'int',
         'NOT NULL' => TRUE,
       ),
@@ -25,7 +25,7 @@ array (
         'type' => 'text',
         'not null' => TRUE,
       ),
-      'lg_id' => array(
+      'lg_nid' => array(
         'type' => 'int',
         'not null' => TRUE,
       ),
@@ -49,7 +49,7 @@ array (
         'type' => 'text',
         'NOT NULL' => FALSE,
       ),
-      'mapping_population_id' => array(
+      'mapping_population_nid' => array(
         'type' => 'int',
         'NOT NULL' => FALSE,
       ),
