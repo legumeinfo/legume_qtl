@@ -3,7 +3,6 @@
   $options = array('return_array' => 1);
   $feature = chado_expand_var($feature, 'table', 'analysisfeature', $options);
   $analyses = $feature->analysisfeature;
-  
   // don't show this page if there are no analyses
   if (count($analyses) > 0) { 
 ?>
@@ -23,6 +22,7 @@
   $rows = array();
   
   foreach ($analyses as $analysis) {
+//echo "<pre>";var_dump($analysis->analysis_id);echo "</pre>";
     $analysis_name = $analysis->analysis_id->name;
     if (property_exists($analysis->analysis_id, 'nid')) {
       $analysis_name = l($analysis_name, "node/" . $analysis->analysis_id->nid);

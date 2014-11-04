@@ -36,11 +36,12 @@
   $organism = $feature->organism_id->genus . " " 
             . $feature->organism_id->species . " (" 
             . $feature->organism_id->common_name .")";
+//echo "<pre>";var_dump($feature);echo "</pre>";
   if (property_exists($feature->organism_id, 'nid')) {
     $organism = l("<i>" . $feature->organism_id->genus . " " 
                   . $feature->organism_id->species . "</i> ("  
                   . $feature->organism_id->common_name .")", 
-                  $feature->organism_id->common_name, 
+                  'node/'.$feature->organism_id->nid, 
                   array('html' => TRUE));
   } 
   
@@ -181,16 +182,6 @@
     $treatment,
   );
   // Organism row
-  $organism = $feature->organism_id->genus . " " 
-            . $feature->organism_id->species . " (" 
-            . $feature->organism_id->common_name .")";
-  if (property_exists($feature->organism_id, 'nid')) {
-    $organism = l("<i>" . $feature->organism_id->genus . " " 
-                  . $feature->organism_id->species . "</i> ("  
-                  . $feature->organism_id->common_name .")", 
-                  $feature->organism_id->common_name, 
-                  array('html' => TRUE));
-  } 
   $rows[] = array(
     array(
       'data' => 'Organism',

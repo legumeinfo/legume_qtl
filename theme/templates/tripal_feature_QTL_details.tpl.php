@@ -7,26 +7,26 @@
   // Nearest Marker
   $nearest_marker = 'unknown';
   if ($qtl_details->nearest_marker) {
-    $id = $qtl_details->nearest_marker_id;
+    $nid = $qtl_details->nearest_marker_nid;
     $name = $qtl_details->nearest_marker;
-    $nearest_marker = "<a href=\"/ID$id\">$name</a>";
+    $nearest_marker = "<a href=\"/node/$nid\">$name</a>";
   }
 
   // Flanking Marker Low
   $flanking_marker_low = '';
   if ($qtl_details->flanking_marker_low) {
-    $id = $qtl_details->flanking_marker_low_id;
+    $nid = $qtl_details->flanking_marker_low_nid;
     $name = $qtl_details->flanking_marker_low;
-    $flanking_marker_low = "<a href=\"/feature/arachis/hypogaea/genetic_marker/$name\">$name</a>";
+    $flanking_marker_low = "<a href=\"/node/$nid\">$name</a>";
   }
 //echo "<br><br>flanking marker low: <pre>";var_dump($flanking_marker_low);echo "</pre><br><br><br>";
 
   // Flanking Marker High
   $flanking_marker_high = '';
   if ($qtl_details->flanking_marker_high) {
-    $id = $qtl_details->flanking_marker_high_id;
+    $nid = $qtl_details->flanking_marker_high_nid;
     $name = $qtl_details->flanking_marker_high;
-    $flanking_marker_high = "<a href=\"/ID$id\">$name</a>";
+    $flanking_marker_high = "<a href=\"/node/$nid\">$name</a>";
   }
 
   // LOD
