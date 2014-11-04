@@ -13,9 +13,9 @@ SELECT
   mpop.name AS mapping_population,
   mpop.stock_id AS mapping_population_id,
   p1.parent_name AS parent1,
-  p1.subject_id AS parent1_id,
+  p1.parent_nid AS parent1_nid,
   p2.parent_name AS parent2,
-  p2.subject_id AS parent2_id,
+  p2.parent_nid AS parent2_nid,
   lislgacc.accession AS lis_lg_map_accession, 
   lisacc.accession AS lis_map_accession
   
@@ -24,10 +24,12 @@ FROM feature q
   -- get nid for QTL feature
   LEFT JOIN public.chado_feature cf ON cf.feature_id = q.feature_id
 
+  -- linkage group and size
   INNER JOIN featureloc loc ON loc.feature_id=q.feature_id
   INNER JOIN feature lgm ON lgm.feature_id=loc.srcfeature_id
   INNER JOIN featureprop lg ON lgm.feature_id=lg.feature_id
   
+  -- QTL peak
   LEFT JOIN featureprop qp 
     ON qp.feature_id=q.feature_id
        AND qp.type_id=(SELECT cvterm_id FROM cvterm 
@@ -35,6 +37,7 @@ FROM feature q
                              AND cv_id=(SELECT cv_id FROM cv 
                                         WHERE name='feature_property'))
   
+  -- Interval Calculation Method
   LEFT JOIN featurelocprop flp 
     ON flp.featureloc_id=loc.featureloc_id
        AND flp.type_id=(SELECT cvterm_id FROM cvterm 
@@ -42,6 +45,7 @@ FROM feature q
                               AND cv_id=(SELECT cv_id FROM cv 
                                          WHERE name='feature_property'))
   
+  -- Start position and map nid
   INNER JOIN featurepos mp ON mp.feature_id=lgm.feature_id
   INNER JOIN featureposprop mpp 
     ON mpp.featurepos_id=mp.featurepos_id
@@ -51,11 +55,12 @@ FROM feature q
                                      WHERE name='featurepos_property'))
   INNER JOIN featuremap m ON m.featuremap_id=mp.featuremap_id
   LEFT JOIN public.chado_featuremap cm ON cm.featuremap_id=m.featuremap_id
-                                        
+                        
+  -- Parent 1                
   LEFT JOIN chado.featuremap_stock fs ON fs.featuremap_id=m.featuremap_id
   LEFT JOIN chado.stock mpop ON mpop.stock_id = fs.stock_id
   LEFT JOIN 
-    (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_id, p.name AS parent_name 
+    (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_nid, p.name AS parent_name 
      FROM chado.stock_relationship pr 
        INNER JOIN chado.stock p ON p.stock_id = pr.subject_id
        INNER JOIN public.chado_stock nid ON nid.stock_id=p.stock_id
@@ -64,8 +69,10 @@ FROM feature q
                                AND cv_id = (SELECT cv_id FROM chado.cv
                                             WHERE name='stock_relationship'))
     ) p1 ON p1.object_id = mpop.stock_id
+                        
+  -- Parent 2                
   LEFT JOIN 
-    (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_id, p.name AS parent_name 
+    (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_nid, p.name AS parent_name 
      FROM chado.stock_relationship pr 
        INNER JOIN chado.stock p ON p.stock_id = pr.subject_id
        INNER JOIN public.chado_stock nid ON nid.stock_id=p.stock_id
@@ -75,6 +82,7 @@ FROM feature q
                                             WHERE name='stock_relationship'))
     ) p2 ON p2.object_id = mpop.stock_id
 
+  -- LIS linkage group map link
   LEFT JOIN
    (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
     FROM dbxref LISLGACC
@@ -83,7 +91,8 @@ FROM feature q
     WHERE LISLGACC.db_id=(SELECT db_id FROM db 
                           WHERE name='LIS:cmap')
    ) lislgacc ON lislgacc.feature_id=lg.feature_id
-    
+
+  -- LIS map link
   LEFT JOIN
    (SELECT LISACC.accession, LISFDBX.featuremap_id 
     FROM dbxref LISACC

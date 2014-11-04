@@ -57,7 +57,7 @@ array (
         'type' => 'text',
         'NOT NULL' => FALSE,
       ),
-      'parent1_id' => array(
+      'parent1_nid' => array(
         'type' => 'int',
         'NOT NULL' => FALSE,
       ),
@@ -65,7 +65,7 @@ array (
         'type' => 'text',
         'NOT NULL' => FALSE,
       ),
-      'parent2_id' => array(
+      'parent2_nid' => array(
         'type' => 'int',
         'NOT NULL' => FALSE,
       ),

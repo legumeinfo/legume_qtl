@@ -292,10 +292,10 @@ array (
         ),
       ),
       
-      'flanking_marker_high_id' => array (
-        'name' => 'flanking_marker_high_id',
-        'title' => 'Right Flanking Marker ID',
-        'description' => 'Right flanking marker ID',
+      'flanking_marker_high_nid' => array (
+        'name' => 'flanking_marker_high_nid',
+        'title' => 'Right Flanking Marker NID',
+        'description' => 'Right flanking marker NID',
         'type' => 'int',
         'handlers' => array (
           'filter' => array (
@@ -344,10 +344,10 @@ array (
         ),
       ),
       
-      'flanking_marker_low_id' => array (
-        'name' => 'flanking_marker_low_id',
-        'title' => 'Left Flanking Marker ID',
-        'description' => 'Left flanking marker ID',
+      'flanking_marker_low_nid' => array (
+        'name' => 'flanking_marker_low_nid',
+        'title' => 'Left Flanking Marker NID',
+        'description' => 'Left flanking marker NID',
         'type' => 'int',
         'handlers' => array (
           'filter' => array (
@@ -552,10 +552,10 @@ array (
         ),
       ),
       
-      'nearest_marker_id' => array (
-        'name' => 'nearest_marker_id',
-        'title' => 'Nearest Marker ID',
-        'description' => 'Nearest marker ID',
+      'nearest_marker_nid' => array (
+        'name' => 'nearest_marker_nid',
+        'title' => 'Nearest Marker NID',
+        'description' => 'Nearest marker NID',
         'type' => 'int',
         'handlers' => array (
           'filter' => array (

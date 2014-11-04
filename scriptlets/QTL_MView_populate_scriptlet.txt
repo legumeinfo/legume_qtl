@@ -26,11 +26,11 @@ SELECT
   tr2.rawscore AS total_r2, 
   add.rawscore AS additivity,
   nm.name AS nearest_marker, 
-  nm.feature_id AS nearest_marker_id, 
+  cnm.nid AS nearest_marker_nid, 
   fml.name AS flanking_marker_low,
-  fml.feature_id AS flanking_marker_low_id,
+  cfml.nid AS flanking_marker_low_nid,
   fmh.name AS flanking_marker_high,
-  fmh.feature_id AS flanking_marker_high_id,
+  cfmh.nid AS flanking_marker_high_nid,
   comm.value AS comment
 
 FROM feature q
@@ -185,6 +185,7 @@ FROM feature q
            AND cv_id=(SELECT cv_id FROM chado.cv 
                       WHERE name='feature_relationship'))
   LEFT JOIN feature nm ON nm.feature_id=nmr.object_id
+  LEFT JOIN public.chado_feature cnm ON cnm.feature_id = nm.feature_id
   
   -- flanking marker low
   LEFT JOIN feature_relationship fmlr 
@@ -194,6 +195,7 @@ FROM feature q
                                AND cv_id=(SELECT cv_id FROM chado.cv 
                                           WHERE name='feature_relationship'))
   LEFT JOIN feature fml ON fml.feature_id=fmlr.object_id
+  LEFT JOIN public.chado_feature cfml ON cfml.feature_id = fml.feature_id
 
   -- flanking marker high
   LEFT JOIN feature_relationship fmhr ON fmhr.subject_id=q.feature_id 
@@ -202,6 +204,7 @@ FROM feature q
                             AND cv_id=(SELECT cv_id FROM chado.cv 
                                        WHERE name='feature_relationship'))
   LEFT JOIN feature fmh ON fmh.feature_id=fmhr.object_id
+  LEFT JOIN public.chado_feature cfmh ON cfmh.feature_id = fmh.feature_id
     
   -- comment
   LEFT JOIN featureprop comm ON comm.feature_id = q.feature_id
