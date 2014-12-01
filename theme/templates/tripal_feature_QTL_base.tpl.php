@@ -55,8 +55,10 @@
   };
   $maps = (count($map_array) > 0) ? implode('; ', $map_array) : '';
   
+/* comments reserved for curator use
   // Comments
   $comments = $qtl_details->comments;
+*/
 ?>
 
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 
@@ -197,6 +199,7 @@
     ),
     $maps,
   );
+/* comments reserved for curator use
   // Comments
   $rows[] = array(
     array(
@@ -205,7 +208,7 @@
     ),
     $comments,
   );
- 
+*/ 
   /////// SEPARATOR /////////
   
   $rows[] = array(
