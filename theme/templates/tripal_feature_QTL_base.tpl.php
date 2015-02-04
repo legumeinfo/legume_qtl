@@ -1,10 +1,7 @@
 <?php
   $feature  = $variables['node']->feature;
-//echo "<br><br>tripal_feature_QTL_base.tpl.php variables object: <pre>";var_dump($variables);echo "</pre><br><br><br>";
-//echo "<br><br>tripal_feature_QTL_base.tpl.php Feature object: <pre>";var_dump($feature);echo "</pre><br><br><br>";
 
   $qtl_details = $feature->qtl_details;
-//echo "<br><br>tripal_feature_QTL_base.tpl.php QTL details: <pre>";var_dump($qtl_details);echo "</pre><br><br><br>";
 
   // QTL symbol from publication
   $expt_qtl_symbol = $qtl_details->expt_qtl_symbol;
@@ -26,7 +23,6 @@
   
   // Publication
   $citation = 'N/A';
-  //echo "Publications: <pre>";var_dump($qtl_details->pub_expt);echo "</pre><br><br><br>";
   if ($qtl_details->pub_nid) {
     $citation = "<a href=\"/pub/" . $qtl_details->pub_nid . "\">";
     $citation .= $qtl_details->citation . "</a>";
@@ -36,7 +32,6 @@
   $organism = $feature->organism_id->genus . " " 
             . $feature->organism_id->species . " (" 
             . $feature->organism_id->common_name .")";
-//echo "<pre>";var_dump($feature);echo "</pre>";
   if (property_exists($feature->organism_id, 'nid')) {
     $organism = l("<i>" . $feature->organism_id->genus . " " 
                   . $feature->organism_id->species . "</i> ("  
@@ -55,10 +50,8 @@
   };
   $maps = (count($map_array) > 0) ? implode('; ', $map_array) : '';
   
-/* comments reserved for curator use
   // Comments
   $comments = $qtl_details->comments;
-*/
 ?>
 
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 
@@ -199,7 +192,6 @@
     ),
     $maps,
   );
-/* comments reserved for curator use
   // Comments
   $rows[] = array(
     array(
@@ -208,7 +200,7 @@
     ),
     $comments,
   );
-*/ 
+ 
   /////// SEPARATOR /////////
   
   $rows[] = array(
@@ -266,6 +258,31 @@
     ),
     $trait_description,
   );
+ 
+  /////// SEPARATOR /////////
+  
+  $rows[] = array(
+    array(
+      'data' => '',
+      'header' => TRUE,
+      'height' => 6,
+      'style' => 'background-color:white',
+    ),
+    array(
+      'data' => '',
+      'style' => 'background-color:white',
+    ),
+  );
+  
+  // Comments
+  $rows[] = array(
+    array(
+      'data' => 'Comments',
+      'header' => TRUE,
+    ),
+    $comments,
+  );
+  
   
   // the $table array contains the headers and rows array as well as other
   // options for controlling the display of the table.  Additional

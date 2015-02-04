@@ -28,7 +28,7 @@
     $mapping_population = $map_position->mapping_population;
     
     // Parent1
-    $parent1 = 'unknown';
+    $parent1 = 'N/A';
     if ($map_position->parent1) {
       $name = $map_position->parent1;
       $nid = $map_position->parent1_nid;
@@ -36,7 +36,7 @@
     }
 
     // Parent2
-    $parent2 = 'unknown';
+    $parent2 = 'N/A';
     if ($map_position->parent2) {
       $name = $map_position->parent2;
       $nid = $map_position->parent2_nid;
@@ -45,7 +45,7 @@
   
     // Population
 //echo "population: " . $map_positions->mapping_population . "<br><br><br>";
-    $population = "unknown";
+    $population = "N/A";
     if ($map_position->mapping_population) {
         $population = $map_position->mapping_population;
     }
