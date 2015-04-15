@@ -31,7 +31,7 @@
   // Organism
   $organism = $feature->organism_id->genus . " " 
             . $feature->organism_id->species . " (" 
-            . $feature->organism_id->common_name .")";
+            . $feature->organism_id->common_name .")";  
   if (property_exists($feature->organism_id, 'nid')) {
     $organism = l("<i>" . $feature->organism_id->genus . " " 
                   . $feature->organism_id->species . "</i> ("  
@@ -50,6 +50,46 @@
   };
   $maps = (count($map_array) > 0) ? implode('; ', $map_array) : '';
   
+  // Nearest Marker
+  $nearest_marker = 'unknown';
+  if ($qtl_details->nearest_marker) {
+    $nid = $qtl_details->nearest_marker_nid;
+    $name = $qtl_details->nearest_marker;
+    $nearest_marker = "<a href=\"/node/$nid\">$name</a>";
+  }
+
+  // Flanking Marker Low
+  $flanking_marker_low = '';
+  if ($qtl_details->flanking_marker_low) {
+    $nid = $qtl_details->flanking_marker_low_nid;
+    $name = $qtl_details->flanking_marker_low;
+    $flanking_marker_low = "<a href=\"/node/$nid\">$name</a>";
+  }
+//echo "<br><br>flanking marker low: <pre>";var_dump($flanking_marker_low);echo "</pre><br><br><br>";
+
+  // Flanking Marker High
+  $flanking_marker_high = '';
+  if ($qtl_details->flanking_marker_high) {
+    $nid = $qtl_details->flanking_marker_high_nid;
+    $name = $qtl_details->flanking_marker_high;
+    $flanking_marker_high = "<a href=\"/node/$nid\">$name</a>";
+  }
+
+  // LOD
+  $lod = $qtl_details->lod;
+
+  // Likelihood ratio
+  $likelihood_ratio = $qtl_details->likelihood_ratio;
+  
+  // Marker R2
+  $marker_r2 = $qtl_details->marker_r2;
+  
+  // Total R2
+  $total_r2 = $qtl_details->total_r2;
+  
+  // Additivity
+  $additivity = $qtl_details->additivity;
+
   // Comments
   $comments = $qtl_details->comments;
 ?>
@@ -80,7 +120,7 @@
       'width' => 200,
       'style' => 'background-color:#c9c9c9;color:#101010',
     ),
-    $feature->name,
+    '<b>'.$feature->name.'</b>',
   );
 
   /////// SEPARATOR /////////
@@ -259,6 +299,96 @@
     $trait_description,
   );
  
+  /////// SEPARATOR /////////
+  
+  $rows[] = array(
+    array(
+      'data' => '',
+      'header' => TRUE,
+      'height' => 6,
+      'style' => 'background-color:white',
+    ),
+    array(
+      'data' => '',
+      'style' => 'background-color:white',
+    ),
+  );
+
+  $rows[] = array(
+    array(
+      'data' => 'Details',
+      'header' => TRUE,
+      'colspan' => 2,
+      'style' => 'background-color:#c9c9c9;color:#101010',
+    ),
+  );
+  
+ // Nearest Marker
+  $rows[] = array(
+    array(
+      'data' => 'Nearest Marker',
+      'header' => TRUE,
+      'width' => 200,
+    ),
+    $nearest_marker
+  );
+  // Flanking Marker Low
+  $rows[] = array(
+    array(
+      'data' => 'Flanking Marker Low',
+      'header' => TRUE,
+    ),
+    $flanking_marker_low
+  );
+  // Flanking Marker High
+  $rows[] = array(
+    array(
+      'data' => 'Flanking Marker High',
+      'header' => TRUE,
+    ),
+    $flanking_marker_high
+  );
+  // LOD
+  $rows[] = array(
+    array(
+      'data' => 'LOD',
+      'header' => TRUE,
+    ),
+    $lod
+  );
+  // Likelihood ratio
+  $rows[] = array(
+    array(
+      'data' => 'Likelihood ratio',
+      'header' => TRUE,
+    ),
+    $likelihood_ratio
+  );
+  // Marker R2
+  $rows[] = array(
+    array(
+      'data' => 'Marker R2',
+      'header' => TRUE,
+    ),
+    $marker_r2
+  );
+  // Total R2
+  $rows[] = array(
+    array(
+      'data' => 'Total R2',
+      'header' => TRUE,
+    ),
+    $total_r2
+  );
+  // Additivity
+  $rows[] = array(
+    array(
+      'data' => 'Additivity',
+      'header' => TRUE,
+    ),
+    $additivity
+  );
+
   /////// SEPARATOR /////////
   
   $rows[] = array(

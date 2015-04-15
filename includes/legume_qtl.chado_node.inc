@@ -41,14 +41,7 @@ function legume_qtl_node_view($node, $view_mode, $langcode) {
           '#tripal_toc_id'    => 'properties',
           '#tripal_toc_title' => 'QTL Details',
         );
-        $node->content['tripal_feature_QTL_details'] = array(
-          '#markup' => theme("tripal_feature_QTL_details",
-                             array('node' => $node)),
-          '#tripal_toc_id'    => 'qtl_details',
-          '#tripal_toc_title' => 'QTL Details',
-          '#weight' => -70,
-        );
-        
+
         $node->content['tripal_feature_Map_Pos'] = array(
           '#markup' => theme("tripal_feature_Map_Pos",
                              array('node' => $node)),
