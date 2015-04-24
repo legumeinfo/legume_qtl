@@ -238,6 +238,7 @@ function makeLgMapLink($map_position) {
 
 // Given a qtl_map_position record, create the HTML for a map name link.
 function makeMapLink($map_position) {
+//echo "<pre>";var_dump($map_position);echo "</pre>";
   $map_name = $map_position->map_name;
   $map_id   = $map_position->map_id;
   $map_name = "<a href=\"/featuremap/$map_name\">$map_name</a>";
