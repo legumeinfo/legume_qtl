@@ -61,6 +61,17 @@
   // https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme_table/7 
   $rows = array();
   
+  // Name row
+  $rows[] = array(
+    array(
+      'data' => 'QTL Name',
+      'header' => TRUE,
+      'width' => 200,
+      'style' => 'background-color:#c9c9c9;color:#101010',
+    ),
+    '<b>'.$feature->name.'</b>',
+  );
+
   // Nearest Marker
   $rows[] = array(
     array(

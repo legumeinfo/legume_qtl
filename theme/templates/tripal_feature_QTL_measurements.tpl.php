@@ -22,6 +22,7 @@
   $rows = array();
   
   foreach ($analyses as $analysis) {
+    $analysis = chado_expand_var($analysis, 'field', 'analysis.description');
 //echo "<pre>";var_dump($analysis->analysis_id);echo "</pre>";
     $analysis_name = $analysis->analysis_id->name;
     if (property_exists($analysis->analysis_id, 'nid')) {
