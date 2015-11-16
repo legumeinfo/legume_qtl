@@ -96,7 +96,7 @@ function correctThis($include) {
   }
   $correct_this = "
     <div>
-      We welcome <a href=\"\contact\">corrections</a> to this record. Please provide contact 
+      We welcome <a href=\"/contact\">corrections</a> to this record. Please provide contact 
       information$include in your note.
     </div>";
   return t($correct_this);
