@@ -234,7 +234,6 @@ function makeLgMapLink($map_position) {
 function makeMapLink($map_position) {
 //echo "<pre>";var_dump($map_position);echo "</pre>";
   $map_name = $map_position->map_name;
-  $map_id   = $map_position->map_id;
   $map_name = "<a href=\"/featuremap/$map_name\">$map_name</a>";
   if ($map_position->lis_map_accession) {
     $options = array('return_sql' => true); // for debugging
