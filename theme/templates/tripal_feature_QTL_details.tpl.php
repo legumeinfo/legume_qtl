@@ -1,6 +1,6 @@
 <?php
   $feature  = $variables['node']->feature;
-  //echo "<br><br>tripal_feature_QTL_base.tpl.php Feature object: <pre>";var_dump($feature);echo "</pre><br><br><br>";
+//echo "<br><br>tripal_feature_QTL_base.tpl.php Feature object: <pre>";var_dump($feature);echo "</pre><br><br><br>";
 
   $qtl_details = $feature->qtl_details;
   
