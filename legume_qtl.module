@@ -107,11 +107,6 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
   $path = drupal_get_path('module', 'legume_qtl');
 
   $themes = array(        
-    'tripal_feature_base' => array(
-      'arguments' => array('node' => NULL),
-      'template' => 'tripal_feature_QTL_base',
-      'path' => "$path/theme/templates"
-    ),
     'tripal_feature_QTL_base' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_base',
@@ -139,7 +134,6 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
     ),
   );
 
-//var_dump($themes);
   return $themes;
 }
 

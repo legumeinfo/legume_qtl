@@ -21,13 +21,6 @@ function legume_qtl_node_view($node, $view_mode, $langcode) {
     case 'full':
       if ($node->feature->type_id->name == 'QTL') {
         // we want to override the base feature theme
-        $node->content['tripal_feature_base'] = array(
-          '#markup' => theme("tripal_feature_QTL_base",
-                             array('node' => $node)),
-          '#tripal_toc_id'    => 'base',
-          '#tripal_toc_title' => 'QTL Overview',
-          '#weight' => -100,
-        );
         $node->content['tripal_feature_QTL_base'] = array(
           '#markup' => theme("tripal_feature_QTL_base",
                              array('node' => $node)),
@@ -36,10 +29,11 @@ function legume_qtl_node_view($node, $view_mode, $langcode) {
           '#weight' => -100,
         );
         
-        $node->content['tripal_feature_properties'] = array(
+        $node->content['tripal_feature_QTL_details'] = array(
           '#markup' => theme('tripal_feature_QTL_details', array('node' => $node)),
-          '#tripal_toc_id'    => 'properties',
+          '#tripal_toc_id'    => 'qtl_details',
           '#tripal_toc_title' => 'QTL Details',
+          '#weight' => -90,
         );
 
         $node->content['tripal_feature_Map_Pos'] = array(
