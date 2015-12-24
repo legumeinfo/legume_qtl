@@ -91,7 +91,7 @@
   $additivity = $qtl_details->additivity;
 
   // Comments
-  $comments = $qtl_details->comments;
+  $comments = $qtl_details->comment;
 ?>
 
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 
