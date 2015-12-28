@@ -91,6 +91,7 @@
   $additivity = $qtl_details->additivity;
 
   // Comments
+  $qtl_details = chado_expand_var($qtl_details, 'field', 'qtl_search.comment');
   $comments = $qtl_details->comment;
 ?>
 
