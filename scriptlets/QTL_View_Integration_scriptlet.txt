@@ -138,7 +138,7 @@ array (
   
       'expt_qtl_symbol' => array (
         'name' => 'expt_qtl_symbol',
-        'title' => 'QTL name used in experiment',
+        'title' => 'QTL name used in publication',
         'description' => 'QTL name used in experiment',
         'type' => 'text',
         'handlers' => array (
