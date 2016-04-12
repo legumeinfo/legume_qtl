@@ -93,103 +93,19 @@
     '<b>'.$feature->name.'</b>',
   );
 
-  /////// SEPARATOR /////////
-  
-  $rows[] = array(
-    array(
-      'data' => '',
-      'header' => TRUE,
-      'height' => 6,
-      'style' => 'background-color:white',
-    ),
-    array(
-      'data' => '',
-      'style' => 'background-color:white',
-    ),
-  );
-
-  for ($i=0; $i<count($positions); $i++) {
+  if (count($positions) == 0) {
     $rows[] = array(
       array(
-        'data' => 'Map Position ' . ($i+1),
-        'header' => TRUE,
-        'colspan' => 2,
-        'style' => 'background-color:#c9c9c9;color:#101010',
+        'data' => 'No position information available.',
+        'header' => FALSE,
+        'colspan' => 3,
+        'style' => 'color:#101010;background-color:#ffffff',
       ),
-    );
-    // Map
-    $rows[] = array(
-      array(
-        'data' => 'Map',
-        'header' => TRUE,
-        'width' => 200,
-      ),
-      $positions[$i]['map_name'],
-    );
-    // Linkage group
-    $rows[] = array(
-      array(
-        'data' => 'Linkage Group',
-        'header' => TRUE,
-      ),
-      $positions[$i]['lg'],
-    );
-    // QTL peak
-    $rows[] = array(
-      array(
-        'data' => 'QTL Peak',
-        'header' => TRUE,
-      ),
-      $positions[$i]['qtl_peak'],
-    );
-    // Start Position
-    $rows[] = array(
-      array(
-        'data' => 'Start Position',
-        'header' => TRUE,
-      ),
-      $positions[$i]['left_end'],
-    );
-    // End Position
-    $rows[] = array(
-      array(
-        'data' => 'End Position',
-        'header' => TRUE,
-      ),
-      $positions[$i]['right_end'],
-    );
-    // Mapping population
-    $rows[] = array(
-      array(
-        'data' => 'Mapping Population',
-        'header' => TRUE,
-      ),
-      $positions[$i]['population'],
-    );
-    // Parent1
-    $rows[] = array(
-      array(
-        'data' => 'Parent1',
-        'header' => TRUE,
-      ),
-      $positions[$i]['parent1'],
-    );
-    // Parent2
-    $rows[] = array(
-      array(
-        'data' => 'Parent2',
-        'header' => TRUE,
-      ),
-      $positions[$i]['parent2'],
-    );
-    // Interval Calculation Method
-    $rows[] = array(
-      array(
-        'data' => 'Interval Calculation Method',
-        'header' => TRUE,
-      ),
-      $positions[$i]['interval_calc_method'],
-    );
+    );  
+  }
+  else {
+    /////// SEPARATOR /////////
+    
     $rows[] = array(
       array(
         'data' => '',
@@ -202,7 +118,103 @@
         'style' => 'background-color:white',
       ),
     );
-  }//each map position
+
+    for ($i=0; $i<count($positions); $i++) {
+      $rows[] = array(
+        array(
+          'data' => 'Map Position ' . ($i+1),
+          'header' => TRUE,
+          'colspan' => 2,
+          'style' => 'background-color:#c9c9c9;color:#101010',
+        ),
+      );
+      // Map
+      $rows[] = array(
+        array(
+          'data' => 'Map',
+          'header' => TRUE,
+          'width' => 200,
+        ),
+        $positions[$i]['map_name'],
+      );
+      // Linkage group
+      $rows[] = array(
+        array(
+          'data' => 'Linkage Group',
+          'header' => TRUE,
+        ),
+        $positions[$i]['lg'],
+      );
+      // QTL peak
+      $rows[] = array(
+        array(
+          'data' => 'QTL Peak',
+          'header' => TRUE,
+        ),
+        $positions[$i]['qtl_peak'],
+      );
+      // Start Position
+      $rows[] = array(
+        array(
+          'data' => 'Start Position',
+          'header' => TRUE,
+        ),
+        $positions[$i]['left_end'],
+      );
+      // End Position
+      $rows[] = array(
+        array(
+          'data' => 'End Position',
+          'header' => TRUE,
+        ),
+        $positions[$i]['right_end'],
+      );
+      // Mapping population
+      $rows[] = array(
+        array(
+          'data' => 'Mapping Population',
+          'header' => TRUE,
+        ),
+        $positions[$i]['population'],
+      );
+      // Parent1
+      $rows[] = array(
+        array(
+          'data' => 'Parent1',
+          'header' => TRUE,
+        ),
+        $positions[$i]['parent1'],
+      );
+      // Parent2
+      $rows[] = array(
+        array(
+          'data' => 'Parent2',
+          'header' => TRUE,
+        ),
+        $positions[$i]['parent2'],
+      );
+      // Interval Calculation Method
+      $rows[] = array(
+        array(
+          'data' => 'Interval Calculation Method',
+          'header' => TRUE,
+        ),
+        $positions[$i]['interval_calc_method'],
+      );
+      $rows[] = array(
+        array(
+          'data' => '',
+          'header' => TRUE,
+          'height' => 6,
+          'style' => 'background-color:white',
+        ),
+        array(
+          'data' => '',
+          'style' => 'background-color:white',
+        ),
+      );
+    }//each map position
+  }//at least 1 map position
   
   // the $table array contains the headers and rows array as well as other
   // options for controlling the display of the table.  Additional
