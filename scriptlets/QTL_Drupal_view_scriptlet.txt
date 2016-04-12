@@ -1074,7 +1074,7 @@
       'optional' => 1,
       'max_length' => '40',
     ),
-    'trait_class' => array(
+    'expt_trait_name' => array(
       'operator' => '=',
       'value' => array(
         'All' => 'All',
@@ -1083,9 +1083,9 @@
       'exposed' => TRUE,
       'expose' => array(
         'use_operator' => 0,
-        'operator' => 'trait_class_op',
-        'identifier' => 'trait_class',
-        'label' => 'Trait Class',
+        'operator' => 'expt_trait_name_op',
+        'identifier' => 'expt_trait_name',
+        'label' => 'Trait Name Used in Publication',
         'bef_filter_description' => '',
         'bef_format' => 'default',
         'remember' => 1,
@@ -1093,9 +1093,9 @@
         'bef_collapsible' => 0,
       ),
       'case' => 1,
-      'id' => 'trait_class',
+      'id' => 'expt_trait_name',
       'table' => 'qtl_search',
-      'field' => 'trait_class',
+      'field' => 'expt_trait_name',
       'relationship' => 'none',
       'agg' => array(
         'records_with' => 1,
@@ -1115,7 +1115,7 @@
         'use_operator' => 1,
         'operator' => 'expt_pub_symbol_op',
         'identifier' => 'expt_pub_symbol',
-        'label' => 'QTL Symbol used in experiment',
+        'label' => 'Published QTL Symbol',
         'bef_filter_description' => '',
         'remember' => 0,
       ),
