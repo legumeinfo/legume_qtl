@@ -1,5 +1,5 @@
   $view = new view;
-  $view->name = 'qtl_search';
+  $view->name = 'QTL';
   $view->description = 'QTL search';
   $view->tag = '';
   $view->base_table = 'qtl_search';
