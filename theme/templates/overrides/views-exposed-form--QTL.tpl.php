@@ -4,6 +4,10 @@
  * @file
  * This template handles the layout of the views exposed filter form.
  *
+ * Note: File name is constructed:
+ *         views-exposed-form--VIEW NAME.tpl.php
+ *       The value for VIEW NAME must match name of Drupal View.
+ *
  * Variables available:
  * - $widgets: An array of exposed form widgets. Each widget contains:
  * - $widget->label: The visible label to print. May be optional.
