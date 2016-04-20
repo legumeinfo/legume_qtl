@@ -248,6 +248,12 @@ function makeLgMapLink($map_position) {
     $vals = array('name' => 'LIS:cmap');
     $res = tripal_core_chado_select('db', $cols, $vals);
     $url = $res[0]->urlprefix . $map_position->lis_lg_map_accession;
+// NOTE! This is unique to LIS websites
+    $highlight = urlencode('"' . $map_position->map_name 
+                           . '_' .  $map_position->lg
+                           . '_' . $map_position->qtl_symbol . '"');
+    $url .= ";highlight=$highlight";
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     $lg .= " [<a href=\"$url\">CMap</a>]";
   }
   
@@ -265,9 +271,13 @@ function makeMapLink($map_position) {
     $cols = array('urlprefix');
     $vals = array('name' => 'LIS:cmap');
     $res = tripal_core_chado_select('db', $cols, $vals);
-//echo "<pre>";var_dump($res);echo "</pre>";
-//echo "urlprefix: " . $res[0]->urlprefix. "<br>";
     $url = $res[0]->urlprefix . $map_position->lis_map_accession;
+// NOTE! This is unique to LIS websites
+    $highlight = urlencode('"' . $map_position->map_name 
+                           . '_' .  $map_position->lg
+                           . '_' . $map_position->qtl_symbol . '"');
+    $url .= ";highlight=$highlight";
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     $map_name .= " [<a href=\"$url\">CMap</a>]";
   }
   
