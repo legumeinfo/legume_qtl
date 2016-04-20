@@ -12,7 +12,7 @@ function legume_qtl_disable() {
   require_once("legume_qtl.views_default.inc");
   $views = legume_qtl_views_default_views();
   foreach (array_keys($views) as $view_name) {
-    tripal_views_admin_disable_view($view_name,FALSE,array('suppress_error' => TRUE));
+    tripal_disable_view($view_name,FALSE,array('suppress_error' => TRUE));
   }
 }
 
