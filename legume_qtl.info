@@ -4,6 +4,9 @@ core = 7.x
 version = 7.x-2.0.1-alpha
 package = Tripal Extensions 
 configure = admin/tripal/legume/legume_qtl
+
+stylesheets[all][] = theme/css/legume_qtl.css
+
 dependencies[] = tripal_core
 dependencies[] = tripal_feature
 dependencies[] = tripal_analysis
