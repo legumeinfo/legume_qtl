@@ -20,7 +20,7 @@ function legume_qtl_views_default_views() {
  */
 function legume_qtl_defaultvalue_user_qtl() {
   $view = new view;
-  $view->name = 'QTL';
+  $view->name = 'qtl_search';
   $view->description = 'QTL';
   $view->tag = '';
   $view->base_table = 'qtl_search';
