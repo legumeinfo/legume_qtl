@@ -157,10 +157,12 @@ function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
   * Use this to trim whitespace from text fields.
   */
 function legume_qtl_form_validate($form, &$form_state) {
-//drupal_set_message("Form values are " . var_export($form_state['values'], true));
-  $form_state['values']['expt_trait_name'] = trim($form_state['values']['expt_trait_name']);
-  $form_state['values']['expt_pub_symbol'] = trim($form_state['values']['expt_pub_symbol']);
-  $form_state['values']['qtl_name']      = trim($form_state['values']['qtl_name']);
+  if (isset($form_state['values']['expt_trait_name']))
+    $form_state['values']['expt_trait_name'] = trim($form_state['values']['expt_trait_name']);
+  if (isset($form_state['values']['expt_pub_symbol']))
+    $form_state['values']['expt_pub_symbol'] = trim($form_state['values']['expt_pub_symbol']);
+  if (isset($form_state['values']['qtl_name']))
+    $form_state['values']['qtl_name']      = trim($form_state['values']['qtl_name']);
 }
 
 
