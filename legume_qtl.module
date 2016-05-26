@@ -79,6 +79,7 @@ function legume_qtl_menu() {
   return $items;
 }
 
+
 /**
  * Implements hook_views_api()
  * Purpose: Essentially this hook tells drupal that there is views support for
@@ -135,7 +136,7 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
   );
 
   return $themes;
-}
+}//legume_qtl_theme
 
 
 /**
@@ -144,12 +145,23 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
   * Add a validator to the search form
   */
 function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
-//drupal_set_message("Form ID is: $form_id");
   if ($form_id == 'views_exposed_form') {
+    // Set validate and submit callbacks
     $form['#validate'][] = 'legume_qtl_form_validate';
-//drupal_set_message("Validation is set to " . var_export($form['#validate'], true));
+    $form['#submit'][] = 'legume_qtl_form_submit';
+    
+    // Add option for expanded/narrow searching
+    $desc = 'if checked, only traits containing the QTL name will be returned';
+    $form['narrow'] = array(
+      '#type'          => 'checkbox',
+      '#title'         => t("Use narrow search ($desc)"),
+      '#default_value' => variable_get('narrow', 0),
+    );
+    
+    // Change default value for submit button
+    $form['submit']['#value'] = 'Search';
   }
-} 
+}//legume_qtl_form_alter
 
 
 /**
@@ -163,7 +175,78 @@ function legume_qtl_form_validate($form, &$form_state) {
     $form_state['values']['expt_pub_symbol'] = trim($form_state['values']['expt_pub_symbol']);
   if (isset($form_state['values']['qtl_name']))
     $form_state['values']['qtl_name']      = trim($form_state['values']['qtl_name']);
-}
+}//legume_qtl_form_validate
+
+
+/**
+  * Form submission. 
+  */
+function legume_qtl_form_submit($form, &$form_state) {
+}//legume_qtl_form_submit
+
+
+// hook_pre_render()
+//   Called just before result table is rendered.
+function legume_qtl_views_pre_render($view) {
+  // Report QTL found before table
+  $view->attachment_before = "<p><b>Found " . $view->total_rows . " QTL</b></p>";
+  
+  // Display similar (sibling) traits below table
+  $simliar_traits = unserialize($_SESSION['related_searches']);
+  $view->attachment_after = "<p><b>Related traits: " . implode(', ', $simliar_traits) . "</b></p>";
+
+}//legume_qtl_views_pre_render
+
+
+function legume_qtl_views_query_alter($view, $query) {
+  if (isset($view->exposed_raw_input['qtl_name'])) {
+    $term = $view->exposed_raw_input['qtl_name'];
+  }
+  else {
+    return;
+  }
+
+  if ($view->exposed_raw_input['narrow'] == 1) {
+    // Don't check ontologies for matches
+    return;
+  }
+  
+  // Find all traits that match qtl name (cv = 'LegumeInfo:traits')
+  $sql = "
+    SELECT cv_id, name FROM {cv} 
+    WHERE name = 'LegumeInfo:traits'";
+  $results = chado_query($sql); // note that trait cv must exist or we wouldn't be here.
+  $trait_cv = $results->fetchAll();
+  $trait_cv_id = $trait_cv[0]->cv_id;
+  $trait_info = ontology_search_setSimilarTerms($term, 
+                                                array($trait_cv_id=>'LegumeInfo:traits'), 
+                                                1000); //1000??!?!?!?!?!
+
+  // Use OBO terms and ontology heirarchy to find additional trait names.
+  if ($trait_info) {
+    $matches = getQTLbyOBOterms($term, $trait_info);
+    
+    if (isset($matches['child_matches'])) {
+      // Extract trait names from the child matches (traits found through 
+      //  child OBO terms attached to initial list of traits that were found 
+      //  via string  similarity)
+      $qtl_names = array();
+      foreach ($matches['child_matches'] as $m) {
+        $qtl_names[] = $m->qtl_name;
+      }
+    
+      // Replace the default qtl_name search with a search for all
+      //   found traits.
+      for ($i=0; $i<count($query->where[1]['conditions']); $i++) {
+        $c = $query->where[1]['conditions'][$i];
+        if ($c['field'] == 'qtl_search.qtl_name') {
+          $query->where[1]['conditions'][$i]['value'] = '%((' . implode(')|(', $qtl_names) . '))%';
+          $query->where[1]['conditions'][$i]['operator'] = 'SIMILAR TO';
+        }
+      }//each condition
+    }//found child matches
+  }//found matching traits
+}//legume_qtl_views_query_alter
 
 
 /**
@@ -172,6 +255,7 @@ function legume_qtl_form_validate($form, &$form_state) {
  * @param $variables
  */
 function legume_qtl_preprocess_tripal_feature_QTL_base(&$variables) {
+  // Fill in $feature with QTL details and positions
   $feature = $variables['node']->feature;  
   $feature->qtl_details = getQTLDetails($feature->feature_id);
   $feature->map_positions = getMapPositions($feature->feature_id);
@@ -192,7 +276,8 @@ function getQTLDetails($feature_id) {
   
   // Return the data
   return $qtl;
-}
+}//getQTLDetails
+
 
 /**
  *
@@ -208,7 +293,7 @@ function getMapPositions($feature_id) {
   
   // Return the data
   return $mp;
-}
+}//getMapPositions
 
 
 // This is a function to convert a database resultset into an object array
@@ -222,7 +307,7 @@ function legume_qtl_dbresult_to_array($dbresult) {
     array_push($arr, $obj);
   }
   return $arr;
-}
+}//legume_qtl_dbresult_to_array
 
 
 // The function will aggreate the content of a String array by using the 
@@ -236,7 +321,7 @@ function legume_qtl_stringarray_agg($arr, $separator) {
         }
     }
     return $text;
-}
+}//legume_qtl_stringarray_agg
 
 
 function makeLgMapLink($map_position) {
@@ -260,12 +345,11 @@ function makeLgMapLink($map_position) {
   }
   
   return $lg;
-}
+}//makeLgMapLink
 
 
 // Given a qtl_map_position record, create the HTML for a map name link.
 function makeMapLink($map_position) {
-//echo "<pre>";var_dump($map_position);echo "</pre>";
   $map_name = $map_position->map_name;
   $map_name = "<a href=\"/featuremap/$map_name\">$map_name</a>";
   if ($map_position->lis_map_accession) {
@@ -284,4 +368,124 @@ function makeMapLink($map_position) {
   }
   
   return $map_name;
-}
+}//makeMapLink
+
+
+// Find child and matching QTL via attached OBO terms and ontology hierarchies.
+function getQTLbyOBOterms($term, $traits) {
+  // Get obo terms attached to these traits
+  $sql = "
+    SELECT dbx.cvterm_id, dbx.dbxref_id, dbx.accession 
+    FROM cvterm t 
+      INNER JOIN cv ON cv.cv_id=t.cv_id 
+      LEFT JOIN ( 
+        SELECT cd.cvterm_id AS trait_id, n.cvterm_id, dx.dbxref_id, (db.name||':'||dx.accession) AS accession 
+        FROM cvterm_dbxref cd 
+          INNER JOIN dbxref dx ON dx.dbxref_id=cd.dbxref_id 
+          INNER JOIN db ON db.db_id=dx.db_id 
+          INNER JOIN cvterm n ON n.dbxref_id=dx.dbxref_id
+        ) dbx ON dbx.trait_id=t.cvterm_id 
+    WHERE accession IS NOT NULL
+          AND t.cvterm_id IN (" . implode(',', array_keys($traits)) . ")";
+  $trait_result = chado_query($sql);
+  $trait_obo_terms = $trait_result->fetchAll();
+  
+  // Get child and sibling terms for each
+  foreach ($trait_obo_terms as $r) {
+    // Put this term in the child list
+    $child_obo_terms[$r->cvterm_id] = $r->accession;
+    // Get all child terms and add to child list
+    if ($children = ontology_search_getChild($r->cvterm_id)) {
+      foreach ($children as $child) {
+        $child_obo_terms[$child['cvterm_id']] = $child['accession'];
+      }//each child
+    }
+
+    if ($siblings = ontology_search_getSibilings($r->cvterm_id)) {
+      foreach ($siblings as $sib) {
+        $sibling_obo_terms[$sib['cvterm_id']] = $sib['accession'];
+      }//each sibling
+    }
+  }//each trait OBO term found
+
+ 
+  // Get all obo terms that match input term
+  
+  // Set ontologies to search:
+  $search_ontologies = array();
+  $sql = "
+    SELECT cv_id, name FROM {cv} 
+    WHERE name IN ('PO', 'SOY', 'plant_ontology', 
+                   'plant_trait_ontology', 'soybean_trait')";
+  $results = chado_query($sql);
+  foreach ($results as $r) {
+    $search_ontologies[$r->cv_id] = $r->name;
+  }
+  
+  // Get similar terms
+  $obo_terms = ontology_search_setSimilarTerms($term, $search_ontologies, 1000); //1000??!?!?!?!?!
+  if ($obo_terms) {
+    // Add child and sib iterms to lists
+    // NOTE: there is likely to be duplicate OBO term in the child and sib lists; 
+    //       these will be cleaned out later.
+    foreach (array_keys($obo_terms) as $cvterm_id) {
+      if ($children = ontology_search_getChild($cvterm_id)) {
+        foreach ($children as $child) {
+          $child_obo_terms[$child['cvterm_id']] = $child['accession'];
+        }
+      }
+ 
+      if ($siblings = ontology_search_getSibilings($cvterm_id)) {
+        foreach ($siblings as $sib) {
+          $sibling_obo_terms[$sib['cvterm_id']] = $sib['accession'];
+        }//each trait OBO term
+      }
+    }//each trait OBO term
+  }
+
+  // Get all QTL records associated with child OBO terms
+  if (count($child_obo_terms) > 0) {
+    $sql = "
+      SELECT qtl_name
+      FROM qtl_search
+      WHERE obo_terms SIMILAR TO '%((" . implode(')|(', $child_obo_terms) . "))%'";
+    $results = chado_query($sql);
+    $child_QTL = $results->fetchAll();
+  }
+//drupal_set_message("All matching " . count($QTL) . " QTL:<br>\n" . print_r($QTL, true) . "<br>");
+
+  if (count($sibling_obo_terms) > 0) {
+    $sql = "
+      SELECT qtl_name
+      FROM qtl_search
+      WHERE obo_terms SIMILAR TO '%((" . implode(')|(', $sibling_obo_terms) . "))%'";
+    $results = chado_query($sql);
+    $sib_QTL = $results->fetchAll();
+  }
+
+  // Weed out all similar (sibling) QTL that are in child matches
+  $child_QTL_names = array();
+  foreach ($child_QTL as $q) {
+    $child_QTL_names[$q->qtl_name] = 1;
+  }//each child QTL
+//drupal_set_message("Child QTL names: " . print_r($matching_QTL, true));
+  $other_QTL = array();
+  $other_traits = array();
+  foreach ($sib_QTL as $q) {
+//drupal_set_message("Check sib " . $q->qtl_name);
+    if (!($child_QTL_names[$q->qtl_name])) {
+//drupal_set_message("  Not a child: add");
+      $other_QTL[] = $q;
+      
+      // extract trait part of QTL name
+      preg_match("/(.*?)\s\d/", $q->qtl_name, $m);
+      $other_traits[$m[1]] = $m[1];
+    }
+  }//each sibling QTL
+//drupal_set_message("other traits: " . print_r($other_traits, true));
+
+  // Save list of other (sibling) traits briefly in the session object for later use.
+  $_SESSION['related_searches'] = serialize($other_traits);
+
+  return array('child_matches' => $child_QTL, 'sibling_matches' => $other_QTL);
+}//getQTLbyOBOterms
