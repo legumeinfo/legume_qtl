@@ -74,7 +74,11 @@ array (
       'type' => 'text',
       'NOT NULL' => FALSE,
     ),
-   'favorable_allele_source' => array(
+    'obo_terms' => array(
+      'type' => 'text',
+      'NOT NULL' => FALSE,
+    ),
+    'favorable_allele_source' => array(
       'type' => 'text',
       'NOT NULL' => FALSE,
     ),
@@ -144,5 +148,6 @@ array (
     'QTL_search_indx2' => array('expt_qtl_symbol'),
     'QTL_search_indx3' => array('qtl_symbol'),
     'QTL_search_indx4' => array('trait_class'),
+    'QTL_search_indx5' => array('obo_terms'),
   ),
 )

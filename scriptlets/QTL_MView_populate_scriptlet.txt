@@ -16,6 +16,7 @@ SELECT
   tc.qtl_symbol,
   tn.trait_name,
   tc.trait_description,
+  tn.obo_terms,
   s.name AS favorable_allele_source,
   cs.nid AS fas_nid,
   tmt.value AS treatment,
@@ -97,13 +98,13 @@ FROM feature q
                 ) t ON t.subject_id=sym.cvterm_id
   ) tc ON tc.feature_id=q.feature_id
     
-  -- trait name
+  -- trait name and OBO terms
   LEFT JOIN (
-    SELECT tnf.feature_id, t.name AS trait_name
+    SELECT tnf.feature_id, tnt.name AS trait_name, obo.obo_terms
     FROM feature q2 
       -- get QTL symbol 
       LEFT JOIN feature_cvterm tnf ON tnf.feature_id=q2.feature_id 
-      LEFT JOIN cvterm tn ON tn.cvterm_id=tnf.cvterm_id
+      LEFT JOIN cvterm tnt ON tnt.cvterm_id=tnf.cvterm_id
       LEFT JOIN feature_cvtermprop tnp ON tnp.feature_cvterm_id=tnf.feature_cvterm_id 
         AND tnp.type_id=(SELECT cvterm_id FROM cvterm 
                           WHERE name='QTL Symbol' 
@@ -114,8 +115,21 @@ FROM feature q
                  WHERE tnr.type_id=(SELECT cvterm_id FROM cvterm 
                                    WHERE name='Has Trait Name' 
                                          AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
-                ) t ON t.subject_id=tn.cvterm_id
-  ) tn ON tn.feature_id=q.feature_id
+                ) t ON t.subject_id=tnt.cvterm_id
+      LEFT JOIN (
+        SELECT t.cvterm_id, ARRAY_TO_STRING(ARRAY_AGG(dbx.accession), ',') AS obo_terms 
+        FROM cvterm t
+          INNER JOIN cv ON cv.cv_id=t.cv_id
+          LEFT JOIN (
+            SELECT cd.cvterm_id, dx.dbxref_id, (db.name||':'||dx.accession) AS accession 
+            FROM cvterm_dbxref cd 
+              INNER JOIN dbxref dx ON dx.dbxref_id=cd.dbxref_id
+              INNER JOIN db ON db.db_id=dx.db_id
+          ) dbx ON dbx.cvterm_id=t.cvterm_id
+        WHERE cv.name='LegumeInfo:traits'
+        GROUP BY t.cvterm_id
+      ) obo ON obo.cvterm_id=tnt.cvterm_id
+    ) tn ON tn.feature_id=q.feature_id
     
   -- Favorable Allele Source
   LEFT JOIN feature_stock fs 
@@ -213,7 +227,7 @@ FROM feature q
                            AND cv_id=(SELECT cv_id FROM chado.cv 
                                       WHERE name='feature_property'))
 
-WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
+ WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
                  WHERE name='QTL'
                        AND cv_id=(SELECT cv_id FROM chado.cv 
                                   WHERE name='sequence'))

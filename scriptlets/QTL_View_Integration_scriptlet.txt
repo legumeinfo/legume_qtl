@@ -214,6 +214,32 @@ array (
         ),
       ),
       
+      'obo_terms' => array (
+        'name' => 'obo_terms',
+        'title' => 'Associated ontology terms',
+        'description' => 'Ontology term associated with this trait',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'favorable_allele_source' => array (
         'name' => 'favorable_allele_source',
         'title' => 'Favorable Allele Source',
@@ -569,6 +595,32 @@ array (
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'obo_terms' => array (
+        'name' => 'obo_terms',
+        'title' => 'Associated ontology terms',
+        'description' => 'Ontology terms associated with this trait',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
