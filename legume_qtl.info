@@ -7,6 +7,8 @@ configure = admin/tripal/legume/legume_qtl
 
 stylesheets[all][] = theme/css/legume_qtl.css
 
+scripts[]          = theme/js/legume_qtl.js
+
 dependencies[] = tripal_core
 dependencies[] = tripal_feature
 dependencies[] = tripal_analysis
