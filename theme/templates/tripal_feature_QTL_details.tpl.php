@@ -1,6 +1,5 @@
 <?php
   $feature  = $variables['node']->feature;
-//echo "<br><br>tripal_feature_QTL_base.tpl.php Feature object: <pre>";var_dump($feature);echo "</pre><br><br><br>";
 
   $qtl_details = $feature->qtl_details;
   
@@ -19,7 +18,6 @@
     $name = $qtl_details->flanking_marker_low;
     $flanking_marker_low = "<a href=\"/node/$nid\">$name</a>";
   }
-//echo "<br><br>flanking marker low: <pre>";var_dump($flanking_marker_low);echo "</pre><br><br><br>";
 
   // Flanking Marker High
   $flanking_marker_high = '';
