@@ -8,3 +8,12 @@
   width: 130px;
 }
 
+/* create break after citation dropdown */
+#edit-citation-wrapper {
+  float: none;
+}
+
+.views-exposed-widgets {
+  background-color: lightgray;
+  border: 1px solid gray;
+}
