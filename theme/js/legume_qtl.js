@@ -7,4 +7,5 @@
       $("#edit-submit-qtl").css('margin-top', 0);
     }
   });
+  
 })(jQuery);
