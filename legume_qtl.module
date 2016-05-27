@@ -142,7 +142,7 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
 /**
   * hook_form_alter
   *
-  * Add a validator to the search form
+  * Alter form before displaying
   */
 function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'views_exposed_form') {
@@ -153,9 +153,8 @@ function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
     // Add option for expanded/narrow searching
     $desc = 'if checked, only traits containing the QTL name will be returned';
     $form['narrow'] = array(
-      '#type'          => 'checkbox',
-      '#title'         => t("Use narrow search ($desc)"),
-      '#default_value' => variable_get('narrow', 0),
+      '#type'    => 'checkbox',
+      '#title'   => t("Use narrow search ($desc)"),
     );
     
     // Change default value for submit button
@@ -169,6 +168,7 @@ function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
   * Use this to trim whitespace from text fields.
   */
 function legume_qtl_form_validate($form, &$form_state) {
+//drupal_set_message('legume_qtl_form_validate()');
   if (isset($form_state['values']['expt_trait_name']))
     $form_state['values']['expt_trait_name'] = trim($form_state['values']['expt_trait_name']);
   if (isset($form_state['values']['expt_pub_symbol']))
@@ -176,7 +176,6 @@ function legume_qtl_form_validate($form, &$form_state) {
   if (isset($form_state['values']['qtl_name']))
     $form_state['values']['qtl_name']      = trim($form_state['values']['qtl_name']);
 }//legume_qtl_form_validate
-
 
 /**
   * Form submission. 
@@ -189,7 +188,10 @@ function legume_qtl_form_submit($form, &$form_state) {
 //   Called just before result table is rendered.
 function legume_qtl_views_pre_render($view) {
   // Report QTL found before table
-  $view->attachment_before = "<p><b>Found " . $view->total_rows . " QTL</b></p>";
+  //with pager:
+//  $view->attachment_before = "<p><b>Found " . $view->total_rows . " QTL</b></p>";
+  // without pager:
+  $view->attachment_before = "<p><b>Found " . $view->query->pager->get_total_items() . " QTL</b></p>";
   
   // Display similar (sibling) traits below table
   $simliar_traits = unserialize($_SESSION['related_searches']);
@@ -199,6 +201,8 @@ function legume_qtl_views_pre_render($view) {
 
 
 function legume_qtl_views_query_alter($view, $query) {
+//drupal_set_message('legume_qtl_views_query_alter');
+//drupal_set_message("narrow in SESSION is " . $_SESSION['narrow_QTL_search']);
   if (isset($view->exposed_raw_input['qtl_name'])) {
     $term = $view->exposed_raw_input['qtl_name'];
   }
