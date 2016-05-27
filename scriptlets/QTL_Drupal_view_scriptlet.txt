@@ -147,7 +147,7 @@ $handler->display->display_options['style_options']['info'] = array(
 $handler->display->display_options['empty']['text']['id'] = 'area';
 $handler->display->display_options['empty']['text']['table'] = 'views';
 $handler->display->display_options['empty']['text']['field'] = 'area';
-$handler->display->display_options['empty']['text']['content'] = 'No QTL records found. Please select your search options, then press "Apply".';
+$handler->display->display_options['empty']['text']['content'] = 'No QTL records found. Please select your search options, then press "Search".';
 $handler->display->display_options['empty']['text']['format'] = '3';
 /* Field: QTL: common name */
 $handler->display->display_options['fields']['common_name']['id'] = 'common_name';
