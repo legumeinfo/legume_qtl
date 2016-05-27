@@ -16,7 +16,7 @@ $handler->display->display_options['access']['type'] = 'none';
 $handler->display->display_options['cache']['type'] = 'none';
 $handler->display->display_options['query']['type'] = 'views_query';
 $handler->display->display_options['exposed_form']['type'] = 'basic';
-$handler->display->display_options['pager']['type'] = 'full';
+$handler->display->display_options['pager']['type'] = 'none';
 $handler->display->display_options['pager']['options']['items_per_page'] = 25;
 $handler->display->display_options['style_plugin'] = 'table';
 $handler->display->display_options['style_options']['grouping'] = '';
@@ -397,27 +397,6 @@ $handler->display->display_options['filters']['expt_qtl_symbol']['expose']['reme
   2 => '2',
   4 => 0,
   1 => 0,
-  5 => 0,
-  6 => 0,
-  7 => 0,
-);
-/* Filter criterion: Trait Name Used in Publication */
-$handler->display->display_options['filters']['expt_trait_name']['id'] = 'expt_trait_name';
-$handler->display->display_options['filters']['expt_trait_name']['table'] = 'qtl_search';
-$handler->display->display_options['filters']['expt_trait_name']['field'] = 'expt_trait_name';
-$handler->display->display_options['filters']['expt_trait_name']['ui_name'] = 'Trait Name Used in Publication';
-$handler->display->display_options['filters']['expt_trait_name']['operator'] = 'contains';
-$handler->display->display_options['filters']['expt_trait_name']['group'] = 1;
-$handler->display->display_options['filters']['expt_trait_name']['exposed'] = TRUE;
-$handler->display->display_options['filters']['expt_trait_name']['expose']['operator_id'] = 'expt_trait_name_op';
-$handler->display->display_options['filters']['expt_trait_name']['expose']['label'] = 'Trait Name in Publication';
-$handler->display->display_options['filters']['expt_trait_name']['expose']['operator'] = 'expt_trait_name_op';
-$handler->display->display_options['filters']['expt_trait_name']['expose']['identifier'] = 'expt_trait_name';
-$handler->display->display_options['filters']['expt_trait_name']['expose']['remember'] = TRUE;
-$handler->display->display_options['filters']['expt_trait_name']['expose']['remember_roles'] = array(
-  2 => '2',
-  4 => '4',
-  1 => '1',
   5 => 0,
   6 => 0,
   7 => 0,
