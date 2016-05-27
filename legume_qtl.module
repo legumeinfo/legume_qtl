@@ -148,10 +148,9 @@ function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'views_exposed_form') {
     // Set validate and submit callbacks
     $form['#validate'][] = 'legume_qtl_form_validate';
-    $form['#submit'][] = 'legume_qtl_form_submit';
     
     // Add option for expanded/narrow searching
-    $desc = 'if checked, only traits containing the QTL name will be returned';
+    $desc = 'if checked, only traits containing the requested text will be returned';
     $form['narrow'] = array(
       '#type'    => 'checkbox',
       '#title'   => t("Use narrow search ($desc)"),
@@ -168,41 +167,42 @@ function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
   * Use this to trim whitespace from text fields.
   */
 function legume_qtl_form_validate($form, &$form_state) {
-//drupal_set_message('legume_qtl_form_validate()');
-  if (isset($form_state['values']['expt_trait_name']))
-    $form_state['values']['expt_trait_name'] = trim($form_state['values']['expt_trait_name']);
+  //trim whitespace from all text fields;
   if (isset($form_state['values']['expt_pub_symbol']))
     $form_state['values']['expt_pub_symbol'] = trim($form_state['values']['expt_pub_symbol']);
   if (isset($form_state['values']['qtl_name']))
     $form_state['values']['qtl_name']      = trim($form_state['values']['qtl_name']);
 }//legume_qtl_form_validate
 
+
 /**
-  * Form submission. 
+  * hook_pre_render()
+  *   Called just before result table is rendered.
   */
-function legume_qtl_form_submit($form, &$form_state) {
-}//legume_qtl_form_submit
-
-
-// hook_pre_render()
-//   Called just before result table is rendered.
 function legume_qtl_views_pre_render($view) {
   // Report QTL found before table
-  //with pager:
-//  $view->attachment_before = "<p><b>Found " . $view->total_rows . " QTL</b></p>";
-  // without pager:
-  $view->attachment_before = "<p><b>Found " . $view->query->pager->get_total_items() . " QTL</b></p>";
+   $view->attachment_before = "<p><b>Found " . $view->query->pager->get_total_items() . " QTL</b></p>";
   
   // Display similar (sibling) traits below table
-  $simliar_traits = unserialize($_SESSION['related_searches']);
-  $view->attachment_after = "<p><b>Related traits: " . implode(', ', $simliar_traits) . "</b></p>";
-
+  if (isset($_SESSION['related_searches'])) {
+    $simliar_traits = unserialize($_SESSION['related_searches']);
+    unset($_SESSION['related_searches']);
+    $view->attachment_after = "<p><b>Related traits: " . implode(', ', $simliar_traits) . "</b></p>";
+  }
 }//legume_qtl_views_pre_render
 
 
+/** hook_query_alter()
+  * Alter contents of query array before query is executed
+  */
 function legume_qtl_views_query_alter($view, $query) {
-//drupal_set_message('legume_qtl_views_query_alter');
-//drupal_set_message("narrow in SESSION is " . $_SESSION['narrow_QTL_search']);
+  // If narrow search selected, don't alter query
+  if ($view->exposed_raw_input['narrow'] == 1) {
+    // Don't check ontologies for matches
+    return;
+  }
+  
+  // Get term to search for, if any
   if (isset($view->exposed_raw_input['qtl_name'])) {
     $term = $view->exposed_raw_input['qtl_name'];
   }
@@ -210,11 +210,6 @@ function legume_qtl_views_query_alter($view, $query) {
     return;
   }
 
-  if ($view->exposed_raw_input['narrow'] == 1) {
-    // Don't check ontologies for matches
-    return;
-  }
-  
   // Find all traits that match qtl name (cv = 'LegumeInfo:traits')
   $sql = "
     SELECT cv_id, name FROM {cv} 
@@ -254,7 +249,7 @@ function legume_qtl_views_query_alter($view, $query) {
 
 
 /**
- * Provide more details about the QTL
+ * Add details and positions for the QTL to $feature record
  * 
  * @param $variables
  */
@@ -267,7 +262,8 @@ function legume_qtl_preprocess_tripal_feature_QTL_base(&$variables) {
 
 
 /**
- * 
+ * getQTLDetails()
+ *
  * @param $feature_id
  */
 function getQTLDetails($feature_id) {
@@ -284,6 +280,7 @@ function getQTLDetails($feature_id) {
 
 
 /**
+ * getMapPositions()
  *
  * @param $feature_id
  */
@@ -300,7 +297,10 @@ function getMapPositions($feature_id) {
 }//getMapPositions
 
 
-// This is a function to convert a database resultset into an object array
+/**
+  * legume_qtl_dbresult_to_array()
+  * Helper function to convert a database resultset into an object array
+  */
 function legume_qtl_dbresult_to_array($dbresult) {
   if (!$dbresult) {
     return false;
@@ -314,8 +314,9 @@ function legume_qtl_dbresult_to_array($dbresult) {
 }//legume_qtl_dbresult_to_array
 
 
-// The function will aggreate the content of a String array by using the 
-//  specified separator
+/**
+  * Aggreate the contents of a String array by using the specified separator.
+  */
 function legume_qtl_stringarray_agg($arr, $separator) {
     $text = "";
     for ($i = 0; $i < count($arr); $i ++) {
@@ -328,6 +329,9 @@ function legume_qtl_stringarray_agg($arr, $separator) {
 }//legume_qtl_stringarray_agg
 
 
+/**
+  * makeLgMapLink()
+  */
 function makeLgMapLink($map_position) {
   $lg    = $map_position->lg;
 //TODO: add link to lg record page
@@ -352,7 +356,10 @@ function makeLgMapLink($map_position) {
 }//makeLgMapLink
 
 
-// Given a qtl_map_position record, create the HTML for a map name link.
+/**
+  * makeMapLink()
+  * Given a qtl_map_position record, create the HTML for a map name link.
+  */
 function makeMapLink($map_position) {
   $map_name = $map_position->map_name;
   $map_name = "<a href=\"/featuremap/$map_name\">$map_name</a>";
@@ -375,7 +382,10 @@ function makeMapLink($map_position) {
 }//makeMapLink
 
 
-// Find child and matching QTL via attached OBO terms and ontology hierarchies.
+/**
+  * getQTLbyOBOterms()
+  * Find child and matching QTL via attached OBO terms and ontology hierarchies.
+  */
 function getQTLbyOBOterms($term, $traits) {
   // Get obo terms attached to these traits
   $sql = "
@@ -456,7 +466,6 @@ function getQTLbyOBOterms($term, $traits) {
     $results = chado_query($sql);
     $child_QTL = $results->fetchAll();
   }
-//drupal_set_message("All matching " . count($QTL) . " QTL:<br>\n" . print_r($QTL, true) . "<br>");
 
   if (count($sibling_obo_terms) > 0) {
     $sql = "
@@ -472,13 +481,10 @@ function getQTLbyOBOterms($term, $traits) {
   foreach ($child_QTL as $q) {
     $child_QTL_names[$q->qtl_name] = 1;
   }//each child QTL
-//drupal_set_message("Child QTL names: " . print_r($matching_QTL, true));
   $other_QTL = array();
   $other_traits = array();
   foreach ($sib_QTL as $q) {
-//drupal_set_message("Check sib " . $q->qtl_name);
     if (!($child_QTL_names[$q->qtl_name])) {
-//drupal_set_message("  Not a child: add");
       $other_QTL[] = $q;
       
       // extract trait part of QTL name
@@ -486,7 +492,6 @@ function getQTLbyOBOterms($term, $traits) {
       $other_traits[$m[1]] = $m[1];
     }
   }//each sibling QTL
-//drupal_set_message("other traits: " . print_r($other_traits, true));
 
   // Save list of other (sibling) traits briefly in the session object for later use.
   $_SESSION['related_searches'] = serialize($other_traits);
