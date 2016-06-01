@@ -16,4 +16,5 @@
 .views-exposed-widgets {
   background-color: lightgray;
   border: 1px solid gray;
+  padding: 3px;
 }
