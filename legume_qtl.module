@@ -145,7 +145,7 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
   * Alter form before displaying
   */
 function legume_qtl_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'views_exposed_form') {
+  if ($form_id == 'views_exposed_form' && strstr($form['#id'], 'QTL')) {
     // Set validate and submit callbacks
     $form['#validate'][] = 'legume_qtl_form_validate';
     
@@ -180,14 +180,15 @@ function legume_qtl_form_validate($form, &$form_state) {
   *   Called just before result table is rendered.
   */
 function legume_qtl_views_pre_render($view) {
-  // Report QTL found before table
-   $view->attachment_before = "<p><b>Found " . $view->query->pager->get_total_items() . " QTL</b></p>";
+  if (strstr($view->name, 'QTL')) {  // Report QTL found before table
+    $view->attachment_before = "<p><b>Found " . $view->query->pager->get_total_items() . " QTL</b></p>";
   
-  // Display similar (sibling) traits below table
-  if (isset($_SESSION['related_searches'])) {
-    $simliar_traits = unserialize($_SESSION['related_searches']);
-    unset($_SESSION['related_searches']);
-    $view->attachment_after = "<p><b>Related traits: " . implode(', ', $simliar_traits) . "</b></p>";
+    // Display similar (sibling) traits below table
+    if (isset($_SESSION['related_searches'])) {
+      $simliar_traits = unserialize($_SESSION['related_searches']);
+      unset($_SESSION['related_searches']);
+      $view->attachment_after = "<p><b>Related traits: " . implode(', ', $simliar_traits) . "</b></p>";
+   }
   }
 }//legume_qtl_views_pre_render
 

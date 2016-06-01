@@ -26,7 +26,7 @@ if (count($s_terms) > 0) {
     // the $headers array is an array of fields to use as the column headers.
     // additional documentation can be found here
     // https://api.drupal.org/api/drupal/includes%21theme.inc/function/theme_table/7
-    $headers = array('Term', 'Definition');
+    $headers = array('Trait', 'Definition', 'Ontology terms');
     
     // the $rows array contains an array of rows where each row is an array
     // of values for each column of the table in that row.  Additional documentation
@@ -40,9 +40,26 @@ if (count($s_terms) > 0) {
         $accession = $term->cvterm_id->dbxref_id->db_id->name . ":" . $term->cvterm_id->dbxref_id->accession;
       }
 
+      // Get attached OBO terms
+      $obo_terms = array();
+      $cvterm_dbxref = chado_expand_var($term->cvterm_id, 'table', 'cvterm_dbxref', $options);
+      $cvterm_dbxrefs = $cvterm_dbxref->cvterm_dbxref;
+      foreach ($cvterm_dbxrefs as $r) {
+//echo "<pre>";var_dump($r);echo "</pre><br><br><br>";
+         $dbxref = $r->dbxref_id;
+         $dbxref = chado_expand_var($dbxref, 'table', 'cvterm', $options);
+//echo "<pre>";var_dump($dbxref);echo "</pre><br><br><br>";
+         $obo_term = $dbxref->db_id->name . ':' . $dbxref->accession;
+         $obo_term .= ' (' . $dbxref->cvterm[0]->name . ')';
+         $obo_terms[] = $obo_term;
+      }
+echo "<pre>";var_dump($obo_terms);echo "</pre><br><br><br>";
+      
+    
       $rows[] = array(
         array('data' => $accession, 'width' => '15%'),
         $term->cvterm_id->definition,
+        implode(', ', $obo_terms),
       );
     } 
 
