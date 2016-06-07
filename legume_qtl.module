@@ -198,7 +198,8 @@ function legume_qtl_views_pre_render($view) {
   */
 function legume_qtl_views_query_alter($view, $query) {
   // If narrow search selected, don't alter query
-  if ($view->exposed_raw_input['narrow'] == 1) {
+  if (isset($view->exposed_raw_input['narrow']) 
+      && $view->exposed_raw_input['narrow'] == 1) {
     // Don't check ontologies for matches
     return;
   }
