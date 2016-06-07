@@ -77,7 +77,7 @@ function legume_qtl_add_qtl_search_mview() {
       pq.name AS expt_qtl_symbol,
       o.genus || ' ' || o.species AS organism,
       o.common_name,
-      co.organism_id AS organism_nid,
+      co.nid AS organism_nid,
       m.accession AS mnemonic,
       p.uniquename AS citation,
       cp.pub_id AS pub_nid,
@@ -86,7 +86,9 @@ function legume_qtl_add_qtl_search_mview() {
       tu.value AS trait_unit,
       tc.trait_class,
       tc.qtl_symbol,
+      tn.trait_name,
       tc.trait_description,
+      tn.obo_terms,
       s.name AS favorable_allele_source,
       cs.nid AS fas_nid,
       tmt.value AS treatment,
@@ -97,11 +99,11 @@ function legume_qtl_add_qtl_search_mview() {
       tr2.rawscore AS total_r2, 
       add.rawscore AS additivity,
       nm.name AS nearest_marker, 
-      nm.feature_id AS nearest_marker_id, 
+      cnm.nid AS nearest_marker_nid, 
       fml.name AS flanking_marker_low,
-      fml.feature_id AS flanking_marker_low_id,
+      cfml.nid AS flanking_marker_low_nid,
       fmh.name AS flanking_marker_high,
-      fmh.feature_id AS flanking_marker_high_id,
+      cfmh.nid AS flanking_marker_high_nid,
       comm.value AS comment
     
     FROM feature q
@@ -152,7 +154,7 @@ function legume_qtl_add_qtl_search_mview() {
         SELECT symf.feature_id, sym.name AS qtl_symbol, 
                sym.definition AS trait_description, t.name AS trait_class
         FROM feature q2 
-          -- get QTL symbol (== trait name) ...
+          -- get QTL symbol 
           LEFT JOIN feature_cvterm symf ON symf.feature_id=q2.feature_id 
           LEFT JOIN cvterm sym ON sym.cvterm_id=symf.cvterm_id
           LEFT JOIN feature_cvtermprop symp ON symp.feature_cvterm_id=symf.feature_cvterm_id 
@@ -167,6 +169,39 @@ function legume_qtl_add_qtl_search_mview() {
                                              AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
                     ) t ON t.subject_id=sym.cvterm_id
       ) tc ON tc.feature_id=q.feature_id
+        
+      -- trait name and OBO terms
+      LEFT JOIN (
+        SELECT tnf.feature_id, tnt.name AS trait_name, obo.obo_terms
+        FROM feature q2 
+          -- get QTL symbol 
+          LEFT JOIN feature_cvterm tnf ON tnf.feature_id=q2.feature_id 
+          LEFT JOIN cvterm tnt ON tnt.cvterm_id=tnf.cvterm_id
+          LEFT JOIN feature_cvtermprop tnp ON tnp.feature_cvterm_id=tnf.feature_cvterm_id 
+            AND tnp.type_id=(SELECT cvterm_id FROM cvterm 
+                              WHERE name='QTL Symbol' 
+                                    AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+          -- ... and use it to get the trait name
+          LEFT JOIN (SELECT subject_id, name FROM cvterm c 
+                       INNER JOIN cvterm_relationship tnr ON tnr.object_id=c.cvterm_id
+                     WHERE tnr.type_id=(SELECT cvterm_id FROM cvterm 
+                                       WHERE name='Has Trait Name' 
+                                             AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
+                    ) t ON t.subject_id=tnt.cvterm_id
+          LEFT JOIN (
+            SELECT t.cvterm_id, ARRAY_TO_STRING(ARRAY_AGG(dbx.accession), ',') AS obo_terms 
+            FROM cvterm t
+              INNER JOIN cv ON cv.cv_id=t.cv_id
+              LEFT JOIN (
+                SELECT cd.cvterm_id, dx.dbxref_id, (db.name||':'||dx.accession) AS accession 
+                FROM cvterm_dbxref cd 
+                  INNER JOIN dbxref dx ON dx.dbxref_id=cd.dbxref_id
+                  INNER JOIN db ON db.db_id=dx.db_id
+              ) dbx ON dbx.cvterm_id=t.cvterm_id
+            WHERE cv.name='LegumeInfo:traits'
+            GROUP BY t.cvterm_id
+          ) obo ON obo.cvterm_id=tnt.cvterm_id
+        ) tn ON tn.feature_id=q.feature_id
         
       -- Favorable Allele Source
       LEFT JOIN feature_stock fs 
@@ -236,6 +271,7 @@ function legume_qtl_add_qtl_search_mview() {
                AND cv_id=(SELECT cv_id FROM chado.cv 
                           WHERE name='feature_relationship'))
       LEFT JOIN feature nm ON nm.feature_id=nmr.object_id
+      LEFT JOIN public.chado_feature cnm ON cnm.feature_id = nm.feature_id
       
       -- flanking marker low
       LEFT JOIN feature_relationship fmlr 
@@ -245,6 +281,7 @@ function legume_qtl_add_qtl_search_mview() {
                                    AND cv_id=(SELECT cv_id FROM chado.cv 
                                               WHERE name='feature_relationship'))
       LEFT JOIN feature fml ON fml.feature_id=fmlr.object_id
+      LEFT JOIN public.chado_feature cfml ON cfml.feature_id = fml.feature_id
     
       -- flanking marker high
       LEFT JOIN feature_relationship fmhr ON fmhr.subject_id=q.feature_id 
@@ -253,6 +290,7 @@ function legume_qtl_add_qtl_search_mview() {
                                 AND cv_id=(SELECT cv_id FROM chado.cv 
                                            WHERE name='feature_relationship'))
       LEFT JOIN feature fmh ON fmh.feature_id=fmhr.object_id
+      LEFT JOIN public.chado_feature cfmh ON cfmh.feature_id = fmh.feature_id
         
       -- comment
       LEFT JOIN featureprop comm ON comm.feature_id = q.feature_id
@@ -261,11 +299,10 @@ function legume_qtl_add_qtl_search_mview() {
                                AND cv_id=(SELECT cv_id FROM chado.cv 
                                           WHERE name='feature_property'))
     
-    WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
+     WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
                      WHERE name='QTL'
                            AND cv_id=(SELECT cv_id FROM chado.cv 
-                                      WHERE name='sequence'))
-  ";
+                                      WHERE name='sequence'))";
   
   // Describes the table qtl_search
   $schema = array (
@@ -335,11 +372,20 @@ function legume_qtl_add_qtl_search_mview() {
         'type' => 'text',
         'NOT NULL' => FALSE,
       ),
+      'trait_name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'NOT NULL' => FALSE,
+      ),
       'trait_description' => array(
         'type' => 'text',
         'NOT NULL' => FALSE,
       ),
-     'favorable_allele_source' => array(
+      'obo_terms' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'favorable_allele_source' => array(
         'type' => 'text',
         'NOT NULL' => FALSE,
       ),
@@ -379,7 +425,7 @@ function legume_qtl_add_qtl_search_mview() {
         'type' => 'text',
         'not null' => FALSE,
       ),
-      'nearest_marker_id' => array(
+      'nearest_marker_nid' => array(
         'type' => 'int',
         'not null' => FALSE,
       ),
@@ -387,7 +433,7 @@ function legume_qtl_add_qtl_search_mview() {
         'type' => 'text',
         'not null' => FALSE,
       ),
-      'flanking_marker_low_id' => array(
+      'flanking_marker_low_nid' => array(
         'type' => 'int',
         'not null' => FALSE,
       ),
@@ -395,7 +441,7 @@ function legume_qtl_add_qtl_search_mview() {
         'type' => 'text',
         'not null' => FALSE,
       ),
-      'flanking_marker_high_id' => array(
+      'flanking_marker_high_nid' => array(
         'type' => 'int',
         'not null' => FALSE,
       ),
@@ -409,6 +455,7 @@ function legume_qtl_add_qtl_search_mview() {
       'QTL_search_indx2' => array('expt_qtl_symbol'),
       'QTL_search_indx3' => array('qtl_symbol'),
       'QTL_search_indx4' => array('trait_class'),
+      'QTL_search_indx5' => array('obo_terms'),
     ),
   );
   
@@ -430,7 +477,7 @@ function legume_qtl_add_qtl_search_mview() {
 function legume_qtl_views_integrate_qtl_search() {
   $integration = array (
     'table' => 'qtl_search',
-    'name' => 'qtl_search',
+    'name' => 'QTL',
     'type' => 'chado',
     'description' => '',
     'priority' => '-1',
@@ -469,7 +516,7 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'float',
         'handlers' => array (
           'filter' => array (
-            'name' => 'views_handler_filter_select_string',
+            'name' => 'tripal_views_handler_filter_select_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',
@@ -540,9 +587,35 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
+      'common_name' => array (
+        'name' => 'common_name',
+        'title' => 'common name',
+        'description' => 'Organism common name',
+        'type' => 'varchar',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
       'expt_qtl_symbol' => array (
         'name' => 'expt_qtl_symbol',
-        'title' => 'QTL name used in experiment',
+        'title' => 'QTL name used in publication',
         'description' => 'QTL name used in experiment',
         'type' => 'text',
         'handlers' => array (
@@ -618,6 +691,32 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
       
+      'obo_terms' => array (
+        'name' => 'obo_terms',
+        'title' => 'Associated ontology terms',
+        'description' => 'Ontology term associated with this trait',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'favorable_allele_source' => array (
         'name' => 'favorable_allele_source',
         'title' => 'Favorable Allele Source',
@@ -644,6 +743,32 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
+      'fas_nid' => array (
+        'name' => 'fas_nid',
+        'title' => 'fas_nid',
+        'description' => 'Favorable Allele Source nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+
       'flanking_marker_high' => array (
         'name' => 'flanking_marker_high',
         'title' => 'Right Flanking Marker',
@@ -661,6 +786,32 @@ function legume_qtl_views_integrate_qtl_search() {
           ),
           'argument' => array (
             'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'flanking_marker_high_nid' => array (
+        'name' => 'flanking_marker_high_nid',
+        'title' => 'Right Flanking Marker NID',
+        'description' => 'Right flanking marker NID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
@@ -696,6 +847,58 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
       
+      'flanking_marker_low_nid' => array (
+        'name' => 'flanking_marker_low_nid',
+        'title' => 'Left Flanking Marker NID',
+        'description' => 'Left flanking marker NID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'genus' => array (
+        'name' => 'genus',
+        'title' => 'Genus',
+        'description' => 'Organism genus',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'interval_calc_method' => array (
         'name' => 'interval_calc_method',
         'title' => 'Interval Calculation Method',
@@ -722,58 +925,6 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
       
-      'left_end' => array (
-        'name' => 'left_end',
-        'title' => 'Left Coordinate',
-        'description' => 'Left coordinate for QTL',
-        'type' => 'float',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'views_handler_filter_numeric',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field_numeric',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_numeric',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-  
-      'lg' => array (
-        'name' => 'lg',
-        'title' => 'Linkage Group',
-        'description' => 'Standardized linkage group name',
-        'type' => 'text',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_string',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-  
       'likelihood_ratio' => array (
         'name' => 'likelihood_ratio',
         'title' => 'Likelihood Ratio',
@@ -800,58 +951,6 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
-      'lis_lg_map_accession' => array (
-        'name' => 'lis_lg_map_accession',
-        'title' => 'LIS Map Name',
-        'description' => 'Linkage Group Map Name at LIS',
-        'type' => 'text',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_string',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-  
-      'lis_map_accession' => array (
-        'name' => 'lis_map_accession',
-        'title' => 'LIS Map Name',
-        'description' => 'Map set Name at LIS',
-        'type' => 'text',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_string',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-  
       'lod' => array (
         'name' => 'lod',
         'title' => 'LOD',
@@ -869,32 +968,6 @@ function legume_qtl_views_integrate_qtl_search() {
           ),
           'argument' => array (
             'name' => 'views_handler_argument_numeric',
-          ),
-          'relationship' => array (
-            'name' => 'views_handler_relationship',
-          ),
-        ),
-        'joins' => array (
-        ),
-      ),
-  
-      'map_name' => array (
-        'name' => 'map_name',
-        'title' => 'Map',
-        'description' => 'Genetic map name',
-        'type' => 'text',
-        'handlers' => array (
-          'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
-          ),
-          'field' => array (
-            'name' => 'views_handler_field',
-          ),
-          'sort' => array (
-            'name' => 'views_handler_sort',
-          ),
-          'argument' => array (
-            'name' => 'views_handler_argument_string',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
@@ -982,14 +1055,40 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
       
-      'organism' => array (
-        'name' => 'organism',
-        'title' => 'organism',
-        'description' => 'Organism name',
-        'type' => 'varchar',
+      'nearest_marker_nid' => array (
+        'name' => 'nearest_marker_nid',
+        'title' => 'Nearest Marker NID',
+        'description' => 'Nearest marker NID',
+        'type' => 'int',
         'handlers' => array (
           'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'obo_terms' => array (
+        'name' => 'obo_terms',
+        'title' => 'Associated ontology terms',
+        'description' => 'Ontology terms associated with this trait',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',
@@ -1007,7 +1106,7 @@ function legume_qtl_views_integrate_qtl_search() {
         'joins' => array (
         ),
       ),
-  
+      
       'org_nid' => array (
         'name' => 'org_nid',
         'title' => 'org_nid',
@@ -1034,11 +1133,11 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
-      'publication_lg' => array (
-        'name' => 'publication_lg',
-        'title' => 'Publication Linkage Group',
-        'description' => 'Linkage group used in publication',
-        'type' => 'text',
+      'organism' => array (
+        'name' => 'organism',
+        'title' => 'organism',
+        'description' => 'Organism name',
+        'type' => 'varchar',
         'handlers' => array (
           'filter' => array (
             'name' => 'tripal_views_handler_filter_select_string',
@@ -1060,10 +1159,62 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
-      'qtl_symbol' => array (
-        'name' => 'qtl_symbol',
-        'title' => 'QTL',
-        'description' => 'QTL symbol',
+      'pub_nid' => array (
+        'name' => 'pub_nid',
+        'title' => 'pub_nid',
+        'description' => 'Publication nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'qtl_id' => array (
+        'name' => 'qtl_id',
+        'title' => 'qtl_id',
+        'description' => 'QTL ID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'qtl_name' => array (
+        'name' => 'qtl_name',
+        'title' => 'QTL name',
+        'description' => 'QTL name',
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
@@ -1112,23 +1263,23 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
-      'right_end' => array (
-        'name' => 'right_end',
-        'title' => 'Right Coordinate',
-        'description' => 'Right coordinate for QTL',
-        'type' => 'float',
+      'qtl_symbol' => array (
+        'name' => 'qtl_symbol',
+        'title' => 'QTL Symbol',
+        'description' => 'QTL symbol',
+        'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'views_handler_filter_numeric',
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
-            'name' => 'views_handler_field_numeric',
+            'name' => 'views_handler_field',
           ),
           'sort' => array (
             'name' => 'views_handler_sort',
           ),
           'argument' => array (
-            'name' => 'views_handler_argument_numeric',
+            'name' => 'views_handler_argument_string',
           ),
           'relationship' => array (
             'name' => 'views_handler_relationship',
@@ -1137,7 +1288,33 @@ function legume_qtl_views_integrate_qtl_search() {
         'joins' => array (
         ),
       ),
-  
+      
+      'species' => array (
+        'name' => 'species',
+        'title' => 'Species',
+        'description' => 'Organism species',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'trait_class' => array (
         'name' => 'trait_class',
         'title' => 'Trait class',
@@ -1146,6 +1323,58 @@ function legume_qtl_views_integrate_qtl_search() {
         'handlers' => array (
           'filter' => array (
             'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'trait_name' => array (
+        'name' => 'trait_name',
+        'title' => 'Trait Name',
+        'description' => 'Official Trait Name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'trait_description' => array (
+        'name' => 'trait_description',
+        'title' => 'Trait Description',
+        'description' => 'Trait description',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',
