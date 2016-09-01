@@ -53,7 +53,7 @@ if (count($s_terms) > 0) {
          $obo_term .= ' (' . $dbxref->cvterm[0]->name . ')';
          $obo_terms[] = $obo_term;
       }
-echo "<pre>";var_dump($obo_terms);echo "</pre><br><br><br>";
+//echo "<pre>";var_dump($obo_terms);echo "</pre><br><br><br>";
       
     
       $rows[] = array(
