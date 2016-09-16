@@ -220,8 +220,7 @@ function legume_qtl_views_query_alter($view, $query) {
   $trait_cv = $results->fetchAll();
   $trait_cv_id = $trait_cv[0]->cv_id;
   $trait_info = ontology_search_setSimilarTerms($term, 
-                                                array($trait_cv_id=>'LegumeInfo:traits'), 
-                                                1000); //1000??!?!?!?!?!
+                                                array($trait_cv_id=>'LegumeInfo:traits'));
 
   // Use OBO terms and ontology heirarchy to find additional trait names.
   if ($trait_info) {
