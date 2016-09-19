@@ -29,10 +29,10 @@ function legume_qtl_node_view($node, $view_mode, $langcode) {
           '#weight' => -100,
         );
         
-        $node->content['tripal_feature_QTL_details'] = array(
-          '#markup' => theme('tripal_feature_QTL_details', array('node' => $node)),
-          '#tripal_toc_id'    => 'qtl_details',
-          '#tripal_toc_title' => 'QTL Details',
+        $node->content['tripal_feature_QTL_experiment'] = array(
+          '#markup' => theme('tripal_feature_QTL_experiment', array('node' => $node)),
+          '#tripal_toc_id'    => 'qtl_experiment',
+          '#tripal_toc_title' => 'Experiment',
           '#weight' => -90,
         );
 

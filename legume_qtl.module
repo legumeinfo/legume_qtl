@@ -113,9 +113,9 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
       'template' => 'tripal_feature_QTL_base',
       'path' => "$path/theme/templates"
     ),
-    'tripal_feature_QTL_details' => array(
+    'tripal_feature_QTL_experiment' => array(
       'arguments' => array('node' => NULL),
-      'template' => 'tripal_feature_QTL_details',
+      'template' => 'tripal_feature_QTL_experiment',
       'path' => "$path/theme/templates"
     ),
     'tripal_feature_Map_Pos' => array(
@@ -263,6 +263,18 @@ function legume_qtl_preprocess_tripal_feature_QTL_base(&$variables) {
 
 
 /**
+ * Add experiment information for the QTL 
+ *
+ * @param $variables
+ */
+function legume_qtl_preprocess_tripal_feature_QTL_experiment(&$variables) {
+  // Fill in $feature with QTL experiment 
+  $feature = $variables['node']->feature;
+  $feature->experiments = getQTLExperiments($feature->feature_id);
+}
+
+
+/**
  * getQTLDetails()
  *
  * @param $feature_id
@@ -281,6 +293,61 @@ function getQTLDetails($feature_id) {
 
 
 /**
+ * getQTLExperiment()
+ *
+ * @param $experiment_id
+ */
+function getQTLExperiments($qtl_id) {
+  $experiments = false;
+
+  $sql = "
+    SELECT p.project_id FROM {project} p
+      INNER JOIN {feature_project} fp ON fp.project_id=p.project_id
+    WHERE fp.feature_id=$qtl_id";
+  if ($res = chado_query($sql, array())) {
+    $experiments = array();
+    $exps = $res->fetchAll();
+    foreach ($exps as $exp) {
+      $experiment_id = $exp->project_id;
+      $sql = "
+        SELECT t.name, pp.value FROM {project} p
+          INNER JOIN {projectprop} pp ON pp.project_id=p.project_id
+          INNER JOIN {cvterm} t ON t.cvterm_id=pp.type_id
+        WHERE p.project_id=$experiment_id";
+      if ($res = chado_query($sql, array())) {
+        $experiment = array();
+        $props = $res->fetchAll();
+        foreach ($props as $prop) {
+          if ($prop->name == 'Project Description') {
+            $experiment['project_description'] = $prop->value;
+          }
+          else if ($prop->name == 'Project Comment') {
+            $experiment['project_comment'] = $prop->value;
+          }
+        }//each property
+      }
+  
+      $sql = "
+        SELECT g.description
+        FROM {project} p
+          INNER JOIN {nd_experiment_project} ep ON ep.project_id=p.project_id
+          INNER JOIN {nd_experiment} e ON e.nd_experiment_id=ep.nd_experiment_id
+          INNER JOIN {nd_geolocation} g ON g.nd_geolocation_id=e.nd_geolocation_id
+        WHERE p.project_id=$experiment_id";
+      if ($res = chado_query($sql, array())) {
+        $desc = $res->fetchObject();
+        $experiment['geolocation'] = $desc->description;
+      }
+
+      $experiments[] = $experiment;
+    }//each experiment
+  }
+
+  return $experiments;
+}//getQTLExperiment
+
+
+/**
  * getMapPositions()
  *
  * @param $feature_id
@@ -296,6 +363,33 @@ function getMapPositions($feature_id) {
   // Return the data
   return $mp;
 }//getMapPositions
+
+
+/**
+ * getStockLink()
+ *
+ * @param $stock_name
+ */
+function getStockLink($stock_name) {
+  // Construct stock link
+  //   example: /stock/Arachis/hypogaea/Cultivar/89xOL14-11-1-1-1-b2B
+   
+  $sql = "
+    SELECT s.uniquename, o.genus, o.species, t.name AS type FROM {stock} s
+      INNER JOIN {organism} o ON o.organism_id=s.organism_id
+      INNER JOIN {cvterm} t ON t.cvterm_id=s.type_id
+    WHERE
+      s.name='$stock_name' OR s.uniquename='$stock_name'";
+  if ($stock_res = chado_query($sql, array())) {
+    foreach ($stock_res as $stock) {
+      $stock_name = str_replace(' ', '-', $stock->uniquename);
+      $parts = array('stock', $stock->genus, $stock->species, $stock->type, $stock_name);
+      return implode('/', $parts);
+    }
+  }
+  
+  return false;
+}//getStockLink
 
 
 /**
