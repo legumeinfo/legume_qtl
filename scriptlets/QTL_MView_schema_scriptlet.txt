@@ -44,6 +44,10 @@ array (
       'type' => 'int',
       'not null' => TRUE,
     ),
+    'experiment_id' => array(
+      'type' => 'int',
+      'not null' => TRUE,
+    ),     
     'expt_trait_name' => array(
       'type' => 'text',
       'NOT NULL' => TRUE,

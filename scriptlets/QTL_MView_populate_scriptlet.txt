@@ -9,6 +9,7 @@ SELECT
   m.accession AS mnemonic,
   p.uniquename AS citation,
   cp.pub_id AS pub_nid,
+  e.project_id AS experiment_id,
   etn.value AS expt_trait_name,
   etd.value AS expt_trait_description,
   tu.value AS trait_unit,
