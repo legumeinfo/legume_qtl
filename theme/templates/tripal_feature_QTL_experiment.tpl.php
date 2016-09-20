@@ -3,8 +3,10 @@
 
   $qtl_details = $feature->qtl_details;
 //echo "<pre>";var_dump($qtl_details);echo "</pre>";
-  $experiments = $feature->experiments;
-//echo "<pre>";var_dump($experiments);echo "</pre>";
+
+  // Note that only be one experiment will be associated with a particular QTL
+  $experiment = $feature->experiments[0];
+//echo "<pre>";var_dump($experiment);echo "</pre>";
 ?>
 
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 

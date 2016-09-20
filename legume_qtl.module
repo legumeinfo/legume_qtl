@@ -342,6 +342,7 @@ function getQTLExperiments($qtl_id) {
       $experiments[] = $experiment;
     }//each experiment
   }
+echo "<pre>";var_dump($experiments);echo "</pre>";
 
   return $experiments;
 }//getQTLExperiment
