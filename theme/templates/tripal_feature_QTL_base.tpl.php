@@ -49,50 +49,6 @@
     array_push($map_array, $map);
   };
   $maps = (count($map_array) > 0) ? implode('; ', $map_array) : '';
-  
-  // Nearest Marker
-  $nearest_marker = 'unknown';
-  if ($qtl_details->nearest_marker) {
-    $nid = $qtl_details->nearest_marker_nid;
-    $name = $qtl_details->nearest_marker;
-    $nearest_marker = "<a href=\"/node/$nid\">$name</a>";
-  }
-
-  // Flanking Marker Low
-  $flanking_marker_low = '';
-  if ($qtl_details->flanking_marker_low) {
-    $nid = $qtl_details->flanking_marker_low_nid;
-    $name = $qtl_details->flanking_marker_low;
-    $flanking_marker_low = "<a href=\"/node/$nid\">$name</a>";
-  }
-//echo "<br><br>flanking marker low: <pre>";var_dump($flanking_marker_low);echo "</pre><br><br><br>";
-
-  // Flanking Marker High
-  $flanking_marker_high = '';
-  if ($qtl_details->flanking_marker_high) {
-    $nid = $qtl_details->flanking_marker_high_nid;
-    $name = $qtl_details->flanking_marker_high;
-    $flanking_marker_high = "<a href=\"/node/$nid\">$name</a>";
-  }
-
-  // LOD
-  $lod = $qtl_details->lod;
-
-  // Likelihood ratio
-  $likelihood_ratio = $qtl_details->likelihood_ratio;
-  
-  // Marker R2
-  $marker_r2 = $qtl_details->marker_r2;
-  
-  // Total R2
-  $total_r2 = $qtl_details->total_r2;
-  
-  // Additivity
-  $additivity = $qtl_details->additivity;
-
-  // Comments
-  $qtl_details = chado_expand_var($qtl_details, 'field', 'qtl_search.comment');
-  $comments = $qtl_details->comment;
 ?>
 
 <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> 
@@ -233,14 +189,6 @@
     ),
     $maps,
   );
-  // Comments
-  $rows[] = array(
-    array(
-      'data' => 'Comments',
-      'header' => TRUE,
-    ),
-    $comments,
-  );
  
   /////// SEPARATOR /////////
   
@@ -323,8 +271,35 @@
       'style' => 'background-color:#c9c9c9;color:#101010',
     ),
   );
+ 
+  // Favorable allele source
+  $favorable_allele_source = 'not specified';
+  if ($qtl_details->favorable_allele_source) {
+    // Construct stock link
+    //   example: /stock/Arachis/hypogaea/Cultivar/89xOL14-11-1-1-1-b2B
+    if ($stock_link = getStockLink("$qtl_details->favorable_allele_source")) {
+      $favorable_allele_source = l($qtl_details->favorable_allele_source, $stock_link);
+    }
+    else {
+      $favorable_allele_source = $qtl_details->favorable_allele_source;
+    }
+  }
+  $rows[] = array(
+    array(
+      'data' => 'Favorable Allele Source',
+      'header' => TRUE,
+      'width' => 200,
+    ),
+    $favorable_allele_source
+  );
   
- // Nearest Marker
+  // Nearest Marker
+  $nearest_marker = 'unknown';
+  if ($qtl_details->nearest_marker) {
+    $nid = $qtl_details->nearest_marker_nid;
+    $name = $qtl_details->nearest_marker;
+    $nearest_marker = "<a href=\"/node/$nid\">$name</a>";
+  }
   $rows[] = array(
     array(
       'data' => 'Nearest Marker',
@@ -333,7 +308,14 @@
     ),
     $nearest_marker
   );
+  
   // Flanking Marker Low
+  $flanking_marker_low = '';
+  if ($qtl_details->flanking_marker_low) {
+    $nid = $qtl_details->flanking_marker_low_nid;
+    $name = $qtl_details->flanking_marker_low;
+    $flanking_marker_low = "<a href=\"/node/$nid\">$name</a>";
+  }
   $rows[] = array(
     array(
       'data' => 'Flanking Marker Low',
@@ -341,7 +323,14 @@
     ),
     $flanking_marker_low
   );
+  
   // Flanking Marker High
+  $flanking_marker_high = '';
+  if ($qtl_details->flanking_marker_high) {
+    $nid = $qtl_details->flanking_marker_high_nid;
+    $name = $qtl_details->flanking_marker_high;
+    $flanking_marker_high = "<a href=\"/node/$nid\">$name</a>";
+  }
   $rows[] = array(
     array(
       'data' => 'Flanking Marker High',
@@ -355,7 +344,7 @@
       'data' => 'LOD',
       'header' => TRUE,
     ),
-    $lod
+    $qtl_details->lod
   );
   // Likelihood ratio
   $rows[] = array(
@@ -363,7 +352,7 @@
       'data' => 'Likelihood ratio',
       'header' => TRUE,
     ),
-    $likelihood_ratio
+    $qtl_details->likelihood_ratio
   );
   // Marker R2
   $rows[] = array(
@@ -371,7 +360,7 @@
       'data' => 'Marker R2',
       'header' => TRUE,
     ),
-    $marker_r2
+    $qtl_details->marker_r2
   );
   // Total R2
   $rows[] = array(
@@ -379,15 +368,16 @@
       'data' => 'Total R2',
       'header' => TRUE,
     ),
-    $total_r2
+    $qtl_details->total_r2
   );
+  
   // Additivity
   $rows[] = array(
     array(
       'data' => 'Additivity',
       'header' => TRUE,
     ),
-    $additivity
+    $qtl_details->additivity
   );
 
   /////// SEPARATOR /////////
@@ -406,6 +396,8 @@
   );
   
   // Comments
+  $qtl_details = chado_expand_var($qtl_details, 'field', 'qtl_search.comment');
+  $comments = $qtl_details->comment;
   $rows[] = array(
     array(
       'data' => 'Comments',
