@@ -128,11 +128,13 @@ function legume_qtl_theme($existing, $type, $theme, $path) {
       'template' => 'tripal_feature_QTL_measurements',
       'path' => "$path/theme/templates"
     ),
+/* eksc- trait is described in overview so this is redundant
     'tripal_feature_QTL_trait' => array(
       'arguments' => array('node' => NULL),
       'template' => 'tripal_feature_QTL_trait',
       'path' => "$path/theme/templates"
     ),
+*/
   );
 
   return $themes;
