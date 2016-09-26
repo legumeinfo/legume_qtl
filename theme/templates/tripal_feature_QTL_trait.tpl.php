@@ -1,4 +1,5 @@
 <?php
+/* eksc- no longer used (09/26/16)
 $feature = $variables['node']->feature;
 
 $options = array('return_array' => 1);
@@ -87,3 +88,4 @@ if (count($s_terms) > 0) {
     $i++;
   }
 }
+*/
