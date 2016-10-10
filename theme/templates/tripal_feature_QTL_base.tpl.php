@@ -298,7 +298,7 @@
   if ($qtl_details->nearest_marker) {
     $nid = $qtl_details->nearest_marker_nid;
     $name = $qtl_details->nearest_marker;
-    $nearest_marker = "<a href=\"/node/$nid\">$name</a>";
+    $nearest_marker = "<a id='nearest_marker_link' href=\"/node/$nid\">$name</a>";
   }
   $rows[] = array(
     array(
