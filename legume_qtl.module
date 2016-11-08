@@ -186,11 +186,11 @@ function legume_qtl_views_pre_render($view) {
     $view->attachment_before = "<p><b>Found " . $view->query->pager->get_total_items() . " QTL</b></p>";
   
     // Display similar (sibling) traits below table
-    if (isset($_SESSION['related_searches'])) {
+    if (isset($_SESSION['related_searches']) && $_SESSION['related_searches']) {
       $simliar_traits = unserialize($_SESSION['related_searches']);
       unset($_SESSION['related_searches']);
-      $view->attachment_after = "<p><b>Related traits: " . implode(', ', $simliar_traits) . "</b></p>";
-   }
+      $view->attachment_after = "<p><b>Possible related traits: " . implode(', ', $simliar_traits) . "</b></p>";
+    }
   }
 }//legume_qtl_views_pre_render
 
@@ -222,13 +222,13 @@ function legume_qtl_views_query_alter($view, $query) {
   $trait_cv = $results->fetchAll();
   $trait_cv_id = $trait_cv[0]->cv_id;
   $trait_info = ontology_search_setSimilarTerms($term, 
-                                                           array($trait_cv_id=>'LegumeInfo:traits'));
+                                                array($trait_cv_id=>'LegumeInfo:traits'));
 
   // Use OBO terms and ontology heirarchy to find additional trait names.
   if ($trait_info) {
     $matches = getQTLbyOBOterms($term, $trait_info);
     
-    if (isset($matches['child_matches']) && count($matches['child_matches']) > 0) {
+    if (isset($matches['child_matches']) && $matches['child_matches']) {
       // Extract trait names from the child matches (traits found through 
       //  child OBO terms attached to initial list of traits that were found 
       //  via string  similarity)
@@ -390,7 +390,19 @@ function getStockLink($stock_name) {
       return implode('/', $parts);
     }
   }
-  
+/*
+  // Use NID
+  $sql =  "
+    SELECT nid FROM {stock} s
+      INNER JOIN chado_stock cs ON cs.stock_id=s.stock_id
+    WHERE s.name='$stock_name' OR s.uniquename='$stock_name'";
+  if ($stock_res = chado_query($sql, array())) {
+    foreach ($stock_res as $stock) {
+      return "/node/" . $stock->nid;
+    }
+  }
+*/
+
   return false;
 }//getStockLink
 
@@ -485,6 +497,10 @@ function makeMapLink($map_position) {
   * Find child and matching QTL via attached OBO terms and ontology hierarchies.
   */
 function getQTLbyOBOterms($term, $traits) {
+  $child_QTL = false;
+  $other_QTL = false;
+  
+/*
   // Get obo terms attached to these traits
   $sql = "
     SELECT dbx.cvterm_id, dbx.dbxref_id, dbx.accession 
@@ -519,7 +535,7 @@ function getQTLbyOBOterms($term, $traits) {
       }//each sibling
     }
   }//each trait OBO term found
-
+*/
  
   // Get all obo terms that match input term
   
@@ -535,7 +551,7 @@ function getQTLbyOBOterms($term, $traits) {
   }
   
   // Get similar terms
-  $obo_terms = ontology_search_setSimilarTerms($term, $search_ontologies, 1000); //1000??!?!?!?!?!
+  $obo_terms = ontology_search_setSimilarTerms($term, $search_ontologies);
   if ($obo_terms) {
     // Add child and sib iterms to lists
     // NOTE: there is likely to be duplicate OBO term in the child and sib lists; 
