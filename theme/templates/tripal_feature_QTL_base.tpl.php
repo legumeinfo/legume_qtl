@@ -298,7 +298,8 @@
   if ($qtl_details->nearest_marker) {
     $nid = $qtl_details->nearest_marker_nid;
     $name = $qtl_details->nearest_marker;
-    $nearest_marker = "<a id='nearest_marker_link' href=\"/node/$nid\">$name</a>";
+    $url = getMarkerURL($nid);
+    $nearest_marker = "<a id='nearest_marker_link' href=\"/$url\">$name</a>";
   }
   $rows[] = array(
     array(
@@ -314,7 +315,8 @@
   if ($qtl_details->flanking_marker_low) {
     $nid = $qtl_details->flanking_marker_low_nid;
     $name = $qtl_details->flanking_marker_low;
-    $flanking_marker_low = "<a href=\"/node/$nid\">$name</a>";
+    $url = getMarkerURL($nid);
+    $flanking_marker_low = "<a href=\"/$url\">$name</a>";
   }
   $rows[] = array(
     array(
@@ -329,7 +331,8 @@
   if ($qtl_details->flanking_marker_high) {
     $nid = $qtl_details->flanking_marker_high_nid;
     $name = $qtl_details->flanking_marker_high;
-    $flanking_marker_high = "<a href=\"/node/$nid\">$name</a>";
+    $url = getMarkerURL($nid);
+    $flanking_marker_high = "<a href=\"/$url\">$name</a>";
   }
   $rows[] = array(
     array(
@@ -431,3 +434,19 @@
   // accept user corrections
   print correctThis("and include QTL name and publication");
   
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+function getMarkerURL($nid){
+  $sql = "SELECT alias FROM url_alias WHERE source='node/$nid'";
+  $res = chado_query($sql); 
+  if (($rows = $res->fetchAll()) && isset($rows[0]->alias) && $rows[0]->alias != '') {
+    return $rows[0]->alias;
+  }
+  else {
+    return "node/$nid";
+  }
+}//getMarkerURL
+
+
+
