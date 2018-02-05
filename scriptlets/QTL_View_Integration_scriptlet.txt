@@ -91,7 +91,7 @@ array (
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
+            'name' => 'tripal_views_handler_filter_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',
