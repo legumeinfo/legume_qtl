@@ -1,5 +1,22 @@
 <?php
-//eksc: copied from tripal_feature; purpose as yet unknown
+/**
+ * Implements hook_enable().
+ * Enable default views when module is enabled
+ *
+ * @ingroup legume_qtl
+ */
+function legume_qtl_enable() {
+  // Disable all default views provided by this module
+  require_once("legume_qtl.views_default.inc");
+
+  $views = legume_qtl_views_default_views();
+  foreach (array_keys($views) as $view_name) {
+print "Enable view $view_name\n";
+    tripal_enable_view($view_name);
+  }
+}
+
+
 /**
  * Implements hook_disable().
  * Disable default views when module is disabled
@@ -10,9 +27,10 @@ function legume_qtl_disable() {
 
   // Disable all default views provided by this module
   require_once("legume_qtl.views_default.inc");
+  
   $views = legume_qtl_views_default_views();
   foreach (array_keys($views) as $view_name) {
-    tripal_disable_view($view_name,FALSE,array('suppress_error' => TRUE));
+    tripal_disable_view($view_name, FALSE, array('suppress_error' => TRUE));
   }
 }
 
@@ -42,25 +60,48 @@ function legume_qtl_requirements($phase) {
  */
 function legume_qtl_install() {
    // create the module's data directory
-   tripal_create_moddir('legume_qtl');
+   tripal_create_files_dir('legume_qtl');
    
-   // add the materializedviews
+print "Add mview\n";
+   // add the materialized views
    legume_qtl_add_qtl_search_mview();
    
+print "Add view integration\n";
    // we want to integrate the materialized views so that they
    // are available for Drupal Views, upon which our search forms are built
-   legume_qtl_views_integrate_qtl_search();
+   if (!tripal_is_table_integrated('qtl_search', $priority)) {
+print "View integration not yet integrated\n";
+     legume_qtl_views_integrate_qtl_search();
+   }
 }
 
 /**
  * Implementation of hook_uninstall().
  */
 function legume_qtl_uninstall() {
+print "\nUninstall legume_qtl\n";
+
+  // Drop the View, if it exists
+print "\nTry to drop view 'qtl'\n";
+  if ($view = views_get_view('QTL')) {
+print "delete view 'qtl'\n";
+    views_delete_view($view);
+  }
   
-  // Drop the MView table if it exists
-  $mview_id = tripal_mviews_get_mview_id('qtl_search');
+  // Remove the View integration, if it exists
+print "\nTry to view integration 'qtl_search'\n";
+  if (tripal_is_table_integrated('qtl_search')) {
+print "delete integration 'qtl_search'\n";
+    tripal_remove_views_integration('qtl_search');
+  }
+  
+  // Drop the MView table, if it exists
+print "\nTry to drop mview 'qtl_search'\n";
+  $mview_id = tripal_get_mview_id('qtl_search');
+print "This mview has id $mview_id\n";
   if ($mview_id) {
-    tripal_mviews_action("delete", $mview_id);
+print "delete MView 'qtl_search'\n";
+    tripal_delete_mview($mview_id);
   }
 }
 
@@ -81,6 +122,7 @@ function legume_qtl_add_qtl_search_mview() {
       m.accession AS mnemonic,
       p.uniquename AS citation,
       cp.pub_id AS pub_nid,
+      e.project_id AS experiment_id,
       etn.value AS expt_trait_name,
       etd.value AS expt_trait_description,
       tu.value AS trait_unit,
@@ -105,50 +147,50 @@ function legume_qtl_add_qtl_search_mview() {
       fmh.name AS flanking_marker_high,
       cfmh.nid AS flanking_marker_high_nid,
       comm.value AS comment
-    
+
     FROM feature q
-    
+
       -- get nid for QTL feature
       INNER JOIN public.chado_feature cf ON cf.feature_id = q.feature_id
-    
+
       INNER JOIN organism o ON o.organism_id=q.organism_id
       INNER JOIN public.chado_organism co ON co.organism_id = o.organism_id
       INNER JOIN organism_dbxref mx ON mx.organism_id=o.organism_id
       INNER JOIN dbxref m ON m.dbxref_id=mx.dbxref_id 
            AND m.db_id=(SELECT db_id FROM db WHERE name='uniprot:species')
-           
+       
       -- experiment and publication
       INNER JOIN feature_project fp ON fp.feature_id=q.feature_id
       INNER JOIN project e ON e.project_id=fp.project_id
       INNER JOIN project_pub pp ON pp.project_id=e.project_id
       INNER JOIN pub p ON p.pub_id=pp.pub_id
       INNER JOIN public.chado_pub cp ON cp.pub_id=p.pub_id
-        
+    
       -- QTL name used in publication
       LEFT JOIN feature_synonym pqs ON pqs.feature_id=q.feature_id
       LEFT JOIN synonym pq ON pq.synonym_id=pqs.synonym_id
-    
+
       -- experiment trait name
       INNER JOIN featureprop etn ON etn.feature_id = q.feature_id
         AND etn.type_id=(SELECT cvterm_id FROM chado.cvterm 
                          WHERE name='Experiment Trait Name'
                                AND cv_id=(SELECT cv_id FROM chado.cv 
                                           WHERE name='feature_property'))
-                             
+                         
       -- experiment trait description
       LEFT JOIN featureprop etd ON etd.feature_id = q.feature_id
         AND etd.type_id=(SELECT cvterm_id FROM chado.cvterm 
                                 WHERE name='Experiment Trait Description'
                                       AND cv_id=(SELECT cv_id FROM chado.cv 
                                                  WHERE name='feature_property'))
-                                 
+                             
       LEFT JOIN featureprop tu 
         on tu.feature_id=q.feature_id
            and tu.type_id=(select cvterm_id from cvterm
                             where name='Trait Unit'
                                   and cv_id=(select cv_id from cv
                                              where name='feature_property'))
-    
+
       -- trait class
       LEFT JOIN (
         SELECT symf.feature_id, sym.name AS qtl_symbol, 
@@ -169,7 +211,7 @@ function legume_qtl_add_qtl_search_mview() {
                                              AND cv_id=(SELECT cv_id FROM cv WHERE name='local'))
                     ) t ON t.subject_id=sym.cvterm_id
       ) tc ON tc.feature_id=q.feature_id
-        
+    
       -- trait name and OBO terms
       LEFT JOIN (
         SELECT tnf.feature_id, tnt.name AS trait_name, obo.obo_terms
@@ -202,7 +244,7 @@ function legume_qtl_add_qtl_search_mview() {
             GROUP BY t.cvterm_id
           ) obo ON obo.cvterm_id=tnt.cvterm_id
         ) tn ON tn.feature_id=q.feature_id
-        
+    
       -- Favorable Allele Source
       LEFT JOIN feature_stock fs 
         ON fs.feature_id=q.feature_id
@@ -212,21 +254,21 @@ function legume_qtl_add_qtl_search_mview() {
                                            WHERE name='local'))
       LEFT JOIN stock s ON s.stock_id=fs.stock_id
       LEFT JOIN public.chado_stock cs on cs.stock_id=s.stock_id
-    
+
       -- treatment
       LEFT JOIN featureprop tmt ON tmt.feature_id = q.feature_id
         AND tmt.type_id=(SELECT cvterm_id FROM chado.cvterm 
                          WHERE name='QTL Study Treatment'
                                AND cv_id=(SELECT cv_id FROM chado.cv 
                                           WHERE name='feature_property'))
-    
+
       -- analysis method
       LEFT JOIN featureprop meth ON meth.feature_id = q.feature_id
         AND meth.type_id=(SELECT cvterm_id FROM chado.cvterm 
                           WHERE name='QTL Analysis Method'
                                 AND cv_id=(SELECT cv_id FROM chado.cv 
                                            WHERE name='feature_property'))
-    
+
       -- LOD
       LEFT JOIN (
         SELECT af.feature_id, af.rawscore
@@ -234,35 +276,35 @@ function legume_qtl_add_qtl_search_mview() {
           INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
         WHERE a.name='LOD'
       ) lod ON lod.feature_id=q.feature_id
-    
+
       -- likelihood ratio
       LEFT JOIN (
         SELECT af.feature_id, af.rawscore FROM analysis a 
           INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
         WHERE a.name='likelihood ratio'
       ) lr ON lr.feature_id=q.feature_id
-      
+  
       -- marker R2
       LEFT JOIN (
         SELECT af.feature_id, af.rawscore FROM analysis a 
           INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
         WHERE a.name='marker R2'
       ) mr2 ON mr2.feature_id=q.feature_id
-      
+  
       -- total R2
       LEFT JOIN (
         SELECT af.feature_id, af.rawscore FROM analysis a 
           INNER JOIN analysisfeature af ON af.analysis_id=a.analysis_id
         WHERE a.name='total R2'
       ) tr2 ON tr2.feature_id=q.feature_id
-      
+  
       -- additivity
       LEFT JOIN (
         SELECT AF.feature_id, AF.rawscore FROM analysis A 
           INNER JOIN analysisfeature AF ON AF.analysis_id=A.analysis_id
         WHERE A.name='additivity'
       ) add ON add.feature_id=q.feature_id  
-    
+
       -- nearest marker
       LEFT JOIN feature_relationship nmr
         ON nmr.subject_id=q.feature_id 
@@ -272,7 +314,7 @@ function legume_qtl_add_qtl_search_mview() {
                           WHERE name='feature_relationship'))
       LEFT JOIN feature nm ON nm.feature_id=nmr.object_id
       LEFT JOIN public.chado_feature cnm ON cnm.feature_id = nm.feature_id
-      
+  
       -- flanking marker low
       LEFT JOIN feature_relationship fmlr 
         ON fmlr.subject_id=q.feature_id 
@@ -282,7 +324,7 @@ function legume_qtl_add_qtl_search_mview() {
                                               WHERE name='feature_relationship'))
       LEFT JOIN feature fml ON fml.feature_id=fmlr.object_id
       LEFT JOIN public.chado_feature cfml ON cfml.feature_id = fml.feature_id
-    
+
       -- flanking marker high
       LEFT JOIN feature_relationship fmhr ON fmhr.subject_id=q.feature_id 
         AND FMHR.type_id=(SELECT cvterm_id FROM chado.cvterm 
@@ -291,18 +333,19 @@ function legume_qtl_add_qtl_search_mview() {
                                            WHERE name='feature_relationship'))
       LEFT JOIN feature fmh ON fmh.feature_id=fmhr.object_id
       LEFT JOIN public.chado_feature cfmh ON cfmh.feature_id = fmh.feature_id
-        
+    
       -- comment
       LEFT JOIN featureprop comm ON comm.feature_id = q.feature_id
         AND comm.type_id=(SELECT cvterm_id FROM chado.cvterm 
                          WHERE name='comment'
                                AND cv_id=(SELECT cv_id FROM chado.cv 
                                           WHERE name='feature_property'))
-    
+
      WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
                      WHERE name='QTL'
                            AND cv_id=(SELECT cv_id FROM chado.cv 
-                                      WHERE name='sequence'))";
+                                      WHERE name='sequence'))
+";
   
   // Describes the table qtl_search
   $schema = array (
@@ -351,6 +394,10 @@ function legume_qtl_add_qtl_search_mview() {
         'type' => 'int',
         'not null' => TRUE,
       ),
+      'experiment_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),     
       'expt_trait_name' => array(
         'type' => 'text',
         'NOT NULL' => TRUE,
@@ -460,13 +507,21 @@ function legume_qtl_add_qtl_search_mview() {
   );
   
   // add a comment to make sure this view makes sense to the site administator
-  $comment = t('This view is used to provide a table for searching QTLs.');
-  tripal_add_mview(
-    'qtl_search', // name of materialized view
-    'legume_qtl', // name of module submitting view
-    $schema,      // schema api array representation
-    $sql,         // sql query that loads the mview
-    $comment );
+  if (!tripal_get_mview_id('qtl_search')) {
+    $comment = t('This view is used to provide a table for searching QTLs.');
+    tripal_add_mview(
+      'qtl_search', // name of materialized view
+      'legume_qtl', // name of module submitting view
+      $schema,      // schema api array representation
+      $sql,         // sql query that loads the mview
+      $comment );
+  }
+  
+  // populate the MView
+  if ($mview_id = tripal_get_mview_id('qtl_search')) {
+    tripal_refresh_mview($mview_id);
+    //OR: tripal_populate_mview($mview_id)? no job launcher
+  }
 }
 
 
@@ -568,7 +623,7 @@ function legume_qtl_views_integrate_qtl_search() {
         'type' => 'text',
         'handlers' => array (
           'filter' => array (
-            'name' => 'tripal_views_handler_filter_select_string',
+            'name' => 'tripal_views_handler_filter_string',
           ),
           'field' => array (
             'name' => 'views_handler_field',
@@ -613,6 +668,32 @@ function legume_qtl_views_integrate_qtl_search() {
         ),
       ),
   
+      'experiment_id' => array (
+        'name' => 'experiment_id',
+        'title' => 'experiment_id',
+        'description' => 'Experiment (project) ID',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
       'expt_qtl_symbol' => array (
         'name' => 'expt_qtl_symbol',
         'title' => 'QTL name used in publication',
@@ -1472,9 +1553,10 @@ function legume_qtl_views_integrate_qtl_search() {
       ),
   
     ),
-  );  
+  )
+;  
 
-  // add the array above that will integrate our qtl_search materialized view
-  // for use with Drupal Views
+  // the array above will integrate our qtl_search materialized with Drupal Views
   tripal_views_integration_add_entry($integration); 
+  tripal_add_views_integration($integration);
 }

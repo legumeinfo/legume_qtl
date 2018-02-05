@@ -19,1183 +19,473 @@ function legume_qtl_views_default_views() {
  * @ingroup legume_qtl
  */
 function legume_qtl_defaultvalue_user_qtl() {
-  $view = new view;
-  $view->name = 'qtl_search';
+  $view = new view();
+  $view->name = 'qtl';
   $view->description = 'QTL';
   $view->tag = '';
   $view->base_table = 'qtl_search';
+  $view->human_name = '';
   $view->core = 7;
   $view->api_version = '3.0';
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+  $view->disabled = FALSE; // Edit this to true to make a default view disabled initially 
+
   // DEFAULT VIEW
   $handler = $view->new_display('default', 'Master', 'default');
-  
+
   $handler->display->display_options['title'] = 'QTL';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['items_per_page'] = 25;
   $handler->display->display_options['style_plugin'] = 'table';
-  $handler->display->display_options['row_plugin'] = 'node';
-
-  $handler->display->display_options['fields'] = array(
-    'common_name' => array(
-      'label' => 'Species Common Name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'common_name',
-      'table' => 'qtl_search',
-      'field' => 'common_name',
-      'relationship' => 'none',
-    ),
-    'organism' => array(
-      'label' => 'Species',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => '[common_name]',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'organism',
-      'table' => 'qtl_search',
-      'field' => 'organism',
-      'relationship' => 'none',
-    ),
+  $handler->display->display_options['style_options']['grouping'] = '';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'qtl_nid' => 'qtl_nid',
+    'qtl_symbol' => 'qtl_symbol',
+    'expt_qtl_symbol' => 'expt_qtl_symbol',
+    'organism' => 'organism',
+    'common_name' => 'common_name',
+    'mnemonic' => 'mnemonic',
+    'citation' => 'citation',
+    'expt_trait_name' => 'expt_trait_name',
+    'expt_trait_description' => 'expt_trait_description',
+    'trait_unit' => 'trait_unit',
+    'trait_class' => 'trait_class',
+    'favorable_allele_source' => 'favorable_allele_source',
+    'treatment' => 'treatment',
+    'analysis_method' => 'analysis_method',
+    'lod' => 'lod',
+    'likelihood_ratio' => 'likelihood_ratio',
+    'marker_r2' => 'marker_r2',
+    'total_r2' => 'total_r2',
+    'additivity' => 'additivity',
+    'nearest_marker' => 'nearest_marker',
+    'flanking_marker_low' => 'flanking_marker_low',
+    'flanking_marker_high' => 'flanking_marker_high',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
     'qtl_nid' => array(
-      'label' => 'qtl_nid',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'set_precision' => FALSE,
-      'precision' => 0,
-      'decimal' => '.',
+      'sortable' => 0,
       'separator' => '',
-      'format_plural' => 0,
-      'format_plural_singular' => '1',
-      'format_plural_plural' => '@count',
-      'prefix' => '',
-      'suffix' => '',
-      'type' => 'separator',
-      'exclude' => 1,
-      'id' => 'qtl_nid',
-      'table' => 'qtl_search',
-      'field' => 'qtl_nid',
-      'relationship' => 'none',
     ),
     'qtl_name' => array(
-      'label' => 'QTL name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => 'node/[qtl_nid]',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'qtl_name',
-      'table' => 'qtl_search',
-      'field' => 'qtl_name',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'qtl_symbol' => array(
-      'label' => 'QTL symbol',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => 'node/[qtl_nid]',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'qtl_symbol',
-      'table' => 'qtl_search',
-      'field' => 'qtl_symbol',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'expt_qtl_symbol' => array(
-      'label' => 'Published QTL Symbol',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'expt_qtl_symbol',
-      'table' => 'qtl_search',
-      'field' => 'expt_qtl_symbol',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
+    ),
+    'organism' => array(
+      'sortable' => 1,
+      'separator' => '',
+    ),
+    'common_name' => array(
+      'sortable' => 1,
+      'separator' => '',
     ),
     'mnemonic' => array(
-      'label' => 'Uniprot Species Mnemonic',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'mnemonic',
-      'table' => 'qtl_search',
-      'field' => 'mnemonic',
-      'relationship' => 'none',
-    ),
-    'pub_nid' => array(
-      'label' => 'pub_nid',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'set_precision' => FALSE,
-      'precision' => 0,
-      'decimal' => '.',
+      'sortable' => 1,
       'separator' => '',
-      'format_plural' => 0,
-      'format_plural_singular' => '1',
-      'format_plural_plural' => '@count',
-      'prefix' => '',
-      'suffix' => '',
-      'type' => 'separator',
-      'exclude' => 1,
-      'id' => 'pub_nid',
-      'table' => 'qtl_search',
-      'field' => 'pub_nid',
-      'relationship' => 'none',
     ),
     'citation' => array(
-      'label' => 'Citation',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => 'pub/[pub_nid]',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'citation',
-      'table' => 'qtl_search',
-      'field' => 'citation',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'expt_trait_name' => array(
-      'label' => 'Published Trait Name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'expt_trait_name',
-      'table' => 'qtl_search',
-      'field' => 'expt_trait_name',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'expt_trait_description' => array(
-      'label' => 'Expt Trait Description',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'expt_trait_description',
-      'table' => 'qtl_search',
-      'field' => 'expt_trait_description',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
+    ),
+    'obo_terms' => array(
+      'sortable' => 0,
+      'separator' => '',
     ),
     'trait_unit' => array(
-      'label' => 'Trait Unit',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'trait_unit',
-      'table' => 'qtl_search',
-      'field' => 'trait_unit',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'trait_class' => array(
-      'label' => 'Trait Class',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'trait_class',
-      'table' => 'qtl_search',
-      'field' => 'trait_class',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'favorable_allele_source' => array(
-      'label' => 'Favorable Allele Source',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'favorable_allele_source',
-      'table' => 'qtl_search',
-      'field' => 'favorable_allele_source',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'treatment' => array(
-      'label' => 'Treatment',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'treatment',
-      'table' => 'qtl_search',
-      'field' => 'treatment',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'analysis_method' => array(
-      'label' => 'Analysis Method',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'analysis_method',
-      'table' => 'qtl_search',
-      'field' => 'analysis_method',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'lod' => array(
-      'label' => 'LOD threshold',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'lod',
-      'table' => 'qtl_search',
-      'field' => 'lod',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'likelihood_ratio' => array(
-      'label' => 'Likelihood Ratio',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'likelihood_ratio',
-      'table' => 'qtl_search',
-      'field' => 'likelihood_ratio',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'marker_r2' => array(
-      'label' => 'Marker R2',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'marker_r2',
-      'table' => 'qtl_search',
-      'field' => 'marker_r2',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'total_r2' => array(
-      'label' => 'Total R2',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'total_r2',
-      'table' => 'qtl_search',
-      'field' => 'total_r2',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
     'additivity' => array(
-      'label' => 'Additivity',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'additivity',
-      'table' => 'qtl_search',
-      'field' => 'additivity',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
-    
-    'nearest_marker_id' => array(
-      'label' => 'Nearest marker ID',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'nearest_marker_id',
-      'table' => 'qtl_search',
-      'field' => 'nearest_marker_id',
-      'relationship' => 'none',
-    ),  
-
     'nearest_marker' => array(
-      'label' => 'Nearest marker',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'nearest_marker',
-      'table' => 'qtl_search',
-      'field' => 'nearest_marker',
-      'relationship' => 'none',
-    ),  
-    
+      'sortable' => 1,
+      'separator' => '',
+    ),
     'flanking_marker_low' => array(
-      'label' => 'Flanking marker low',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'flanking_marker_low',
-      'table' => 'qtl_search',
-      'field' => 'flanking_marker_low',
-      'relationship' => 'none',
-    ),  
+      'sortable' => 1,
+      'separator' => '',
+    ),
     'flanking_marker_high' => array(
-      'label' => 'Flanking marker high',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'flanking_marker_high',
-      'table' => 'qtl_search',
-      'field' => 'flanking_marker_high',
-      'relationship' => 'none',
+      'sortable' => 1,
+      'separator' => '',
     ),
   );
+  // No results behavior: Global: Text area 
+  $handler->display->display_options['empty']['text']['id'] = 'area';
+  $handler->display->display_options['empty']['text']['table'] = 'views';
+  $handler->display->display_options['empty']['text']['field'] = 'area';
+  $handler->display->display_options['empty']['text']['content'] = 'No QTL records found. Please select your search options, then press "Search".';
+  $handler->display->display_options['empty']['text']['format'] = '3';
+  // Field: QTL: common name 
+  $handler->display->display_options['fields']['common_name']['id'] = 'common_name';
+  $handler->display->display_options['fields']['common_name']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['common_name']['field'] = 'common_name';
+  $handler->display->display_options['fields']['common_name']['label'] = 'Species Common Name';
+  $handler->display->display_options['fields']['common_name']['exclude'] = TRUE;
+  // Field: QTL: Species mnemonic 
+  $handler->display->display_options['fields']['mnemonic']['id'] = 'mnemonic';
+  $handler->display->display_options['fields']['mnemonic']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['mnemonic']['field'] = 'mnemonic';
+  $handler->display->display_options['fields']['mnemonic']['label'] = 'Uniprot Species Mnemonic';
+  $handler->display->display_options['fields']['mnemonic']['exclude'] = TRUE;
+  // Field: QTL: org_nid 
+  $handler->display->display_options['fields']['org_nid']['id'] = 'org_nid';
+  $handler->display->display_options['fields']['org_nid']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['org_nid']['field'] = 'org_nid';
+  $handler->display->display_options['fields']['org_nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['org_nid']['separator'] = '';
+  // Field: QTL: organism 
+  $handler->display->display_options['fields']['organism']['id'] = 'organism';
+  $handler->display->display_options['fields']['organism']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['organism']['field'] = 'organism';
+  $handler->display->display_options['fields']['organism']['label'] = 'Organism';
+  $handler->display->display_options['fields']['organism']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['organism']['alter']['path'] = 'node/[org_nid]';
+  // Field: QTL: Trait class 
+  $handler->display->display_options['fields']['trait_class']['id'] = 'trait_class';
+  $handler->display->display_options['fields']['trait_class']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['trait_class']['field'] = 'trait_class';
+  $handler->display->display_options['fields']['trait_class']['label'] = 'Trait Class';
+  // Field: QTL: qtl_nid 
+  $handler->display->display_options['fields']['qtl_nid']['id'] = 'qtl_nid';
+  $handler->display->display_options['fields']['qtl_nid']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['qtl_nid']['field'] = 'qtl_nid';
+  $handler->display->display_options['fields']['qtl_nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['qtl_nid']['separator'] = '';
+  // Field: QTL: QTL name 
+  $handler->display->display_options['fields']['qtl_name']['id'] = 'qtl_name';
+  $handler->display->display_options['fields']['qtl_name']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['qtl_name']['field'] = 'qtl_name';
+  $handler->display->display_options['fields']['qtl_name']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['qtl_name']['alter']['path'] = 'node/[qtl_nid]';
+  // Field: QTL: QTL Symbol 
+  $handler->display->display_options['fields']['qtl_symbol']['id'] = 'qtl_symbol';
+  $handler->display->display_options['fields']['qtl_symbol']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['qtl_symbol']['field'] = 'qtl_symbol';
+  $handler->display->display_options['fields']['qtl_symbol']['label'] = 'QTL symbol';
+  $handler->display->display_options['fields']['qtl_symbol']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['qtl_symbol']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['qtl_symbol']['alter']['path'] = 'node/[qtl_nid]';
+  // Field: QTL: Published QTL Symbol 
+  $handler->display->display_options['fields']['expt_qtl_symbol']['id'] = 'expt_qtl_symbol';
+  $handler->display->display_options['fields']['expt_qtl_symbol']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['expt_qtl_symbol']['field'] = 'expt_qtl_symbol';
+  $handler->display->display_options['fields']['expt_qtl_symbol']['label'] = 'QTL Symbol in Publication';
+  // Field: QTL: Experimental Trait Name 
+  $handler->display->display_options['fields']['expt_trait_name']['id'] = 'expt_trait_name';
+  $handler->display->display_options['fields']['expt_trait_name']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['expt_trait_name']['field'] = 'expt_trait_name';
+  $handler->display->display_options['fields']['expt_trait_name']['label'] = 'Trait Name in Publication';
+  // Field: QTL: pub_nid 
+  $handler->display->display_options['fields']['pub_nid']['id'] = 'pub_nid';
+  $handler->display->display_options['fields']['pub_nid']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['pub_nid']['field'] = 'pub_nid';
+  $handler->display->display_options['fields']['pub_nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['pub_nid']['separator'] = '';
+  // Field: QTL: Citation 
+  $handler->display->display_options['fields']['citation']['id'] = 'citation';
+  $handler->display->display_options['fields']['citation']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['citation']['field'] = 'citation';
+  $handler->display->display_options['fields']['citation']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['citation']['alter']['path'] = 'pub/[pub_nid]';
+  // Field: QTL: Experimental Trait Description 
+  $handler->display->display_options['fields']['expt_trait_description']['id'] = 'expt_trait_description';
+  $handler->display->display_options['fields']['expt_trait_description']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['expt_trait_description']['field'] = 'expt_trait_description';
+  $handler->display->display_options['fields']['expt_trait_description']['label'] = 'Trait Description in Publication';
+  $handler->display->display_options['fields']['expt_trait_description']['exclude'] = TRUE;
+  // Field: QTL: Trait Name 
+  $handler->display->display_options['fields']['trait_name']['id'] = 'trait_name';
+  $handler->display->display_options['fields']['trait_name']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['trait_name']['field'] = 'trait_name';
+  $handler->display->display_options['fields']['trait_name']['exclude'] = TRUE;
+  // Field: QTL: Trait unit 
+  $handler->display->display_options['fields']['trait_unit']['id'] = 'trait_unit';
+  $handler->display->display_options['fields']['trait_unit']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['trait_unit']['field'] = 'trait_unit';
+  $handler->display->display_options['fields']['trait_unit']['label'] = 'Trait Unit';
+  $handler->display->display_options['fields']['trait_unit']['exclude'] = TRUE;
+  // Field: QTL: OBO Terms 
+  $handler->display->display_options['fields']['expt_trait_description']['id'] = 'obo_terms';
+  $handler->display->display_options['fields']['expt_trait_description']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['expt_trait_description']['field'] = 'obo_terms';
+  $handler->display->display_options['fields']['expt_trait_description']['label'] = 'Associated ontology terms';
+  $handler->display->display_options['fields']['expt_trait_description']['exclude'] = TRUE;
+  // Field: QTL: Favorable Allele Source 
+  $handler->display->display_options['fields']['favorable_allele_source']['id'] = 'favorable_allele_source';
+  $handler->display->display_options['fields']['favorable_allele_source']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['favorable_allele_source']['field'] = 'favorable_allele_source';
+  $handler->display->display_options['fields']['favorable_allele_source']['exclude'] = TRUE;
+  // Field: QTL: QTL treatment 
+  $handler->display->display_options['fields']['treatment']['id'] = 'treatment';
+  $handler->display->display_options['fields']['treatment']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['treatment']['field'] = 'treatment';
+  $handler->display->display_options['fields']['treatment']['label'] = 'Treatment';
+  $handler->display->display_options['fields']['treatment']['exclude'] = TRUE;
+  // Field: QTL: Analysis method 
+  $handler->display->display_options['fields']['analysis_method']['id'] = 'analysis_method';
+  $handler->display->display_options['fields']['analysis_method']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['analysis_method']['field'] = 'analysis_method';
+  $handler->display->display_options['fields']['analysis_method']['label'] = 'Analysis Method';
+  $handler->display->display_options['fields']['analysis_method']['exclude'] = TRUE;
+  // Field: QTL: LOD 
+  $handler->display->display_options['fields']['lod']['id'] = 'lod';
+  $handler->display->display_options['fields']['lod']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['lod']['field'] = 'lod';
+  $handler->display->display_options['fields']['lod']['label'] = 'LOD threshold';
+  $handler->display->display_options['fields']['lod']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['lod']['separator'] = ', ';
+  // Field: QTL: Likelihood Ratio 
+  $handler->display->display_options['fields']['likelihood_ratio']['id'] = 'likelihood_ratio';
+  $handler->display->display_options['fields']['likelihood_ratio']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['likelihood_ratio']['field'] = 'likelihood_ratio';
+  $handler->display->display_options['fields']['likelihood_ratio']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['likelihood_ratio']['separator'] = ', ';
+  // Field: QTL: Marker R2 
+  $handler->display->display_options['fields']['marker_r2']['id'] = 'marker_r2';
+  $handler->display->display_options['fields']['marker_r2']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['marker_r2']['field'] = 'marker_r2';
+  $handler->display->display_options['fields']['marker_r2']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['marker_r2']['separator'] = ', ';
+  // Field: QTL: Total R2 
+  $handler->display->display_options['fields']['total_r2']['id'] = 'total_r2';
+  $handler->display->display_options['fields']['total_r2']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['total_r2']['field'] = 'total_r2';
+  $handler->display->display_options['fields']['total_r2']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['total_r2']['separator'] = ', ';
+  // Field: QTL: Additivity 
+  $handler->display->display_options['fields']['additivity']['id'] = 'additivity';
+  $handler->display->display_options['fields']['additivity']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['additivity']['field'] = 'additivity';
+  $handler->display->display_options['fields']['additivity']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['additivity']['separator'] = ', ';
+  // Field: QTL: Nearest Marker NID 
+  $handler->display->display_options['fields']['nearest_marker_nid']['id'] = 'nearest_marker_nid';
+  $handler->display->display_options['fields']['nearest_marker_nid']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['nearest_marker_nid']['field'] = 'nearest_marker_nid';
+  $handler->display->display_options['fields']['nearest_marker_nid']['label'] = 'Nearest marker NID';
+  $handler->display->display_options['fields']['nearest_marker_nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['nearest_marker_nid']['separator'] = ', ';
+  // Field: QTL: Nearest Marker 
+  $handler->display->display_options['fields']['nearest_marker']['id'] = 'nearest_marker';
+  $handler->display->display_options['fields']['nearest_marker']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['nearest_marker']['field'] = 'nearest_marker';
+  $handler->display->display_options['fields']['nearest_marker']['label'] = 'Nearest marker';
+  $handler->display->display_options['fields']['nearest_marker']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['nearest_marker']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['nearest_marker']['alter']['path'] = 'node/[nearest_marker_nid]';
+  // Field: QTL: Left Flanking Marker NID 
+  $handler->display->display_options['fields']['flanking_marker_low_nid']['id'] = 'flanking_marker_low_nid';
+  $handler->display->display_options['fields']['flanking_marker_low_nid']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['flanking_marker_low_nid']['field'] = 'flanking_marker_low_nid';
+  $handler->display->display_options['fields']['flanking_marker_low_nid']['label'] = 'Flanking Marker Low NID';
+  $handler->display->display_options['fields']['flanking_marker_low_nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['flanking_marker_low_nid']['separator'] = ', ';
+  // Field: QTL: Left Flanking Marker 
+  $handler->display->display_options['fields']['flanking_marker_low']['id'] = 'flanking_marker_low';
+  $handler->display->display_options['fields']['flanking_marker_low']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['flanking_marker_low']['field'] = 'flanking_marker_low';
+  $handler->display->display_options['fields']['flanking_marker_low']['label'] = 'Flanking marker low';
+  $handler->display->display_options['fields']['flanking_marker_low']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['flanking_marker_low']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['flanking_marker_low']['alter']['path'] = 'node/[flanking_marker_low_nid]';
+  // Field: QTL: Right Flanking Marker NID 
+  $handler->display->display_options['fields']['flanking_marker_high_nid']['id'] = 'flanking_marker_high_nid';
+  $handler->display->display_options['fields']['flanking_marker_high_nid']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['flanking_marker_high_nid']['field'] = 'flanking_marker_high_nid';
+  $handler->display->display_options['fields']['flanking_marker_high_nid']['label'] = 'Flanking Marker High NID';
+  $handler->display->display_options['fields']['flanking_marker_high_nid']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['flanking_marker_high_nid']['separator'] = ', ';
+  // Field: QTL: Right Flanking Marker 
+  $handler->display->display_options['fields']['flanking_marker_high']['id'] = 'flanking_marker_high';
+  $handler->display->display_options['fields']['flanking_marker_high']['table'] = 'qtl_search';
+  $handler->display->display_options['fields']['flanking_marker_high']['field'] = 'flanking_marker_high';
+  $handler->display->display_options['fields']['flanking_marker_high']['label'] = 'Flanking marker high';
+  $handler->display->display_options['fields']['flanking_marker_high']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['flanking_marker_high']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['flanking_marker_high']['alter']['path'] = 'node/[flanking_marker_high_nid]';
+  // Sort criterion: QTL: QTL name 
+  $handler->display->display_options['sorts']['qtl_name']['id'] = 'qtl_name';
+  $handler->display->display_options['sorts']['qtl_name']['table'] = 'qtl_search';
+  $handler->display->display_options['sorts']['qtl_name']['field'] = 'qtl_name';
   
   // DEFAULT FILTERS
-  $handler->override_option('filters', array(
-    'organism' => array(
-      'operator' => '=',
-      'value' => array(
-        'All' => 'All',
-      ),
-      'group' => '0',
-      'exposed' => TRUE,
-      'expose' => array(
-        'use_operator' => 0,
-        'operator' => 'organism_op',
-        'identifier' => 'organism',
-        'label' => 'Species',
-        'bef_filter_description' => '',
-        'bef_format' => 'default',
-        'remember' => 1,
-        'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
-      ),
-      'case' => 1,
-      'id' => 'organism',
-      'table' => 'qtl_search',
-      'field' => 'organism',
-      'relationship' => 'none',
-      'agg' => array(
-        'records_with' => 1,
-        'aggregates_with' => 0,
-      ),
-      'values_form_type' => 'select',
-      'multiple' => 1,
-      'optional' => 1,
-      'max_length' => '40',
-    ),
-    'trait_class' => array(
-      'operator' => '=',
-      'value' => array(
-        'All' => 'All',
-      ),
-      'group' => '0',
-      'exposed' => TRUE,
-      'expose' => array(
-        'use_operator' => 0,
-        'operator' => 'trait_class_op',
-        'identifier' => 'trait_class',
-        'label' => 'Trait Class',
-        'bef_filter_description' => '',
-        'bef_format' => 'default',
-        'remember' => 1,
-        'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
-      ),
-      'case' => 1,
-      'id' => 'trait_class',
-      'table' => 'qtl_search',
-      'field' => 'trait_class',
-      'relationship' => 'none',
-      'agg' => array(
-        'records_with' => 1,
-        'aggregates_with' => 0,
-      ),
-      'values_form_type' => 'select',
-      'multiple' => 1,
-      'optional' => 1,
-      'max_length' => '40',
-    ),
-    'expt_qtl_symbol' => array(
-      'operator' => 'contains',
-      'value' => '',
-      'group' => '0',
-      'exposed' => TRUE,
-      'expose' => array(
-        'use_operator' => 1,
-        'operator' => 'expt_pub_symbol_op',
-        'identifier' => 'expt_pub_symbol',
-        'label' => 'QTL Symbol used in experiment',
-        'bef_filter_description' => '',
-        'remember' => 0,
-      ),
-      'case' => 0,
-      'id' => 'expt_qtl_symbol',
-      'table' => 'qtl_search',
-      'field' => 'expt_qtl_symbol',
-      'relationship' => 'none',
-      'agg' => array(
-        'records_with' => 1,
-        'aggregates_with' => 0,
-      ),
-    ),
-    'qtl_symbol' => array(
-      'operator' => 'contains',
-      'value' => '',
-      'group' => '0',
-      'exposed' => TRUE,
-      'expose' => array(
-        'use_operator' => 1,
-        'operator' => 'qtl_symbol_op',
-        'identifier' => 'qtl_symbol',
-        'label' => 'QTL symbol',
-        'bef_filter_description' => '',
-        'remember' => 0,
-      ),
-      'case' => 0,
-      'id' => 'qtl_symbol',
-      'table' => 'qtl_search',
-      'field' => 'qtl_symbol',
-      'relationship' => 'none',
-      'agg' => array(
-        'records_with' => 1,
-        'aggregates_with' => 0,
-      ),
-    ),
-    'search_results' => array(
-      'operator' => '=',
-      'value' => '',
-      'group' => '0',
-      'exposed' => FALSE,
-      'expose' => array(
-        'operator' => FALSE,
-        'label' => '',
-      ),
-      'id' => 'search_results',
-      'table' => 'views',
-      'field' => 'search_results',
-      'relationship' => 'none',
-      'apply_button' => 'Search',
-      'no_results_text' => 'No records were found.',
-    ),
-  ));
-  
-  // ACCESS
-  $handler->override_option('access', array(
-    'type' => 'none',
-  ));
-  
-  // CACHE
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
-  
-  // EMPTY
-  $handler->override_option('empty', 'No QTL records found. Please select your search options, then press "Apply".');
-  
+  $handler->display->display_options['filters']['organism']['id'] = 'organism';
+  $handler->display->display_options['filters']['organism']['table'] = 'qtl_search';
+  $handler->display->display_options['filters']['organism']['field'] = 'organism';
+  $handler->display->display_options['filters']['organism']['value'] = array(
+    'All' => 'All',
+  );
+  $handler->display->display_options['filters']['organism']['group'] = 1;
+  $handler->display->display_options['filters']['organism']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['organism']['expose']['operator_id'] = 'organism_op';
+  $handler->display->display_options['filters']['organism']['expose']['label'] = 'Species';
+  $handler->display->display_options['filters']['organism']['expose']['operator'] = 'organism_op';
+  $handler->display->display_options['filters']['organism']['expose']['identifier'] = 'organism';
+  $handler->display->display_options['filters']['organism']['expose']['remember'] = TRUE;
+  $handler->display->display_options['filters']['organism']['values_form_type'] = 'select';
+  $handler->display->display_options['filters']['organism']['max_length'] = '40';
+  /* Filter criterion: QTL: Trait class */
+  $handler->display->display_options['filters']['trait_class']['id'] = 'trait_class';
+  $handler->display->display_options['filters']['trait_class']['table'] = 'qtl_search';
+  $handler->display->display_options['filters']['trait_class']['field'] = 'trait_class';
+  $handler->display->display_options['filters']['trait_class']['value'] = array(
+    'All' => 'All',
+  );
+  $handler->display->display_options['filters']['trait_class']['group'] = 1;
+  $handler->display->display_options['filters']['trait_class']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['trait_class']['expose']['operator_id'] = 'trait_class_op';
+  $handler->display->display_options['filters']['trait_class']['expose']['label'] = 'Trait Class';
+  $handler->display->display_options['filters']['trait_class']['expose']['operator'] = 'trait_class_op';
+  $handler->display->display_options['filters']['trait_class']['expose']['identifier'] = 'trait_class';
+  $handler->display->display_options['filters']['trait_class']['expose']['remember'] = TRUE;
+  $handler->display->display_options['filters']['trait_class']['values_form_type'] = 'select';
+  $handler->display->display_options['filters']['trait_class']['max_length'] = '40';
+  /* Filter criterion: QTL: QTL name */
+  $handler->display->display_options['filters']['qtl_name']['id'] = 'qtl_name';
+  $handler->display->display_options['filters']['qtl_name']['table'] = 'qtl_search';
+  $handler->display->display_options['filters']['qtl_name']['field'] = 'qtl_name';
+  $handler->display->display_options['filters']['qtl_name']['operator'] = 'contains';
+  $handler->display->display_options['filters']['qtl_name']['group'] = 1;
+  $handler->display->display_options['filters']['qtl_name']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['qtl_name']['expose']['operator_id'] = 'qtl_name_op';
+  $handler->display->display_options['filters']['qtl_name']['expose']['label'] = 'Trait';
+  $handler->display->display_options['filters']['qtl_name']['expose']['operator'] = 'qtl_name_op';
+  $handler->display->display_options['filters']['qtl_name']['expose']['identifier'] = 'qtl_name';
+  $handler->display->display_options['filters']['qtl_name']['expose']['remember_roles'] = array(
+    2 => '2',
+    4 => 0,
+    1 => 0,
+    5 => 0,
+    6 => 0,
+    7 => 0,
+  );
+  // Filter criterion: QTL: Published QTL Symbol 
+  $handler->display->display_options['filters']['expt_qtl_symbol']['id'] = 'expt_qtl_symbol';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['table'] = 'qtl_search';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['field'] = 'expt_qtl_symbol';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['operator'] = 'contains';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['group'] = 1;
+  $handler->display->display_options['filters']['expt_qtl_symbol']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['expt_qtl_symbol']['expose']['operator_id'] = 'expt_pub_symbol_op';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['expose']['label'] = 'QTL Symbol in Pub';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['expose']['operator'] = 'expt_pub_symbol_op';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['expose']['identifier'] = 'expt_pub_symbol';
+  $handler->display->display_options['filters']['expt_qtl_symbol']['expose']['remember_roles'] = array(
+    2 => '2',
+    4 => 0,
+    1 => 0,
+    5 => 0,
+    6 => 0,
+    7 => 0,
+  );
+  // Filter criterion: Trait Name Used in Publication 
+  $handler->display->display_options['filters']['expt_trait_name']['id'] = 'expt_trait_name';
+  $handler->display->display_options['filters']['expt_trait_name']['table'] = 'qtl_search';
+  $handler->display->display_options['filters']['expt_trait_name']['field'] = 'expt_trait_name';
+  $handler->display->display_options['filters']['expt_trait_name']['ui_name'] = 'Trait Name Used in Publication';
+  $handler->display->display_options['filters']['expt_trait_name']['operator'] = 'contains';
+  $handler->display->display_options['filters']['expt_trait_name']['group'] = 1;
+  $handler->display->display_options['filters']['expt_trait_name']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['expt_trait_name']['expose']['operator_id'] = 'expt_trait_name_op';
+  $handler->display->display_options['filters']['expt_trait_name']['expose']['label'] = 'Trait Name in Pub';
+  $handler->display->display_options['filters']['expt_trait_name']['expose']['operator'] = 'expt_trait_name_op';
+  $handler->display->display_options['filters']['expt_trait_name']['expose']['identifier'] = 'expt_trait_name';
+  $handler->display->display_options['filters']['expt_trait_name']['expose']['remember'] = TRUE;
+  $handler->display->display_options['filters']['expt_trait_name']['expose']['remember_roles'] = array(
+    2 => '2',
+    4 => '4',
+    1 => '1',
+    5 => 0,
+    6 => 0,
+    7 => 0,
+  );
+  // Filter criterion: QTL: Citation 
+  $handler->display->display_options['filters']['citation']['id'] = 'citation';
+  $handler->display->display_options['filters']['citation']['table'] = 'qtl_search';
+  $handler->display->display_options['filters']['citation']['field'] = 'citation';
+  $handler->display->display_options['filters']['citation']['value'] = 'All';
+  $handler->display->display_options['filters']['citation']['group'] = 1;
+  $handler->display->display_options['filters']['citation']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['citation']['expose']['operator_id'] = 'citation_op';
+  $handler->display->display_options['filters']['citation']['expose']['label'] = 'From this Pub';
+  $handler->display->display_options['filters']['citation']['expose']['operator'] = 'citation_op';
+  $handler->display->display_options['filters']['citation']['expose']['identifier'] = 'citation';
+  $handler->display->display_options['filters']['citation']['expose']['remember'] = TRUE;
+  $handler->display->display_options['filters']['citation']['expose']['remember_roles'] = array(
+    2 => '2',
+    4 => 0,
+    1 => 0,
+    5 => 0,
+    6 => 0,
+    7 => 0,
+  );
+  $handler->display->display_options['filters']['citation']['values_form_type'] = 'select';
+  $handler->display->display_options['filters']['citation']['select_optional'] = TRUE;
+  $handler->display->display_options['filters']['citation']['max_length'] = '40';
+
   // EMPTY_FORMAT
   $handler->override_option('empty_format', '3');
-  
-  // ITEMS_PER_PAGE
-  $handler->override_option('items_per_page', 25);
-  
+
   // USE_PAGER
   $handler->override_option('use_pager', '1');
   
-  // STYLE_PLUGIN
-  $handler->override_option('style_plugin', 'table');
-  
-  // STYLE_OPTIONS
-  $handler->override_option('style_options', array(
-    'grouping' => '',
-    'override' => 1,
-    'sticky' => 0,
-    'order' => 'asc',
-    'summary' => '',
-    'columns' => array(
-      'qtl_nid' => 'qtl_nid',
-      'qtl_symbol' => 'qtl_symbol',
-      'expt_qtl_symbol' => 'expt_qtl_symbol',
-      'organism' => 'organism',
-      'common_name' => 'common_name',
-      'mnemonic' => 'mnemonic',
-      'citation' => 'citation',
-      'expt_trait_name' => 'expt_trait_name',
-      'expt_trait_description' => 'expt_trait_description',
-      'trait_unit' => 'trait_unit',
-      'trait_class' => 'trait_class',
-      'favorable_allele_source' => 'favorable_allele_source',
-      'treatment' => 'treatment',
-      'analysis_method' => 'analysis_method',
-      'lod' => 'lod',
-      'likelihood_ratio' => 'likelihood_ratio',
-      'marker_r2' => 'marker_r2',
-      'total_r2' => 'total_r2',
-      'additivity' => 'additivity',
-      'nearest_marker' => 'nearest_marker',
-      'flanking_marker_low' => 'flanking_marker_low',
-      'flanking_marker_high' => 'flanking_marker_high',
-    ),
-    'info' => array(
-      'qtl_nid' => array(
-        'sortable' => 0,
-        'separator' => '',
-      ),
-      'qtl_symbol' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'expt_qtl_symbol' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'organism' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'common_name' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'mnemonic' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'citation' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'expt_trait_name' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'expt_trait_description' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'trait_unit' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'trait_class' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'favorable_allele_source' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'treatment' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'analysis_method' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'lod' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'likelihood_ratio' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'marker_r2' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'total_r2' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'additivity' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'nearest_marker' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'flanking_marker_low' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-      'flanking_marker_high' => array(
-        'sortable' => 1,
-        'separator' => '',
-      ),
-    ),
-    'default' => '-1',
-  ));
-  
-  
   // QTL SEARCH DISPLAY
-  
   $handler = $view->new_display('page', 'QTL Search', 'page_1');
   
   // PATH
@@ -1218,806 +508,6 @@ function legume_qtl_defaultvalue_user_qtl() {
     'weight' => 0,
     'name' => 'navigation',
   ));
-  
-  
-  // QTL SEARCH DOWNLOAD DISPLAY
-/*TODO: not available in views 3.0: FIX  
-  $handler = $view->new_display('views_data_export', 'QTL Search Download', 'views_data_export_1');
-  
-  // FIELDS
-  $handler->override_option('fields', array(
-    'qtl_nid' => array(
-      'label' => 'qtl_nid',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'set_precision' => FALSE,
-      'precision' => 0,
-      'decimal' => '.',
-      'separator' => '',
-      'format_plural' => 0,
-      'format_plural_singular' => '1',
-      'format_plural_plural' => '@count',
-      'prefix' => '',
-      'suffix' => '',
-      'type' => 'separator',
-      'exclude' => 1,
-      'id' => 'qtl_nid',
-      'table' => 'qtl_search',
-      'field' => 'qtl_nid',
-      'relationship' => 'none',
-    ),
-    'qtl_symbol' => array(
-      'label' => 'QTL name',
-      'alter' => array(
-        'alter_text' => 1,
-        'text' => '',
-        'make_link' => 1,
-        'path' => 'node/[qtl_nid]',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'qtl_symbol',
-      'table' => 'qtl_search',
-      'field' => 'qtl_symbol',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Use default',
-      ),
-    ),
-    'expt_qtl_symbol' => array(
-      'label' => 'Expt QTL Symbol',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'expt_qtl_symbol',
-      'table' => 'qtl_search',
-      'field' => 'expt_qtl_symbol',
-      'relationship' => 'none',
-    ),
-    'organism' => array(
-      'label' => 'Species',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'organism',
-      'table' => 'qtl_search',
-      'field' => 'organism',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Use default',
-      ),
-    ),
-    'mnemonic' => array(
-      'label' => 'Uniprot mnemonic',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 1,
-      'id' => 'mnemonic',
-      'table' => 'qtl_search',
-      'field' => 'mnemonic',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Use default',
-      ),
-    ),
-    'citation' => array(
-      'label' => 'Citation',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 1,
-        'path' => 'node/[pub_nid]',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => 'N/A',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 0,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'citation',
-      'table' => 'qtl_search',
-      'field' => 'citation',
-      'relationship' => 'none',
-      'override' => array(
-        'button' => 'Use default',
-      ),
-    ),
-    'expt_trait_name' => array(
-      'label' => 'Expt Trait Name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'expt_trait_name',
-      'table' => 'qtl_search',
-      'field' => 'expt_trait_name',
-      'relationship' => 'none',
-    ),
-    'expt_trait_description' => array(
-      'label' => 'Expt Trait Description',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'expt_trait_description',
-      'table' => 'qtl_search',
-      'field' => 'expt_trait_description',
-      'relationship' => 'none',
-    ),
-    'trait_unit' => array(
-      'label' => 'Trait Name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'trait_unit',
-      'table' => 'qtl_search',
-      'field' => 'trait_unit',
-      'relationship' => 'none',
-    ),
-    'trait_class' => array(
-      'label' => 'Trait Name',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'trait_class',
-      'table' => 'qtl_search',
-      'field' => 'trait_class',
-      'relationship' => 'none',
-    ),
-    'favorable_allele_source' => array(
-      'label' => 'Favorable Allele Source',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'favorable_allele_source',
-      'table' => 'qtl_search',
-      'field' => 'favorable_allele_source',
-      'relationship' => 'none',
-    ),
-    'treatment' => array(
-      'label' => 'Treatment',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'treatment',
-      'table' => 'qtl_search',
-      'field' => 'treatment',
-      'relationship' => 'none',
-    ),
-    'analysis_method' => array(
-      'label' => 'QTL Analysis Method',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'analysis_method',
-      'table' => 'qtl_search',
-      'field' => 'analysis_method',
-      'relationship' => 'none',
-    ),
-    'lod' => array(
-      'label' => 'LOD Score',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'lod',
-      'table' => 'qtl_search',
-      'field' => 'lod',
-      'relationship' => 'none',
-    ),
-    'likelihood_ratio' => array(
-      'label' => 'Likelihood Ratio',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'likelihood_ratio',
-      'table' => 'qtl_search',
-      'field' => 'likelihood_ratio',
-      'relationship' => 'none',
-    ),
-    'marker_r2' => array(
-      'label' => 'Marker R2',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'marker_r2',
-      'table' => 'qtl_search',
-      'field' => 'marker_r2',
-      'relationship' => 'none',
-    ),
-    'total_r2' => array(
-      'label' => 'Total R2',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'total_r2',
-      'table' => 'qtl_search',
-      'field' => 'total_r2',
-      'relationship' => 'none',
-    ),
-    'additivity' => array(
-      'label' => 'Additivity',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'additivity',
-      'table' => 'qtl_search',
-      'field' => 'additivity',
-      'relationship' => 'none',
-    ),
-    'nearest_marker' => array(
-      'label' => 'Nearest Marker',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'nearest_marker',
-      'table' => 'qtl_search',
-      'field' => 'nearest_marker',
-      'relationship' => 'none',
-    ),
-    'flanking_marker_low' => array(
-      'label' => 'Low Flanking Marker',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'flanking_marker_low',
-      'table' => 'qtl_search',
-      'field' => 'flanking_marker_low',
-      'relationship' => 'none',
-    ),
-    'flanking_marker_high' => array(
-      'label' => 'High Flanking Marker',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'absolute' => 0,
-        'link_class' => '',
-        'alt' => '',
-        'rel' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'target' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'html' => 0,
-        'strip_tags' => 0,
-      ),
-      'empty' => '',
-      'hide_empty' => 0,
-      'empty_zero' => 0,
-      'hide_alter_empty' => 1,
-      'type' => 'separator',
-      'separator' => ', ',
-      'exclude' => 0,
-      'id' => 'flanking_marker_high',
-      'table' => 'qtl_search',
-      'field' => 'flanking_marker_high',
-      'relationship' => 'none',
-    ),
-    
-  ));
-  
-  // ITEMS_PER_PAGE
-  $handler->override_option('items_per_page', '0');
-  
-  // STYLE_PLUGIN
-// TODO: this style plugin is not available in Views 3.0: FIX
-//  $handler->override_option('style_plugin', 'views_data_export_xls');
-  
-  // STYLE_OPTIONS
-  $handler->override_option('style_options', array(
-    'mission_description' => FALSE,
-    'description' => '',
-    'attach_text' => 'XLS',
-    'provide_file' => 1,
-    'filename' => '%view.xls',
-    'help' => '',
-    'parent_sort' => 0,
-  ));
-  
-  // ROW_PLUGIN
-  $handler->override_option('row_plugin', '');
-  
-  // PATH
-  $handler->override_option('path', 'search/qtl/download/csv');
-  
-  // MENU
-  $handler->override_option('menu', array(
-    'type' => 'none',
-    'title' => '',
-    'description' => '',
-    'weight' => 0,
-    'name' => 'primary-links',
-  ));
-  
-  // TAB_OPTIONS
-  $handler->override_option('tab_options', array(
-    'type' => 'none',
-    'title' => '',
-    'description' => '',
-    'weight' => 0,
-    'name' => 'navigation',
-  ));
-  
-  // DISPLAYS
-  $handler->override_option('displays', array(
-    'page_1' => 'page_1',
-    'default' => 0,
-  ));
-  
-  // SITENAME_TITLE
-  $handler->override_option('sitename_title', 0);
-  
-  // USE_BATCH
-  $handler->override_option('use_batch', 0);
-*/
-
-  
+   
   return $view;
 }
