@@ -62,16 +62,20 @@ function legume_qtl_install() {
    // create the module's data directory
    tripal_create_files_dir('legume_qtl');
    
-print "Add mview\n";
    // add the materialized views
+print "Add qtl_search mview\n";
    legume_qtl_add_qtl_search_mview();
+print "Add qtl_map_position mview\n";
+   legume_qtl_add_qtl_map_position_mview();
    
-print "Add view integration\n";
-   // we want to integrate the materialized views so that they
-   // are available for Drupal Views, upon which our search forms are built
+   // Integrate the materialized views into Drupal Views
    if (!tripal_is_table_integrated('qtl_search', $priority)) {
-print "View integration not yet integrated\n";
+print "Integrate MView qtl_search\n";
      legume_qtl_views_integrate_qtl_search();
+   }
+   if (!tripal_is_table_integrated('qtl_map_position', $priority)) {
+print "Integrate MView qtl_map_position\n";
+     legume_qtl_views_integrate_qtl_map_position();
    }
 }
 
@@ -81,26 +85,37 @@ print "View integration not yet integrated\n";
 function legume_qtl_uninstall() {
 print "\nUninstall legume_qtl\n";
 
-  // Drop the View, if it exists
-print "\nTry to drop view 'qtl'\n";
+  // Drop the 'qtl' Drupal View, if it exists
   if ($view = views_get_view('QTL')) {
 print "delete view 'qtl'\n";
     views_delete_view($view);
   }
-  
-  // Remove the View integration, if it exists
-print "\nTry to view integration 'qtl_search'\n";
+    
+  // Remove the qtl_search and qtl_map_position View integration
   if (tripal_is_table_integrated('qtl_search')) {
 print "delete integration 'qtl_search'\n";
-    tripal_remove_views_integration('qtl_search');
+    tripal_remove_views_integration(array('table_name'=>'qtl_search', 'priority'=>-1));
+    tripal_remove_views_integration(array('table_name'=>'qtl_search', 'priority'=>10));
+  }
+print "\nTry to view integration 'qtl_map_position'\n";
+  if (tripal_is_table_integrated('qtl_map_position')) {
+print "delete integration 'qtl_map_position'\n";
+    tripal_remove_views_integration(array('table_name'=>'qtl_map_position', 'priority'=>-1));
+    tripal_remove_views_integration(array('table_name'=>'qtl_map_position', 'priority'=>10));
   }
   
-  // Drop the MView table, if it exists
+  // Drop the MView tables
 print "\nTry to drop mview 'qtl_search'\n";
   $mview_id = tripal_get_mview_id('qtl_search');
-print "This mview has id $mview_id\n";
   if ($mview_id) {
 print "delete MView 'qtl_search'\n";
+    tripal_delete_mview($mview_id);
+  }
+print "\nTry to drop mview 'qtl_map_position'\n";
+  $mview_id = tripal_get_mview_id('qtl_map_position');
+print "This mview has id $mview_id\n";
+  if ($mview_id) {
+print "delete MView 'qtl_map_position'\n";
     tripal_delete_mview($mview_id);
   }
 }
@@ -519,6 +534,226 @@ function legume_qtl_add_qtl_search_mview() {
   
   // populate the MView
   if ($mview_id = tripal_get_mview_id('qtl_search')) {
+    tripal_refresh_mview($mview_id);
+    //OR: tripal_populate_mview($mview_id)? no job launcher
+  }
+}
+
+
+function legume_qtl_add_qtl_map_position_mview() {
+  $sql = "
+    SELECT 
+      q.feature_id AS qtl_id,
+      cf.nid AS qtl_nid,
+      q.name AS qtl_symbol,
+      m.name AS map_name,
+      cm.nid AS map_nid,
+      lg.value AS lg,
+      clg.nid AS lg_nid,
+      qp.value::numeric AS qtl_peak,
+      CAST(loc.fmin as float)/100.0 AS start, 
+      CAST(loc.fmax as float)/100.0 AS end,
+      flp.value AS int_calc_meth,
+      mpop.name AS mapping_population,
+      cmpop.nid AS mapping_population_nid,
+      p1.parent_name AS parent1,
+      p1.parent_nid AS parent1_nid,
+      p2.parent_name AS parent2,
+      p2.parent_nid AS parent2_nid,
+      lislgacc.accession AS lis_lg_map_accession, 
+      lisacc.accession AS lis_map_accession
+  
+    FROM feature q
+
+      -- get nid for QTL feature
+      LEFT JOIN public.chado_feature cf ON cf.feature_id = q.feature_id
+
+      -- linkage group and size
+      INNER JOIN featureloc loc ON loc.feature_id=q.feature_id
+      INNER JOIN feature lgm ON lgm.feature_id=loc.srcfeature_id
+      INNER JOIN featureprop lg ON lgm.feature_id=lg.feature_id
+      LEFT JOIN public.chado_feature clg ON clg.feature_id=lgm.feature_id
+  
+      -- QTL peak
+      LEFT JOIN featureprop qp 
+        ON qp.feature_id=q.feature_id
+           AND qp.type_id=(SELECT cvterm_id FROM cvterm 
+                           WHERE name='QTL Peak'
+                                 AND cv_id=(SELECT cv_id FROM cv 
+                                            WHERE name='feature_property'))
+  
+      -- Interval Calculation Method
+      LEFT JOIN featurelocprop flp 
+        ON flp.featureloc_id=loc.featureloc_id
+           AND flp.type_id=(SELECT cvterm_id FROM cvterm 
+                            WHERE name='Interval Calculation Method'
+                                  AND cv_id=(SELECT cv_id FROM cv 
+                                             WHERE name='feature_property'))
+  
+      -- Start position and map nid
+      INNER JOIN featurepos mp ON mp.feature_id=lgm.feature_id
+      INNER JOIN featureposprop mpp 
+        ON mpp.featurepos_id=mp.featurepos_id
+           AND mpp.type_id=(SELECT cvterm_id FROM cvterm
+                            WHERE name='start'
+                              AND cv_id=(SELECT cv_id FROM chado.cv 
+                                         WHERE name='featurepos_property'))
+      INNER JOIN featuremap m ON m.featuremap_id=mp.featuremap_id
+      LEFT JOIN public.chado_featuremap cm ON cm.featuremap_id=m.featuremap_id
+    
+      -- Mapping population                    
+      LEFT JOIN chado.featuremap_stock fs ON fs.featuremap_id=m.featuremap_id
+      LEFT JOIN chado.stock mpop ON mpop.stock_id = fs.stock_id
+      LEFT JOIN public.chado_stock cmpop ON cmpop.stock_id=mpop.stock_id
+
+      -- Parent 1                
+      LEFT JOIN 
+        (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_nid, p.name AS parent_name 
+         FROM chado.stock_relationship pr 
+           INNER JOIN chado.stock p ON p.stock_id = pr.subject_id
+           INNER JOIN public.chado_stock nid ON nid.stock_id=p.stock_id
+         WHERE pr.type_id = (SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name='Parent1' 
+                                   AND cv_id = (SELECT cv_id FROM chado.cv
+                                                WHERE name='stock_relationship'))
+        ) p1 ON p1.object_id = mpop.stock_id
+                        
+      -- Parent 2                
+      LEFT JOIN 
+        (SELECT pr.object_id, pr.subject_id, nid.nid AS parent_nid, p.name AS parent_name 
+         FROM chado.stock_relationship pr 
+           INNER JOIN chado.stock p ON p.stock_id = pr.subject_id
+           INNER JOIN public.chado_stock nid ON nid.stock_id=p.stock_id
+         WHERE pr.type_id = (SELECT cvterm_id FROM chado.cvterm 
+                             WHERE name='Parent2' 
+                                   AND cv_id = (SELECT cv_id FROM chado.cv 
+                                                WHERE name='stock_relationship'))
+        ) p2 ON p2.object_id = mpop.stock_id
+
+      -- LIS linkage group map link
+      LEFT JOIN
+       (SELECT LISLGACC.accession, LISLGFDBX.feature_id 
+        FROM dbxref LISLGACC
+          INNER JOIN feature_dbxref LISLGFDBX 
+            ON LISLGFDBX.dbxref_id=LISLGACC.dbxref_id
+        WHERE LISLGACC.db_id=(SELECT db_id FROM db 
+                              WHERE name='LIS:cmap')
+       ) lislgacc ON lislgacc.feature_id=lg.feature_id
+
+      -- LIS map link
+      LEFT JOIN
+       (SELECT LISACC.accession, LISFDBX.featuremap_id 
+        FROM dbxref LISACC
+          INNER JOIN featuremap_dbxref LISFDBX 
+            ON LISFDBX.dbxref_id=LISACC.dbxref_id
+        WHERE LISACC.db_id=(SELECT db_id FROM db WHERE name='LIS:cmap')
+       ) lisacc ON lisacc.featuremap_id=m.featuremap_id
+
+
+    WHERE q.type_id=(SELECT cvterm_id FROM cvterm 
+                     WHERE name='QTL'
+                           AND cv_id=(SELECT cv_id FROM chado.cv 
+                                      WHERE name='sequence'))";
+
+  // Describes the table qtl_search
+  $schema = array (
+    'table' => 'qtl_map_position',
+    'fields' => array(
+      'qtl_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'qtl_nid' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'qtl_symbol' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'map_name' => array(
+        'type' => 'text',
+        'NOT NULL' => TRUE,
+      ),
+      'map_nid' => array(
+        'type' => 'int',
+        'NOT NULL' => TRUE,
+      ),
+      'lg' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'lg_nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'qtl_peak' => array(
+        'type' => 'float',
+        'NOT NULL' => FALSE,
+      ),
+      'left_end' => array(
+        'type' => 'float',
+        'NOT NULL' => FALSE,
+      ),
+      'right_end' => array(
+        'type' => 'float',
+        'NOT NULL' => FALSE,
+      ),
+      'int_calc_meth' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'mapping_population' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'mapping_population_nid' => array(
+        'type' => 'int',
+        'NOT NULL' => FALSE,
+      ),
+      'parent1' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'parent1_nid' => array(
+        'type' => 'int',
+        'NOT NULL' => FALSE,
+      ),
+      'parent2' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'parent2_nid' => array(
+        'type' => 'int',
+        'NOT NULL' => FALSE,
+      ),
+      'lis_lg_map_accession' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+      'lis_map_accession' => array(
+        'type' => 'text',
+        'NOT NULL' => FALSE,
+      ),
+    ),
+    'indexes' => array(
+      'QTL_search_indx3' => array('qtl_symbol'),
+    ),
+  );
+  
+  // add a comment to make sure this view makes sense to the site administator
+  if (!tripal_get_mview_id('qtl_map_position')) {
+    $comment = t('This view is used to simplify map posistion queries.');
+    tripal_add_mview(
+      'qtl_map_position', // name of materialized view
+      'legume_qtl', // name of module submitting view
+      $schema,      // schema api array representation
+      $sql,         // sql query that loads the mview
+      $comment );
+  }
+  
+  // populate the MView
+  if ($mview_id = tripal_get_mview_id('qtl_map_position')) {
     tripal_refresh_mview($mview_id);
     //OR: tripal_populate_mview($mview_id)? no job launcher
   }
@@ -1553,10 +1788,232 @@ function legume_qtl_views_integrate_qtl_search() {
       ),
   
     ),
-  )
-;  
+  );  
 
-  // the array above will integrate our qtl_search materialized with Drupal Views
-  tripal_views_integration_add_entry($integration); 
+  // Integrate qtl_search MView with Drupal Views
+  tripal_add_views_integration($integration);
+}
+
+
+function legume_qtl_views_integrate_qtl_map_position() {
+  $integration = array (
+    'table' => 'qtl_map_position',
+    'name' => 'qtl_map_position',
+    'type' => 'chado',
+    'description' => '',
+    'priority' => '-1',
+    'base_table' => '1',
+    'fields' => array (
+      'left_end' => array (
+        'name' => 'left_end',
+        'title' => 'Left Coordinate',
+        'description' => 'Left coordinate for QTL',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lg' => array (
+        'name' => 'lg',
+        'title' => 'Linkage Group',
+        'description' => 'Standardized linkage group name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lis_lg_map_accession' => array (
+        'name' => 'lis_lg_map_accession',
+        'title' => 'LIS Map Name',
+        'description' => 'Linkage Group Map Name at LIS',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'lis_map_accession' => array (
+        'name' => 'lis_map_accession',
+        'title' => 'LIS Map Name',
+        'description' => 'Map set Name at LIS',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'map_name' => array (
+        'name' => 'map_name',
+        'title' => 'Map',
+        'description' => 'Genetic map name',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'tripal_views_handler_filter_select_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'qtl_symbol' => array (
+        'name' => 'qtl_symbol',
+        'title' => 'QTL',
+        'description' => 'QTL symbol',
+        'type' => 'text',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_string',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_string',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+      
+      'qtl_nid' => array (
+        'name' => 'qtl_nid',
+        'title' => 'qtl_nid',
+        'description' => 'QTL nid',
+        'type' => 'int',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+  
+      'right_end' => array (
+        'name' => 'right_end',
+        'title' => 'Right Coordinate',
+        'description' => 'Right coordinate for QTL',
+        'type' => 'float',
+        'handlers' => array (
+          'filter' => array (
+            'name' => 'views_handler_filter_numeric',
+          ),
+          'field' => array (
+            'name' => 'views_handler_field_numeric',
+          ),
+          'sort' => array (
+            'name' => 'views_handler_sort',
+          ),
+          'argument' => array (
+            'name' => 'views_handler_argument_numeric',
+          ),
+          'relationship' => array (
+            'name' => 'views_handler_relationship',
+          ),
+        ),
+        'joins' => array (
+        ),
+      ),
+    ),
+  );  
+
+  // Integrate our qtl_map_position MView with Drupal Views
   tripal_add_views_integration($integration);
 }

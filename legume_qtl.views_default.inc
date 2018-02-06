@@ -66,6 +66,7 @@ function legume_qtl_defaultvalue_user_qtl() {
     'flanking_marker_low' => 'flanking_marker_low',
     'flanking_marker_high' => 'flanking_marker_high',
   );
+  
   $handler->display->display_options['style_options']['default'] = '-1';
   $handler->display->display_options['style_options']['info'] = array(
     'qtl_nid' => array(
@@ -165,6 +166,7 @@ function legume_qtl_defaultvalue_user_qtl() {
       'separator' => '',
     ),
   );
+  
   // No results behavior: Global: Text area 
   $handler->display->display_options['empty']['text']['id'] = 'area';
   $handler->display->display_options['empty']['text']['table'] = 'views';
@@ -487,18 +489,11 @@ function legume_qtl_defaultvalue_user_qtl() {
   
   // QTL SEARCH DISPLAY
   $handler = $view->new_display('page', 'QTL Search', 'page_1');
-  
-  // PATH
-  $handler->override_option('path', 'search/qtl');
-  
-  // MENU
-  $handler->override_option('menu', array(
-    'type' => 'none',
-    'title' => 'QTL Search',
-    'description' => 'QTL Search',
-    'weight' => '20',
-    'name' => 'menu-main',
-  ));
+  $handler->display->display_options['path'] = 'search/qtl';
+  $handler->display->display_options['menu']['title'] = 'QTL Search';
+  $handler->display->display_options['menu']['description'] = 'QTL Search';
+  $handler->display->display_options['menu']['weight'] = '20';
+  $handler->display->display_options['menu']['name'] = 'menu-main';
   
   // TAB_OPTIONS
   $handler->override_option('tab_options', array(
@@ -508,6 +503,6 @@ function legume_qtl_defaultvalue_user_qtl() {
     'weight' => 0,
     'name' => 'navigation',
   ));
-   
+  
   return $view;
 }
